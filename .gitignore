@@ -1,0 +1,15 @@
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+### IDE ###
+# IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# VSCode
+.vscode/
