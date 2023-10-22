@@ -20,10 +20,10 @@ class Booking
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $startDate = null;
+    private ?\DateTime $startDate = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $endDate = null;
+    private ?\DateTime $endDate = null;
 
     #[ORM\Column]
     private ?float $rating = null;
@@ -46,24 +46,24 @@ class Booking
         return $this->id;
     }
 
-    public function getStartDate(): ?\DateTimeImmutable
+    public function getStartDate(): ?\DateTime
     {
         return $this->startDate;
     }
 
-    public function setStartDate(\DateTimeImmutable $startDate): static
+    public function setStartDate(\DateTime $startDate): static
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeImmutable
+    public function getEndDate(): ?\DateTime
     {
         return $this->endDate;
     }
 
-    public function setEndDate(\DateTimeImmutable $endDate): static
+    public function setEndDate(\DateTime $endDate): static
     {
         $this->endDate = $endDate;
 

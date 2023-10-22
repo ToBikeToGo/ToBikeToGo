@@ -28,7 +28,7 @@ class Notification
     private ?string $sender = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $sentDate = null;
+    private ?\DateTime $sentDate = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'notifications')]
     private Collection $users;
@@ -67,12 +67,12 @@ class Notification
         return $this;
     }
 
-    public function getSentDate(): ?\DateTimeImmutable
+    public function getSentDate(): ?\DateTime
     {
         return $this->sentDate;
     }
 
-    public function setSentDate(\DateTimeImmutable $sentDate): static
+    public function setSentDate(\DateTime $sentDate): static
     {
         $this->sentDate = $sentDate;
 
