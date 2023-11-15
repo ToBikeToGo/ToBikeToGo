@@ -1,0 +1,27 @@
+name: Deployment
+
+concurrency:
+  group: production
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deployment:
+    name: Connexion au serveur de prod
+    runs-on: ubuntu-latest
+    steps:
+    - name: Connect with SSH to server
+      uses: garygrossgarten/github-action-ssh@release
+      with:
+        command: |
+          ls -a
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.username }}
+        password: ${{ secrets.PASSPHRASE }}
