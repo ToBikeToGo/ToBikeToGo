@@ -38,6 +38,7 @@ class VacationFixtures extends Fixture implements DependentFixtureInterface
 
             $vacation = (new Vacation())
                 ->setUser($this->getReference(UserFixtures::EMPLOYEE_REFERENCE . $i))
+                ->setDescription($faker->text(200))
                 ->setStartDate($startDate)
                 ->setEndDate($endDate)
                 ->setStatus($faker->boolean(80));
