@@ -10,7 +10,7 @@ use App\Repository\NotificationRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
-#[ORM\Entity(repositoryClass: NotificationRepository::class)]
+#[ORM\Entity()]
 #[ApiResource]
 class Notification
 {

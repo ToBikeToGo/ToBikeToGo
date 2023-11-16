@@ -10,7 +10,7 @@ use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
-#[ORM\Entity(repositoryClass: ShopRepository::class)]
+#[ORM\Entity()]
 #[ApiResource]
 class Shop
 {

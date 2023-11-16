@@ -1,4 +1,7 @@
 api_platform:
+    graphql:
+        graphql_playground:
+            enabled: false
     title: Hello API Platform
     version: 1.0.0
 

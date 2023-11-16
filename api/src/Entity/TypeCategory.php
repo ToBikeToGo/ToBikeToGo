@@ -10,7 +10,7 @@ use App\Repository\TypeCategoryRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
-#[ORM\Entity(repositoryClass: TypeCategoryRepository::class)]
+#[ORM\Entity()]
 #[ApiResource]
 class TypeCategory
 {

@@ -10,7 +10,7 @@ use App\Repository\PropositionRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
-#[ORM\Entity(repositoryClass: PropositionRepository::class)]
+#[ORM\Entity()]
 #[ApiResource]
 class Proposition
 {

@@ -10,7 +10,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;
 use App\Entity\Traits\TimestampableTrait;
 
-#[ORM\Entity(repositoryClass: BikeRepository::class)]
+#[ORM\Entity()]
 #[ApiResource]
 class Bike
 {

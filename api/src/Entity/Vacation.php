@@ -8,7 +8,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\VacationRepository;
 use App\Entity\Traits\TimestampableTrait;
 
-#[ORM\Entity(repositoryClass: VacationRepository::class)]
+#[ORM\Entity()]
 #[ApiResource]
 class Vacation
 {

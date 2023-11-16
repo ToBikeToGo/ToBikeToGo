@@ -8,7 +8,7 @@ use App\Entity\Traits\TimestampableTrait;
 use App\Repository\BookingRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: BookingRepository::class)]
+#[ORM\Entity()]
 #[ApiResource]
 class Booking
 {

@@ -8,7 +8,7 @@ use App\Entity\Traits\BlameableTrait;
 use App\Repository\RequestRepository;
 use App\Entity\Traits\TimestampableTrait;
 
-#[ORM\Entity(repositoryClass: RequestRepository::class)]
+#[ORM\Entity()]
 #[ApiResource]
 class Request
 {
