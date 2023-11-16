@@ -17,13 +17,14 @@ jobs:
     name: Connexion au serveur de prod
     runs-on: ubuntu-latest
     steps:
-    - name: Connect with SSH to server
+    - name: Connect with SSH to server and deploy
       uses: garygrossgarten/github-action-ssh@release
       with:
         command: |
           cd /home/debian/ToBikeToGo/
-          git stash -m 'stash before deploy'
+          git stash
           git pull --rebase origin main
+          git log --oneline -n 5
           git stash pop
           cd api/
           composer install --no-dev --optimize-autoloader
