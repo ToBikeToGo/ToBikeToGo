@@ -1,0 +1,30 @@
+name: Reset and update database
+
+concurrency:
+  group: production
+  cancel-in-progress: true
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  reset:
+    name: Connexion au serveur de prod
+    runs-on: ubuntu-latest
+    steps:
+    - name: Connect with SSH to server and deploy
+      uses: garygrossgarten/github-action-ssh@release
+      with:
+        command: |
+          cd /home/debian/ToBikeToGo/api/
+          php bin/console doctrine:database:drop --force
+          php bin/console doctrine:database:create
+          php bin/console doctrine:migrations:migrate --no-interaction
+          curl --verbose https://api.tobiketogo.shop/api
+          curl --verbose https://tobiketogo.shop
+          curl -o /dev/null -s -w "%{http_code}\n" https://api.tobiketogo.shop/api
+          curl -o /dev/null -s -w "%{http_code}\n" https://tobiketogo.shop
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.username }}
+        password: ${{ secrets.PASSPHRASE }}
