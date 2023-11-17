@@ -34,7 +34,7 @@ class Payment
     private ?string $status = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $paymentDate = null;
+    private ?\DateTime $paymentDate = null;
 
     #[ORM\ManyToMany(targetEntity: Shop::class, inversedBy: 'payments')]
     private Collection $shop;
@@ -104,12 +104,12 @@ class Payment
         return $this;
     }
 
-    public function getPaymentDate(): ?\DateTimeImmutable
+    public function getPaymentDate(): ?\DateTime
     {
         return $this->paymentDate;
     }
 
-    public function setPaymentDate(\DateTimeImmutable $paymentDate): static
+    public function setPaymentDate(\DateTime $paymentDate): static
     {
         $this->paymentDate = $paymentDate;
 

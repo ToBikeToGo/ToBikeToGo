@@ -10,7 +10,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Auth\User;
-use DateTimeImmutable;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -38,7 +38,7 @@ class Comment
 
     #[Groups(['comment:read'])]
     #[ORM\Column]
-    private DateTimeImmutable $createdAt;
+    private DateTime $createdAt;
 
     #[Groups(['comment:write'])]
     #[ORM\ManyToOne(inversedBy: 'comments')]
@@ -52,7 +52,7 @@ class Comment
 
     public function __construct()
     {
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -70,12 +70,12 @@ class Comment
         $this->content = $content;
     }
 
-    public function getCreatedAt(): ?DateTimeImmutable
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): void
+    public function setCreatedAt(DateTime $createdAt): void
     {
         $this->createdAt = $createdAt;
     }

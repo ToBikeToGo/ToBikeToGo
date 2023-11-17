@@ -9,6 +9,7 @@ use App\Repository\ScheduleRepository;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints\Date;
 
 #[ORM\Entity()]
 #[ApiResource]
@@ -24,11 +25,11 @@ class Schedule
     #[ORM\Column]
     private ?int $dow = null;
 
-    #[ORM\Column(type: Types::TIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $startTime = null;
+    #[ORM\Column]
+    private ?\DateTime $startTime = null;
 
-    #[ORM\Column(type: Types::TIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $endTime = null;
+    #[ORM\Column]
+    private ?\DateTime $endTime = null;
 
     #[ORM\ManyToMany(targetEntity: Shop::class, inversedBy: 'schedules')]
     private Collection $shops;
@@ -55,24 +56,24 @@ class Schedule
         return $this;
     }
 
-    public function getStartTime(): ?\DateTimeImmutable
+    public function getStartTime(): ?\DateTime
     {
         return $this->startTime;
     }
 
-    public function setStartTime(\DateTimeImmutable $startTime): static
+    public function setStartTime(\DateTime $startTime): static
     {
         $this->startTime = $startTime;
 
         return $this;
     }
 
-    public function getEndTime(): ?\DateTimeImmutable
+    public function getEndTime(): ?\DateTime
     {
         return $this->endTime;
     }
 
-    public function setEndTime(\DateTimeImmutable $endTime): static
+    public function setEndTime(\DateTime $endTime): static
     {
         $this->endTime = $endTime;
 

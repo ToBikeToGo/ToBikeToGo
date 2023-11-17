@@ -7,7 +7,7 @@ use App\Entity\Franchise;
 use App\Entity\Notification;
 use App\Entity\Payment;
 use App\Entity\Vacation;
-use DateTimeImmutable;
+use DateTime;
 use App\Entity\Blog\Comment;
 use App\Entity\Shop\Product;
 use ApiPlatform\Metadata\Get;
@@ -103,7 +103,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->products = new ArrayCollection();
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = new DateTime();
         $this->bookings = new ArrayCollection();
         $this->payments = new ArrayCollection();
         $this->vacations = new ArrayCollection();

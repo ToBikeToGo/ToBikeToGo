@@ -21,7 +21,7 @@ class Request
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $requestDate = null;
+    private ?\DateTime $requestDate = null;
 
     #[ORM\Column]
     private ?bool $status = null;
@@ -34,12 +34,12 @@ class Request
         return $this->id;
     }
 
-    public function getRequestDate(): ?\DateTimeImmutable
+    public function getRequestDate(): ?\DateTime
     {
         return $this->requestDate;
     }
 
-    public function setRequestDate(\DateTimeImmutable $requestDate): static
+    public function setRequestDate(\DateTime $requestDate): static
     {
         $this->requestDate = $requestDate;
 

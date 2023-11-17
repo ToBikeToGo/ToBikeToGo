@@ -4,7 +4,7 @@ namespace App\Entity\Shop;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Auth\User;
-use DateTimeImmutable;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -30,7 +30,7 @@ class Product
 
     #[Groups(['product:read', 'admin:manage'])]
     #[ORM\Column]
-    private DateTimeImmutable $createdAt;
+    private DateTime $createdAt;
 
     #[Groups(['product:read:authorized'])]
     #[ORM\Column(length: 255)]
@@ -43,7 +43,7 @@ class Product
     public function __construct()
     {
         $this->buyers = new ArrayCollection();
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -71,12 +71,12 @@ class Product
         $this->price = $price;
     }
 
-    public function getCreatedAt(): DateTimeImmutable
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): void
+    public function setCreatedAt(DateTime $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
