@@ -1,0 +1,58 @@
+import { useEffect, useRef, useState } from 'react';
+import { addDays, getDay } from 'date-fns';
+
+export const useCalendar = ({ onChangeDateCallback, disabledDates = [] }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const calendarRef = useRef(null);
+  const [dates, setDates] = useState([
+    {
+      startDate: new Date(),
+      endDate: addDays(new Date(), 7),
+      key: 'selection',
+    },
+  ]);
+
+  useEffect(() => {
+    document.addEventListener('click', handeInputBlur);
+    return () => {
+      document.removeEventListener('click', handeInputBlur);
+    };
+  }, []);
+
+  const onChangeDate = (item) => {
+    onChangeDateCallback?.();
+    if (
+      getDay(item.selection?.startDate) != getDay(item.selection?.endDate) &&
+      getDay(dates[0]?.endDate) !== getDay(item.selection?.endDate)
+    ) {
+      setIsOpen(false);
+    }
+    setDates([item?.selection]);
+  };
+  const handleOpen = () => {
+    if (!isOpen) setIsOpen(true);
+  };
+  const handeInputBlur = (e) => {
+    e.preventDefault();
+
+    // if click outside of the calendar
+    if (calendarRef.current && !calendarRef.current.contains(e.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handeInputBlur);
+    return () => {
+      document.removeEventListener('click', handeInputBlur);
+    };
+  }, []);
+
+  return {
+    calendarRef,
+    dates,
+    isOpen,
+    onChangeDate,
+    handleOpen,
+  };
+};

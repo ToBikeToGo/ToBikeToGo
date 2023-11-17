@@ -1,0 +1,27 @@
+.rdp {
+  --rdp-cell-size: 40px;
+  --rdp-accent-color: #970000;
+  --rdp-background-color: #051c2c;
+  /* Switch to dark colors for dark themes */
+  --rdp-accent-color-dark: #cccccc;
+  --rdp-background-color-dark: #b7a0ff;
+  /* Outline border for focused elements */
+  /* Outline border for focused and selected elements */
+  --rdp-outline-selected: 2px solid rgba(0, 0, 0, 0.75);
+}
+
+.rdp-table {
+  background-color: black;
+  position: absolute;
+  top: 0;
+}
+
+.rdrCalendarWrapper {
+  max-width: 100%;
+  position: absolute;
+  z-index: 1200000;
+}
+
+.MuiInput-input {
+  text-align: center;
+}

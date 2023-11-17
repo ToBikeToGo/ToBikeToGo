@@ -36,6 +36,8 @@ jobs:
               uses: garygrossgarten/github-action-ssh@release
               with:
                 command: |
+                    export PGUSER=${{ secrets.PGUSER }}
+                    export PGPASSWORD=${{ secrets.PGPASSWORD }}
                     cd /home/debian/ToBikeToGo/api/
                     php bin/console doctrine:database:backup
                 host: ${{ secrets.HOST }}
@@ -74,6 +76,8 @@ jobs:
               uses: garygrossgarten/github-action-ssh@release
               with:
                 command: |
+                    export PGUSER=${{ secrets.PGUSER }}
+                    export PGPASSWORD=${{ secrets.PGPASSWORD }}
                     cd /home/debian/ToBikeToGo/api/
                     php bin/console doctrine:database:restore
                 host: ${{ secrets.HOST }}
