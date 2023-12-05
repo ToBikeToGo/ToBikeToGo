@@ -1,4 +1,9 @@
 api_platform:
+    keep_legacy_inflector: false
+    formats:
+        jsonld: ['application/ld+json']
+        jsonhal: ['application/hal+json']
+        json: ['application/json']
     graphql:
         graphql_playground:
             enabled: false
