@@ -2,11 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Auth\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\TimestampableTrait;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity()]
 #[ApiResource]
@@ -20,21 +23,26 @@ class Vacation
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['shop:vacations:read'])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
+    #[Groups(['shop:vacations:read'])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column]
+    #[Groups(['shop:vacations:read'])]
     private ?bool $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'vacations')]
     private ?Shop $shop = null;
 
     #[ORM\ManyToOne(inversedBy: 'vacations')]
+    #[Groups(['shop:vacations:read'])]
     private ?User $user = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['shop:vacations:read'])]
     private ?string $description = null;
 
     public function getId(): ?int

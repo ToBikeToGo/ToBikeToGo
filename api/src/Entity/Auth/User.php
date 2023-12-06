@@ -6,6 +6,7 @@ use App\Entity\Booking;
 use App\Entity\Franchise;
 use App\Entity\Notification;
 use App\Entity\Payment;
+use App\Entity\Shop;
 use App\Entity\Vacation;
 use DateTime;
 use App\Entity\Blog\Comment;
@@ -65,6 +66,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $payments;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Vacation::class)]
+    #[Groups(["user:read:vacations"])]
     private Collection $vacations;
 
     #[ORM\ManyToMany(targetEntity: Notification::class, mappedBy: 'users')]
@@ -72,26 +74,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToMany(targetEntity: Franchise::class, mappedBy: 'users')]
     private Collection $franchises;
-
+    #[ORM\ManyToMany(targetEntity: Shop::class, inversedBy: 'users')]
+    #[Groups(["user:read"])]
+    private Collection $shops;
     #[ORM\Column(length: 255)]
+    #[Groups(["user:read", 'shop:vacations:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["user:read", 'shop:vacations:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[Groups(["user:read", 'shop:vacations:read'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["user:read", 'shop:vacations:read'])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["user:read"])]
     private ?string $locale = null;
 
     #[ORM\Column]
+    #[Groups(["user:read"])]
     private ?bool $status = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -109,6 +119,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->vacations = new ArrayCollection();
         $this->notifications = new ArrayCollection();
         $this->franchises = new ArrayCollection();
+    }
+
+
+
+    public function addShop(Shop $shop): static
+    {
+        if (!$this->shops->contains($shop)) {
+            $this->shops->add($shop);
+        }
+
+        return $this;
+    }
+
+    public function getShops(): Collection
+    {
+        return $this->shops;
     }
 
     public function getId(): ?int
@@ -456,6 +482,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
 
     /**
      * @see UserInterface

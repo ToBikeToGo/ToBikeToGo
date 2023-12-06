@@ -2,9 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\DataFixtures\UserFixtures;
 use Faker\Factory;
 use App\Entity\Shop;
-use App\DataFixtures\UserFixtures;
 use App\DataFixtures\FranchiseFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -18,15 +18,17 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
+        for ($i=0; $i < 20; $i++) {
+            $userIndex = $i % 136;
 
-        for ($i=0; $i < 20; $i++) { 
             $object = (new Shop())
                 ->setLabel($faker->streetName())
                 ->setAddress($faker->address())
                 ->setIsOpened($faker->boolean(80))
                 ->setFranchise($this->getReference(FranchiseFixtures::FRANCHISE_REFERENCE . $i))
-                ->setCreatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $i))
-                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $i));
+                ->setCreatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $userIndex))
+                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $userIndex))
+                ->addMember($this->getReference(UserFixtures::PROVIDER_REFERENCE . $userIndex));
 
             $manager->persist($object);
 
@@ -42,7 +44,8 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
                 ->setIsOpened($faker->boolean(80))
                 ->setFranchise($this->getReference(FranchiseFixtures::FRANCHISE_REFERENCE . $random))
                 ->setCreatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE. $random))
-                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE. $random));
+                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE. $random))
+                ->addMember($this->getReference(UserFixtures::PROVIDER_REFERENCE . $random));
 
             $manager->persist($object);
 

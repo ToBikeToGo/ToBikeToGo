@@ -7,10 +7,12 @@ use App\Entity\Auth\User;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\BookingRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity()]
-#[ApiResource]
-class Booking
+#[ApiResource(
+    normalizationContext: ['groups' => ['booking:read']],
+)]class Booking
 {
     use TimestampableTrait;
 
@@ -20,22 +22,28 @@ class Booking
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(["booking:read"])]
+
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
+    #[Groups(["booking:read"])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column]
     private ?float $rating = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["booking:read"])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["booking:read"])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
+    #[Groups(["booking:read"])]
     private ?Bike $bike = null;
 
     #[ORM\OneToOne(mappedBy: 'booking', cascade: ['persist', 'remove'])]

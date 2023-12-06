@@ -9,6 +9,7 @@ use App\Repository\BikeRepository;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;
 use App\Entity\Traits\TimestampableTrait;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity()]
 #[ApiResource]
@@ -23,16 +24,20 @@ class Bike
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["booking:read"])]
     private ?string $brand = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["booking:read"])]
     private ?string $label = null;
 
     #[ORM\Column]
+    #[Groups(["booking:read"])]
     private ?float $price = null;
 
     #[ORM\ManyToOne(inversedBy: 'bikes')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["booking:read"])]
     private ?Shop $shop = null;
 
     #[ORM\OneToMany(mappedBy: 'bike', targetEntity: Booking::class)]
