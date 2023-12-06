@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use App\Controller\VacationController;
 use App\Entity\Auth\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,7 +13,18 @@ use App\Entity\Traits\TimestampableTrait;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity()]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+           uriTemplate: '/vacations/user/{id}',
+            controller: VacationController::class,
+            name: 'get_vacation_by_user',
+        ),
+        new GetCollection(),
+        new Post()
+    ],
+)
+]
 class Vacation
 {
     use TimestampableTrait;
@@ -20,6 +32,7 @@ class Vacation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['shop:vacations:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
