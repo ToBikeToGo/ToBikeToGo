@@ -1,4 +1,10 @@
 api_platform:
+    title: ToBikeToGo API
+    version: 1.0.0
+    description: API for ToBikeToGo
+    collection:
+        pagination:
+            enabled: true
     keep_legacy_inflector: false
     formats:
         jsonld: ['application/ld+json']
@@ -7,8 +13,6 @@ api_platform:
     graphql:
         graphql_playground:
             enabled: false
-    title: Hello API Platform
-    version: 1.0.0
 
     defaults:
         stateless: true

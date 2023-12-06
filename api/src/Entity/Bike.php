@@ -2,16 +2,28 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\Link;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\BikeRepository;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;
+use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity()]
 #[ApiResource]
+#[ApiResource(
+    operations: [new GetCollection(
+        uriTemplate: "/shops/{shopId}/bikes",
+        uriVariables: [
+            "shopId" => new Link(
+                fromClass: Shop::class,
+                fromProperty: "bikes"
+            )
+        ],
+    )]
+)]
 class Bike
 {
     use TimestampableTrait;
