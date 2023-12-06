@@ -24,11 +24,14 @@ security:
             pattern: ^/_(profiler|wdt)
             security: false
         api:
+            provider: users
             pattern: ^/api/
             stateless: true
-            provider: users
             jwt: ~
         main:
+            pattern: ^/auth
+            stateless: true
+            provider: users
             json_login:
                 check_path: /auth # The name in routes.yaml is enough for mapping
                 username_path: email

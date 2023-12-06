@@ -2,6 +2,8 @@
 
 namespace App\Entity\Auth;
 
+use ApiPlatform\Metadata\HttpOperation;
+use App\Controller\UserController;
 use App\Entity\Booking;
 use App\Entity\Franchise;
 use App\Entity\Notification;
@@ -21,6 +23,7 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -30,7 +33,13 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ApiResource(
     denormalizationContext: ['groups' => ['user:write:update', 'user:write']],
     normalizationContext: ['groups' => ['user:read']],
+
     operations: [
+        new Get(
+            uriTemplate: '/me',
+            controller: UserController::class,
+            read: false,
+        ),
         new GetCollection(),
         new Post(),
         new Get(normalizationContext: ['groups' => ['user:read', 'user:read:full']]),
@@ -45,7 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
-
+    #[Groups(['user:read'])]
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
@@ -69,28 +78,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToMany(targetEntity: Notification::class, mappedBy: 'users')]
     private Collection $notifications;
-
+    #[Groups(['user:read'])]
     #[ORM\ManyToMany(targetEntity: Franchise::class, mappedBy: 'users')]
     private Collection $franchises;
-
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
-
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
+    #[Groups(['user:read'])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
-
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
-
+    #[Groups(['user:read'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $locale = null;
-
+    #[Groups(['user:read'])]
     #[ORM\Column]
     private ?bool $status = null;
 
