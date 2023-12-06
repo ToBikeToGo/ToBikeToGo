@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Link;
+use App\Entity\Auth\User;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ShopRepository;
 use ApiPlatform\Metadata\ApiResource;
@@ -9,9 +12,16 @@ use App\Entity\Traits\BlameableTrait;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 
 #[ORM\Entity()]
 #[ApiResource]
+#[ApiResource(
+    uriTemplate: '/shops/vacations/{id}',
+    operations: [new Get()],
+    normalizationContext: ['groups' => ['shop:vacations:read']],
+)]
 class Shop
 {
     use TimestampableTrait;
@@ -22,7 +32,11 @@ class Shop
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'shops')]
+    private Collection $users;
+
     #[ORM\Column(length: 255)]
+    #[Groups(["booking:read"])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255)]
@@ -45,6 +59,7 @@ class Shop
     private Collection $payments;
 
     #[ORM\OneToMany(mappedBy: 'shop', targetEntity: Vacation::class)]
+    #[Groups(['shop:vacations:read'])]
     private Collection $vacations;
 
     public function __construct()
@@ -53,6 +68,7 @@ class Shop
         $this->schedules = new ArrayCollection();
         $this->payments = new ArrayCollection();
         $this->vacations = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -209,6 +225,17 @@ class Shop
 
         return $this;
     }
+
+    public function addMember(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addShop($this);
+        }
+
+        return $this;
+    }
+
 
     public function removeVacation(Vacation $vacation): static
     {

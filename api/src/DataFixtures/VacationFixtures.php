@@ -2,10 +2,10 @@
 
 namespace App\DataFixtures;
 
-use Faker\Factory;
-use App\Entity\Vacation;
 use App\DataFixtures\ShopFixtures;
 use App\DataFixtures\UserFixtures;
+use Faker\Factory;
+use App\Entity\Vacation;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -27,6 +27,7 @@ class VacationFixtures extends Fixture implements DependentFixtureInterface
             $vacation->setStartDate($startDate);
             $vacation->setEndDate($endDate);
             $vacation->setStatus($faker->boolean(80));
+            $vacation->setUser($this->getReference(UserFixtures::EMPLOYEE_REFERENCE . $i));
 
             $manager->persist($vacation);
         }
@@ -39,6 +40,7 @@ class VacationFixtures extends Fixture implements DependentFixtureInterface
             $vacation = (new Vacation())
                 ->setUser($this->getReference(UserFixtures::EMPLOYEE_REFERENCE . $i))
                 ->setDescription($faker->text(200))
+                ->setShop($this->getReference(ShopFixtures::SHOP_REFERENCE . $i))
                 ->setStartDate($startDate)
                 ->setEndDate($endDate)
                 ->setStatus($faker->boolean(80));
