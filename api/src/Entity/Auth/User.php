@@ -12,7 +12,6 @@ use DateTime;
 use App\Entity\Blog\Comment;
 use App\Entity\Shop\Product;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use App\Entity\Blog\Publication;
@@ -22,7 +21,6 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
@@ -38,6 +36,15 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         new Patch(denormalizationContext: ['groups' => ['user:write:update']]),
         // new Put(), // I don't use PUT, only PATCH
         // new Delete(), // Disable DELETE method, do soft delete instead
+    ]
+)]
+#[ApiResource(
+    operations:
+    [
+        new GetCollection(
+            uriTemplate: '/vacations/{id}/users',
+            
+        ),
     ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
