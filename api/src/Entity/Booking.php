@@ -2,14 +2,30 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Auth\User;
-use App\Entity\Traits\TimestampableTrait;
-use App\Repository\BookingRepository;
+use ApiPlatform\Metadata\Link;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use App\Entity\Traits\TimestampableTrait;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity()]
 #[ApiResource]
+#[ApiResource(
+    uriTemplate: "/bikes/{bikeId}/bookings",
+    uriVariables: [
+        "bikeId" => new Link(
+            fromClass: Bike::class,
+            fromProperty: "bookings"
+        )
+    ],
+    operations: [new GetCollection(
+        normalizationContext: [
+            'groups' => ['booking:read']
+        ]
+    )]
+)]
 class Booking
 {
     use TimestampableTrait;
@@ -17,12 +33,15 @@ class Booking
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['booking:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['booking:read'])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
+    #[Groups(['booking:read'])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column]

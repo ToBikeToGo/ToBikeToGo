@@ -3,13 +3,31 @@
 namespace App\Entity;
 
 use App\Entity\Auth\User;
+use ApiPlatform\Metadata\Link;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 
 #[ORM\Entity()]
 #[ApiResource]
+#[ApiResource(
+    operations: [        
+        new GetCollection(
+            uriTemplate: "/shops/{shopId}/vacations",
+            uriVariables: [
+                "shopId" => new Link(
+                    fromClass: Shop::class,
+                    fromProperty: "vacations"
+                )
+            ],
+        )
+    ]
+)]
+#[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'], arguments: ['orderParameterName' => 'order'])]
 class Vacation
 {
     use TimestampableTrait;
@@ -25,8 +43,8 @@ class Vacation
     #[ORM\Column]
     private ?\DateTime $endDate = null;
 
-    #[ORM\Column]
-    private ?bool $status = null;
+    #[ORM\Column(type: Types::SMALLINT)]
+    private ?int $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'vacations')]
     private ?Shop $shop = null;
@@ -66,7 +84,7 @@ class Vacation
         return $this;
     }
 
-    public function isStatus(): ?bool
+    public function getStatus(): ?int
     {
         return $this->status;
     }

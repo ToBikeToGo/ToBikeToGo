@@ -6,6 +6,7 @@ use App\Entity\Booking;
 use App\Entity\Franchise;
 use App\Entity\Notification;
 use App\Entity\Payment;
+use App\Entity\Schedule;
 use App\Entity\Vacation;
 use DateTime;
 use App\Entity\Blog\Comment;
@@ -97,6 +98,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $verification_key = null;
 
+    #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'users')]
+    private Collection $schedules;
 
     public function __construct()
     {
@@ -109,6 +112,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->vacations = new ArrayCollection();
         $this->notifications = new ArrayCollection();
         $this->franchises = new ArrayCollection();
+        $this->schedules = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -464,5 +468,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Schedule>
+     */
+    public function getSchedules(): Collection
+    {
+        return $this->schedules;
+    }
+
+    public function addSchedule(Schedule $schedule): static
+    {
+        if (!$this->schedules->contains($schedule)) {
+            $this->schedules->add($schedule);
+        }
+
+        return $this;
+    }
+
+    public function removeSchedule(Schedule $schedule): static
+    {
+        $this->schedules->removeElement($schedule);
+
+        return $this;
     }
 }
