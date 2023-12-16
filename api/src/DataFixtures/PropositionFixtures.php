@@ -16,8 +16,8 @@ class PropositionFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        for ($i=0; $i < 20; $i++) { 
-            for ($j=0; $j < 3; $j++) { 
+        for ($i=0; $i < 20; $i++) {
+            for ($j=0; $j < 3; $j++) {
                 $object = (new Proposition())
                     ->setLabel($faker->sentence())
                     ->setQuestion($this->getReference(QuestionFixtures::QUESTION_REFERENCE . $i * 3 + $j))

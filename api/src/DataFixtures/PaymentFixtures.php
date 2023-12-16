@@ -7,7 +7,6 @@ use App\DataFixtures\BookingFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-;
 
 class PaymentFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -15,7 +14,7 @@ class PaymentFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        for ($i=0; $i < 20; $i++) { 
+        for ($i=0; $i < 20; $i++) {
             $object = (new \App\Entity\Payment())
                 ->setPrice($faker->numberBetween(10, 1000))
                 ->setCommission($faker->numberBetween(1, 20))

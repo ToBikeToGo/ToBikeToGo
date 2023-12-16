@@ -9,7 +9,6 @@ use App\DataFixtures\FranchiseFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-;
 
 class ShopFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -69,7 +68,7 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
             '12 Rue de la Paix, 75002 Paris',
         ];
 
-        for ($i=0; $i < 20; $i++) { 
+        for ($i=0; $i < 20; $i++) {
             $object = (new Shop())
                 ->setLabel($faker->streetName())
                 ->setAddress($adresses[$i])
@@ -83,7 +82,7 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
             $this->addReference(self::SHOP_REFERENCE . $i, $object);
         }
 
-        for ($i=20; $i < 30; $i++) { 
+        for ($i=20; $i < 30; $i++) {
             $random = $faker->numberBetween(0, 19);
 
             $object = (new Shop())

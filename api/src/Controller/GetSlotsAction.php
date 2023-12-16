@@ -15,6 +15,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[AsController]
 class GetSlotsAction extends AbstractController
 {
+
+    private const TIME_FORMAT = 'H:i:s';
+
+    private const DATE_FORMAT = 'Y-m-d';
+
     public function __construct(private EntityManagerInterface $entityManager)
     {
     }
@@ -32,7 +37,7 @@ class GetSlotsAction extends AbstractController
         $date = $data['date'];
 
         // Verify that the date is valid
-        if (!\DateTime::createFromFormat('Y-m-d', $date)) {
+        if (!\DateTime::createFromFormat(self::DATE_FORMAT, $date)) {
             return new JsonResponse(status: Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -42,7 +47,7 @@ class GetSlotsAction extends AbstractController
         $dow = $date->format('N');
 
         // Format the date
-        $date = $date->format('Y-m-d');
+        $date = $date->format(self::DATE_FORMAT);
 
         // Get the employees with the role "employee"
         $employees = $shop->getFranchise()->getUsers()->filter(function ($employee) {
@@ -119,15 +124,18 @@ class GetSlotsAction extends AbstractController
         // Loop through the employees
         foreach ($employees as $employee) {
 
-            // Filter the schedules based on the day of the week and date validity 
+            // Filter the schedules based on the day of the week and date validity
             $schedules = $employee->getSchedules()->filter(function ($schedule) use ($dow, $date) {
                 $startValidity = $schedule->getStartValidity();
                 $endValidity = $schedule->getEndValidity();
 
                 return $schedule->getDow() == $dow &&
                     (
-                        ($endValidity === null && $startValidity->format('Y-m-d') <= $date) ||
-                        ($endValidity !== null && $startValidity->format('Y-m-d') <= $date && $endValidity->format('Y-m-d') >= $date)
+                        ($endValidity === null && $startValidity->format(self::DATE_FORMAT) <= $date) ||
+                        (
+                            $endValidity !== null && $startValidity->format(self::DATE_FORMAT) <= $date &&
+                            $endValidity->format(self::DATE_FORMAT) >= $date
+                        )
                     );
             });
 
@@ -141,8 +149,8 @@ class GetSlotsAction extends AbstractController
             $scheduleEndTime = $schedule->getEndTime();
 
             // Populate the start and end times arrays
-            $startTimeArray[$employee->getId()] = $scheduleStartTime->format('H:i:s');
-            $endTimeArray[$employee->getId()] = $scheduleEndTime->format('H:i:s');
+            $startTimeArray[$employee->getId()] = $scheduleStartTime->format(self::TIME_FORMAT);
+            $endTimeArray[$employee->getId()] = $scheduleEndTime->format(self::TIME_FORMAT);
 
             // Get the vacations of the employee
             $vacations = $employee->getVacations()->getValues();
@@ -150,10 +158,10 @@ class GetSlotsAction extends AbstractController
             // Loop through the vacations
             foreach ($vacations as $vacation) {
 
-                $vacationStartDate = $vacation->getStartDate()->format('Y-m-d');
-                $vacationEndDate = $vacation->getEndDate()->format('Y-m-d');
-                $vacationStartTime = $vacation->getStartDate()->format('H:i:s');
-                $vacationEndTime = $vacation->getEndDate()->format('H:i:s');
+                $vacationStartDate = $vacation->getStartDate()->format(self::DATE_FORMAT);
+                $vacationEndDate = $vacation->getEndDate()->format(self::DATE_FORMAT);
+                $vacationStartTime = $vacation->getStartDate()->format(self::TIME_FORMAT);
+                $vacationEndTime = $vacation->getEndDate()->format(self::TIME_FORMAT);
 
                 // If the vacation is not valid for the date, skip it and populate the not available employees array
                 if ($vacationStartDate < $date && $vacationEndDate > $date) {
@@ -219,7 +227,7 @@ class GetSlotsAction extends AbstractController
         foreach ($bikes as $bike) {
             // Filter the bookings based on the date
             $bookingsForBike = $bike->getBookings()->filter(function ($booking) use ($date) {
-                return $booking->getStartDate()->format('Y-m-d') == $date;
+                return $booking->getStartDate()->format(self::DATE_FORMAT) == $date;
             });
 
             if ($bookingsForBike->count() == 0) {

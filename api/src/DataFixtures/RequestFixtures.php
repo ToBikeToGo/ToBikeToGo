@@ -8,7 +8,6 @@ use App\DataFixtures\FranchiseFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-;
 
 class RequestFixtures extends Fixture implements DependentFixtureInterface
 {

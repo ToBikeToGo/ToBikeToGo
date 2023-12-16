@@ -9,7 +9,6 @@ use App\DataFixtures\UserFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-;
 
 class VacationFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -17,7 +16,7 @@ class VacationFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        for ($i=0; $i < 5; $i++) { 
+        for ($i=0; $i < 5; $i++) {
             $startDate = $faker->dateTimeBetween("today", "+2 month");
             $endDate = clone $startDate;
             $endDate->add(new \DateInterval('P' . random_int(1, 30). 'D'));
@@ -31,7 +30,7 @@ class VacationFixtures extends Fixture implements DependentFixtureInterface
             $manager->persist($vacation);
         }
 
-        for ($i=0; $i < 5; $i++) { 
+        for ($i=0; $i < 5; $i++) {
             $startDate = $faker->dateTimeBetween("today", "+2 month");
             $endDate = clone $startDate;
             $endDate->add(new \DateInterval('P' . random_int(1, 30). 'D'));

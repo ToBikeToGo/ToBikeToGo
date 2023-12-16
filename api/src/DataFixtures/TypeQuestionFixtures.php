@@ -6,7 +6,6 @@ use Faker\Factory;
 use App\Entity\TypeQuestion;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-;
 
 class TypeQuestionFixtures extends Fixture
 {

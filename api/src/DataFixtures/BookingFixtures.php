@@ -9,7 +9,6 @@ use App\DataFixtures\UserFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-;
 
 class BookingFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -20,7 +19,7 @@ class BookingFixtures extends Fixture implements DependentFixtureInterface
         $faker = Factory::create('fr_FR');
 
         // Make a booking for a bike each two
-        for ($i=0; $i < 75; $i++) { 
+        for ($i=0; $i < 75; $i++) {
             $startDate = $faker->dateTimeBetween("today", "+1 month");
             $endDate = clone $startDate;
             $endDate->add(new \DateInterval('P' . random_int(1, 30) . 'D'));
