@@ -15,7 +15,7 @@ use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 #[ORM\Entity()]
 #[ApiResource]
 #[ApiResource(
-    operations: [        
+    operations: [
         new GetCollection(
             uriTemplate: "/shops/{shopId}/vacations",
             uriVariables: [

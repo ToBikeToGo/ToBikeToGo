@@ -8,7 +8,6 @@ use App\DataFixtures\ShopFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-;
 
 class ScheduleFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -16,8 +15,8 @@ class ScheduleFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        for ($i=0; $i < 30; $i++) { 
-            for ($j=1; $j < 8; $j++) { 
+        for ($i=0; $i < 30; $i++) {
+            for ($j=1; $j < 8; $j++) {
                 $startTime = $faker->dateTimeBetween("today 7:00", "today 12:00");
                 $endTime = clone $startTime;
                 $endTime->add(new \DateInterval('PT' . random_int(2, 8) . 'H'));
@@ -34,8 +33,8 @@ class ScheduleFixtures extends Fixture implements DependentFixtureInterface
             $manager->persist($scheduleShop);
         }
 
-        for ($i=0; $i < 40; $i++) { 
-                for ($j=1; $j < 8; $j++) { 
+        for ($i=0; $i < 40; $i++) {
+                for ($j=1; $j < 8; $j++) {
                 $startTime = $faker->dateTimeBetween("today 9:00", "today 17:00");
                 $endTime = clone $startTime;
                 $endTime->add(new \DateInterval('PT' . random_int(2, 8) . 'H'));

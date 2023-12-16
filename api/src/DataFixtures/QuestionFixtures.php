@@ -17,8 +17,8 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        for ($i=0; $i < 20; $i++) { 
-            for ($j=0; $j < 3; $j++) { 
+        for ($i=0; $i < 20; $i++) {
+            for ($j=0; $j < 3; $j++) {
                 $object = (new Question())
                     ->setLabel($faker->sentence())
                     ->setTypeQuestion($this->getReference($faker->randomElement(TypeQuestionFixtures::TYPE_QUESTION)))

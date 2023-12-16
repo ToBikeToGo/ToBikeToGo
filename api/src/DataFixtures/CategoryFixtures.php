@@ -18,7 +18,7 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        for ($i=0; $i < 20; $i++) { 
+        for ($i=0; $i < 20; $i++) {
             $object = (new Category())
                 ->setLabel($faker->sentence())
                 ->setTypeCategory($this->getReference($faker->randomElement(TypeCategoryFixtures::TYPE_CATEGORY)));
