@@ -34,17 +34,18 @@ class ScheduleFixtures extends Fixture implements DependentFixtureInterface
             $manager->persist($scheduleShop);
         }
 
-        for ($i=0; $i < 75; $i++) { 
+        for ($i=0; $i < 40; $i++) { 
                 for ($j=1; $j < 8; $j++) { 
-                        $startTime = $faker->dateTimeBetween("today 9:00", "today 17:00");
+                $startTime = $faker->dateTimeBetween("today 9:00", "today 17:00");
                 $endTime = clone $startTime;
                 $endTime->add(new \DateInterval('PT' . random_int(2, 8) . 'H'));
         
                 $scheduleUser = (new Schedule())
                     ->setDow($j)
-                    ->addUser($this->getReference(UserFixtures::USER_REFERENCE. $i))
+                    ->addUser($this->getReference(UserFixtures::EMPLOYEE_REFERENCE. $i))
                     ->setStartTime($startTime)
-                    ->setEndTime($endTime);
+                    ->setEndTime($endTime)
+                    ->setStartValidity(new \DateTime('now'));
         
                 $manager->persist($scheduleUser);
             }
