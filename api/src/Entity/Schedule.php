@@ -50,17 +50,23 @@ class Schedule
     #[ORM\Column]
     private ?int $dow = null;
 
-    #[ORM\Column]
-    private ?\DateTime $startTime = null;
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTimeInterface $startTime = null;
 
-    #[ORM\Column]
-    private ?\DateTime $endTime = null;
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTimeInterface $endTime = null;
 
     #[ORM\ManyToMany(targetEntity: Shop::class, mappedBy: 'schedules')]
     private Collection $shops;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'schedules')]
     private Collection $users;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $startValidity = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $endValidity = null;
 
     public function __construct()
     {
@@ -159,6 +165,30 @@ class Schedule
         if ($this->users->removeElement($user)) {
             $user->removeSchedule($this);
         }
+
+        return $this;
+    }
+
+    public function getStartValidity(): ?\DateTimeInterface
+    {
+        return $this->startValidity;
+    }
+
+    public function setStartValidity(?\DateTimeInterface $startValidity): static
+    {
+        $this->startValidity = $startValidity;
+
+        return $this;
+    }
+
+    public function getEndValidity(): ?\DateTimeInterface
+    {
+        return $this->endValidity;
+    }
+
+    public function setEndValidity(?\DateTimeInterface $endValidity): static
+    {
+        $this->endValidity = $endValidity;
 
         return $this;
     }

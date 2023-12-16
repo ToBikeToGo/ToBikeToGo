@@ -2,29 +2,97 @@
 
 namespace App\Entity;
 
+use App\Dto\SlotsDto;
 use App\Entity\Auth\User;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
+use App\Processor\SlotsProcessor;
+use App\Controller\GetSlotsAction;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\Parameter;
 use App\Entity\Traits\TimestampableTrait;
+use ApiPlatform\OpenApi\Model\RequestBody;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity()]
 #[ApiResource]
 #[ApiResource(
-    uriTemplate: "/bikes/{bikeId}/bookings",
-    uriVariables: [
-        "bikeId" => new Link(
-            fromClass: Bike::class,
-            fromProperty: "bookings"
+    operations: [
+        new GetCollection(
+            uriTemplate: "/bikes/{bikeId}/bookings",
+            uriVariables: [
+                "bikeId" => new Link(
+                    fromClass: Bike::class,
+                    fromProperty: "bookings"
+                )
+            ],
+            normalizationContext: [
+                'groups' => ['booking:read']
+            ],
+        ),
+        new Post(
+            input: SlotsDto::class,
+            processor: SlotsProcessor::class,
+            uriTemplate: "/shops/{id}/slots",
+            controller: GetSlotsAction::class,
+            read: false,
+            openapi: new Operation(
+                summary: "Get slots for a shop by date",
+                tags: ["Slot"],
+                requestBody: new RequestBody(
+                    description: "Date to get slots for",
+                    required: true,
+                    content: new \ArrayObject(
+                        [
+                            "application/json" => [
+                                "schema" => [
+                                    "type" => "object",
+                                    "properties" => [
+                                        "date" => [
+                                            "type" => "string",
+                                            "format" => "date",
+                                        ],
+                                    ],
+                                ],
+                                "example" => [
+                                    "date" => "2021-01-01",
+                                ],
+                            ],
+                        ]
+                    )
+                ),
+                responses: [
+                    '200' => [
+                        'description' => 'Slots for a shop',
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    'type' => 'array',
+                                    'items' => [
+                                        // Array of slots for a shop
+                                        '$ref' => '#/components/schemas/Slot',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                    '400' => [
+                        'description' => 'Invalid input',
+                    ],
+                    '404' => [
+                        'description' => 'Shop not found',
+                    ],
+                    '422' => [
+                        'description' => 'Invalid input',
+                    ],
+                ],
+            ),
         )
-    ],
-    operations: [new GetCollection(
-        normalizationContext: [
-            'groups' => ['booking:read']
-        ]
-    )]
+    ]
 )]
 class Booking
 {
