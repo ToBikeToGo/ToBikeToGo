@@ -1,0 +1,26 @@
+name: Test Back
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - 'api/**'
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+jobs:
+    sonarqube:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+            - name: SonarQube Scan
+              uses: sonarsource/sonarqube-scan-action@master
+              with: 
+                projectBaseDir: ./api
+              env:
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
+                  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
