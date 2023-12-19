@@ -20,6 +20,15 @@ class GetSlotsAction extends AbstractController
 
     private const DATE_FORMAT = 'Y-m-d';
 
+    private array $startTimeArray = [];
+    private array $endTimeArray = [];
+    private array $startTimeArrayVacation = [];
+    private array $endTimeArrayVacation = [];
+    private array $notAvailableEmployees = [];
+    private array $bookings = [];
+    private $date = '';
+    private $dow = '';
+
     public function __construct(private EntityManagerInterface $entityManager)
     {
     }
@@ -28,113 +37,91 @@ class GetSlotsAction extends AbstractController
      * Get the available slots for a given shop.
      *
      * @param Shop $shop The shop entity
-     * @return array|JsonResponse The available slots array or a JSON response with a 422 status code if the date is invalid
+     * @return array|JsonResponse The available slots array or a JSON response
      */
     public function __invoke(Shop $shop, Request $request)
     {
         // Retrieve data from the body of the request
         $data = json_decode($request->getContent(), true);
-        $date = $data['date'];
+        $this->date = $data['date'];
 
         // Verify that the date is valid
-        if (!\DateTime::createFromFormat(self::DATE_FORMAT, $date)) {
+        if (!\DateTime::createFromFormat(self::DATE_FORMAT, $this->date)) {
             return new JsonResponse(status: Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $date = new \DateTime($date);
+        $this->date = new \DateTime($this->date);
 
         // Get the day of the week
-        $dow = $date->format('N');
+        $this->dow = $this->date->format('N');
 
         // Format the date
-        $date = $date->format(self::DATE_FORMAT);
+        $this->date = $this->toDateFormat($this->date);
 
         // Get the employees with the role "employee"
         $employees = $shop->getFranchise()->getUsers()->filter(function ($employee) {
             return in_array(Globals::ROLE_EMPLOYEE, $employee->getRoles());
         });
 
-        // Initialize arrays for start and end times, vacation start and end times, and not available employees
-        $startTimeArray = [];
-        $endTimeArray = [];
-        $startTimeArrayVacation = [];
-        $endTimeArrayVacation = [];
-        $notAvailableEmployees = [];
-
         // Process the employees and populate the arrays
-        $this->processEmployees($employees, $dow, $date, $startTimeArray, $endTimeArray, $startTimeArrayVacation, $endTimeArrayVacation, $notAvailableEmployees);
+        $this->processEmployees($employees);
 
-        // Filter the vacation start and end times based on the available employees
-        $startTimeArrayVacation = array_intersect_key($startTimeArrayVacation, $startTimeArray);
-        $endTimeArrayVacation = array_intersect_key($endTimeArrayVacation, $endTimeArray);
-
-        // Merge the start and end times with the vacation start and end times
-        $startTimeArray = array_replace($startTimeArray, $startTimeArrayVacation);
-        $endTimeArray = array_replace($endTimeArray, $endTimeArrayVacation);
-
-        // Remove not available employees from the start and end times arrays
-        $startTimeArray = array_diff_key($startTimeArray, array_flip($notAvailableEmployees));
-        $endTimeArray = array_diff_key($endTimeArray, array_flip($notAvailableEmployees));
+        // Process the employees and update the start and end times arrays
+        $this->processEmployeesAvailability();
 
         // If there are no available start or end times, return an empty array
-        if (empty($startTimeArray) || empty($endTimeArray)) {
+        if (empty($this->startTimeArray) || empty($this->endTimeArray)) {
             return json_decode(json_encode(['slots' => []]), false);
         }
 
         // Round the start times and end times to the nearest 30 minutes
-        $startTimeArray = $this->roundStartTimes($startTimeArray);
-        $endTimeArray = $this->roundEndTimes($endTimeArray);
+        $this->startTimeArray = $this->roundStartTimes();
+        $this->endTimeArray = $this->roundEndTimes();
 
         // Get the bikes for the shop
         $bikes = $shop->getBikes()->getValues();
-        $bookings = [];
 
         // Process the bikes and populate the bookings array
-        $this->processBikes($bikes, $date, $bookings);
+        $this->processBikes($bikes);
 
         // Create the employees availability array
-        $employeesAvailability = $this->createEmployeesAvailabilityArray($startTimeArray, $endTimeArray);
+        $employeesAvailability = $this->createEmployeesAvailabilityArray();
 
         // Find the earliest start time and latest end time
-        $earliestStartTime = min($startTimeArray);
-        $latestEndTime = max($endTimeArray);
+        $earliestStartTime = min($this->startTimeArray);
+        $latestEndTime = max($this->endTimeArray);
 
-        // Generate the slots array based on the employees availability, earliest start time, latest end time, and bookings
-        $slots = $this->generateSlotsArray($employeesAvailability, $earliestStartTime, $latestEndTime, $bookings);
+        // Generate the slots array
+        $slots = $this->generateSlotsArray($employeesAvailability, $earliestStartTime, $latestEndTime);
 
 
-        return json_decode(json_encode($slots), false);
+        return new JsonResponse($slots, Response::HTTP_OK);
     }
 
+
     /**
-     * Process the employees and populate the start and end times arrays, vacation start and end times arrays, and not available employees array.
+     * Process the employees and populate the start and end times arrays,
+     * vacation start and end times arrays,
+     * and not available employees array.
      *
      * @param Collection $employees The employees collection
-     * @param int $dow The day of the week
-     * @param string $date The date
-     * @param array $startTimeArray The start time array
-     * @param array $endTimeArray The end time array
-     * @param array $startTimeArrayVacation The vacation start time array
-     * @param array $endTimeArrayVacation The vacation end time array
-     * @param array $notAvailableEmployees The not available employees array
      * @return void
      */
-    private function processEmployees(Collection $employees, $dow, $date, array &$startTimeArray, array &$endTimeArray, array &$startTimeArrayVacation, array &$endTimeArrayVacation, array &$notAvailableEmployees): void
+    private function processEmployees(Collection $employees): void
     {
         // Loop through the employees
         foreach ($employees as $employee) {
-
             // Filter the schedules based on the day of the week and date validity
-            $schedules = $employee->getSchedules()->filter(function ($schedule) use ($dow, $date) {
+            $schedules = $employee->getSchedules()->filter(function ($schedule) {
                 $startValidity = $schedule->getStartValidity();
                 $endValidity = $schedule->getEndValidity();
 
-                return $schedule->getDow() == $dow &&
+                return $schedule->getDow() == $this->dow &&
                     (
-                        ($endValidity === null && $startValidity->format(self::DATE_FORMAT) <= $date) ||
+                        ($endValidity === null && $this->toDateFormat($startValidity) <= $this->date) ||
                         (
-                            $endValidity !== null && $startValidity->format(self::DATE_FORMAT) <= $date &&
-                            $endValidity->format(self::DATE_FORMAT) >= $date
+                            $endValidity !== null && $this->toDateFormat($startValidity) <= $this->date &&
+                            $this->toDateFormat($endValidity) >= $this->date
                         )
                     );
             });
@@ -149,34 +136,72 @@ class GetSlotsAction extends AbstractController
             $scheduleEndTime = $schedule->getEndTime();
 
             // Populate the start and end times arrays
-            $startTimeArray[$employee->getId()] = $scheduleStartTime->format(self::TIME_FORMAT);
-            $endTimeArray[$employee->getId()] = $scheduleEndTime->format(self::TIME_FORMAT);
+            $this->startTimeArray[$employee->getId()] = $this->toTimeFormat($scheduleStartTime);
+            $this->endTimeArray[$employee->getId()] = $this->toTimeFormat($scheduleEndTime);
 
             // Get the vacations of the employee
             $vacations = $employee->getVacations()->getValues();
 
             // Loop through the vacations
-            foreach ($vacations as $vacation) {
+            $this->processVacations($employee, $vacations, $scheduleStartTime, $scheduleEndTime);
+        }
+    }
 
-                $vacationStartDate = $vacation->getStartDate()->format(self::DATE_FORMAT);
-                $vacationEndDate = $vacation->getEndDate()->format(self::DATE_FORMAT);
-                $vacationStartTime = $vacation->getStartDate()->format(self::TIME_FORMAT);
-                $vacationEndTime = $vacation->getEndDate()->format(self::TIME_FORMAT);
+    /**
+     * Process the employees and update the start and end times arrays.
+     *
+     * @return void
+     */
+    private function processEmployeesAvailability(): void
+    {
+        // Filter the vacation start and end times based on the available employees
+        $this->startTimeArrayVacation = array_intersect_key($this->startTimeArrayVacation, $this->startTimeArray);
+        $this->endTimeArrayVacation = array_intersect_key($this->endTimeArrayVacation, $this->endTimeArray);
 
-                // If the vacation is not valid for the date, skip it and populate the not available employees array
-                if ($vacationStartDate < $date && $vacationEndDate > $date) {
-                    $notAvailableEmployees[] = $employee->getId();
-                    continue;
-                }
+        // Merge the start and end times with the vacation start and end times
+        $this->startTimeArray = array_replace($this->startTimeArray, $this->startTimeArrayVacation);
+        $this->endTimeArray = array_replace($this->endTimeArray, $this->endTimeArrayVacation);
 
-                // If the vacation is valid for the date, populate the vacation start and end times arrays
-                if ($vacationStartDate == $date && $scheduleStartTime <= $vacation->getEndDate()) {
-                    $endTimeArrayVacation[$employee->getId()] = $vacationStartTime;
-                }
+        // Remove not available employees from the start and end times arrays
+        $this->startTimeArray = array_diff_key($this->startTimeArray, array_flip($this->notAvailableEmployees));
+        $this->endTimeArray = array_diff_key($this->endTimeArray, array_flip($this->notAvailableEmployees));
+    }
 
-                if ($vacationEndDate == $date && $scheduleEndTime >= $vacation->getStartDate()) {
-                    $startTimeArrayVacation[$employee->getId()] = $vacationEndTime;
-                }
+    /**
+     * Process the vacations of an employee and populate the vacation start and end times arrays,
+     * and not available employees array.
+     *
+     * @param $employee The employee
+     * @param array $vacations The vacations array
+     * @param \DateTime $scheduleStartTime The schedule start time
+     * @param \DateTime $scheduleEndTime The schedule end time
+     * @return void
+     */
+    private function processVacations(
+        $employee,
+        array $vacations,
+        \DateTime $scheduleStartTime,
+        \DateTime $scheduleEndTime
+    ): void {
+        foreach ($vacations as $vacation) {
+            $vacationStartDate = $this->toDateFormat($vacation->getStartDate());
+            $vacationEndDate = $this->toDateFormat($vacation->getEndDate());
+            $vacationStartTime = $this->toTimeFormat($vacation->getStartDate());
+            $vacationEndTime = $this->toTimeFormat($vacation->getEndDate());
+
+            // If the vacation is not valid for the date, skip it and populate the not available employees array
+            if ($vacationStartDate < $this->date && $vacationEndDate > $this->date) {
+                $this->notAvailableEmployees[] = $employee->getId();
+                continue;
+            }
+
+            // If the vacation is valid for the date, populate the vacation start and end times arrays
+            if ($vacationStartDate == $this->date && $scheduleStartTime <= $vacation->getEndDate()) {
+                $this->endTimeArrayVacation[$employee->getId()] = $vacationStartTime;
+            }
+
+            if ($vacationEndDate == $this->date && $scheduleEndTime >= $vacation->getStartDate()) {
+                $this->startTimeArrayVacation[$employee->getId()] = $vacationEndTime;
             }
         }
     }
@@ -184,50 +209,46 @@ class GetSlotsAction extends AbstractController
     /**
      * Round the start times to the nearest 30 minutes.
      *
-     * @param array $startTimeArray The start time array
      * @return array The rounded start time array
      */
-    private function roundStartTimes(array $startTimeArray): array
+    private function roundStartTimes(): array
     {
         return array_map(function ($time) {
             $startTime = new \DateTime($time);
             $roundedMinutes = ($startTime->format('i') >= 30) ? 30 : 0;
             $startTime->setTime($startTime->format('H'), $roundedMinutes)->modify('+30 minutes');
             return $startTime->format('H:i');
-        }, $startTimeArray);
+        }, $this->startTimeArray);
     }
 
     /**
      * Round the end times to the nearest 30 minutes.
      *
-     * @param array $endTimeArray The end time array
      * @return array The rounded end time array
      */
-    private function roundEndTimes(array $endTimeArray): array
+    private function roundEndTimes(): array
     {
         return array_map(function ($time) {
             $endTime = new \DateTime($time);
             $roundedMinutes = ($endTime->format('i') >= 30) ? 30 : 0;
             $endTime->setTime($endTime->format('H'), $roundedMinutes);
             return $endTime->format('H:i');
-        }, $endTimeArray);
+        }, $this->endTimeArray);
     }
 
     /**
      * Process the bikes and populate the bookings array.
      *
      * @param array $bikes The bikes array
-     * @param string $date The date
-     * @param array $bookings The bookings array
      * @return void
      */
-    private function processBikes(array $bikes, string $date, array &$bookings): void
+    private function processBikes(array $bikes): void
     {
         // Loop through the bikes
         foreach ($bikes as $bike) {
             // Filter the bookings based on the date
-            $bookingsForBike = $bike->getBookings()->filter(function ($booking) use ($date) {
-                return $booking->getStartDate()->format(self::DATE_FORMAT) == $date;
+            $bookingsForBike = $bike->getBookings()->filter(function ($booking) {
+                return $this->toDateFormat($booking->getStartDate()) == $this->date;
             });
 
             if ($bookingsForBike->count() == 0) {
@@ -242,25 +263,45 @@ class GetSlotsAction extends AbstractController
             }, $bookingsForBike->getValues());
 
             // Merge the bookings array with the bookings for the bike
-            $bookings = array_merge($bookings, $bookingsForBike);
+            $this->bookings = array_merge($this->bookings, $bookingsForBike);
         }
     }
 
     /**
      * Create the employees availability array.
      *
-     * @param array $startTimeArray The start time array
-     * @param array $endTimeArray The end time array
      * @return array The employees availability array
      */
-    private function createEmployeesAvailabilityArray(array $startTimeArray, array $endTimeArray): array
+    private function createEmployeesAvailabilityArray(): array
     {
-        return array_map(function ($employeeId, $startTime) use ($endTimeArray) {
+        return array_map(function ($employeeId, $startTime) {
             return [
                 "start" => $startTime,
-                "end" => $endTimeArray[$employeeId],
+                "end" => $this->endTimeArray[$employeeId],
             ];
-        }, array_keys($startTimeArray), $startTimeArray);
+        }, array_keys($this->startTimeArray), $this->startTimeArray);
+    }
+
+    /**
+     * Format a date to the DATE_FORMAT constant.
+     *
+     * @param \DateTime $date The date to format
+     * @return string The formatted date
+     */
+    private function toDateFormat(\DateTime $date)
+    {
+        return $date->format(self::DATE_FORMAT);
+    }
+
+    /**
+     * Format a date to the TIME_FORMAT constant.
+     *
+     * @param \DateTime $date The date to format
+     * @return string The formatted date
+     */
+    private function toTimeFormat(\DateTime $date)
+    {
+        return $date->format(self::TIME_FORMAT);
     }
 
     /**
@@ -269,11 +310,13 @@ class GetSlotsAction extends AbstractController
      * @param array $employeesAvailability The employees availability array
      * @param string $earliestStartTime The earliest start time
      * @param string $latestEndTime The latest end time
-     * @param array $bookings The bookings array
      * @return array The slots array
      */
-    private function generateSlotsArray(array $employeesAvailability, string $earliestStartTime, string $latestEndTime, array $bookings): array
-    {
+    private function generateSlotsArray(
+        array $employeesAvailability,
+        string $earliestStartTime,
+        string $latestEndTime,
+    ): array {
         $slots = [];
         $startTime = new \DateTime($earliestStartTime);
         $endTime = new \DateTime($latestEndTime);
@@ -283,12 +326,14 @@ class GetSlotsAction extends AbstractController
             $currentSlot = $startTime->format('H:i');
 
             // Filter the employees availability based on the current slot
-            $totalAvailableEmployees = count(array_filter($employeesAvailability, function ($availability) use ($currentSlot) {
-                return $availability['start'] <= $currentSlot && $availability['end'] > $currentSlot;
-            }));
+            $totalAvailableEmployees = count(
+                array_filter($employeesAvailability, function ($availability) use ($currentSlot) {
+                    return $availability['start'] <= $currentSlot && $availability['end'] > $currentSlot;
+                })
+            );
 
             // Filter the bookings based on the current slot
-            $totalAvailableEmployees -= count(array_filter($bookings, function ($booking) use ($currentSlot) {
+            $totalAvailableEmployees -= count(array_filter($this->bookings, function ($booking) use ($currentSlot) {
                 return $booking == $currentSlot;
             }));
 
