@@ -144,3 +144,15 @@ yarn-error.log
 
 ###> sonarlint ###
 .scannerwork/
+###< sonarlint ###
+
+###> Static testing ###
+test-reports/
+###< Static testing ###
+
+###> phpstan/phpstan ###
+###< phpstan/phpstan ###
+
+###> qossmic/deptrac-shim ###
+/.deptrac.cache
+###< qossmic/deptrac-shim ###

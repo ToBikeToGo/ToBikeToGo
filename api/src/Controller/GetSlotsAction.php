@@ -177,7 +177,8 @@ class GetSlotsAction extends AbstractController
      * @param \DateTime $scheduleEndTime The schedule end time
      * @return void
      */
-    private function processVacations(
+    private function processVacations
+    (
         $employee,
         array $vacations,
         \DateTime $scheduleStartTime,

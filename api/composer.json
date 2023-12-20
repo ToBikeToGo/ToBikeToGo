@@ -77,7 +77,8 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "phpstan": "vendor/bin/phpstan analyse -c phpstan.dist.neon --error-format=json > test-reports/phpstan-report.json || echo"
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -89,6 +90,7 @@
         }
     },
     "require-dev": {
+        "phpstan/phpstan": "^1.10",
         "symfony/debug-bundle": "6.4.*",
         "symfony/maker-bundle": "^1.50",
         "symfony/stopwatch": "6.4.*",
