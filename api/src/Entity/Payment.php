@@ -30,8 +30,8 @@ class Payment
     #[ORM\Column(length: 255)]
     private ?string $stripeId = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $status = null;
+    #[ORM\Column(length: 255, nullable: true, type: 'boolean')]
+    private ?bool $status = null;
 
     #[ORM\Column]
     private ?\DateTime $paymentDate = null;
@@ -92,12 +92,12 @@ class Payment
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?bool
     {
         return $this->status;
     }
 
-    public function setStatus(?string $status): static
+    public function setStatus(?bool $status): static
     {
         $this->status = $status;
 

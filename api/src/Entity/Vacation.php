@@ -89,7 +89,7 @@ class Vacation
         return $this->status;
     }
 
-    public function setStatus(bool $status): static
+    public function setStatus(?int $status): static
     {
         $this->status = $status;
 

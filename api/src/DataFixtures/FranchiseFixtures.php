@@ -25,7 +25,7 @@ class FranchiseFixtures extends Fixture implements DependentFixtureInterface
                 ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $i));
 
                 for ($j=0; $j < 2; $j++) {
-                    $object->addUser($this->getReference(UserFixtures::EMPLOYEE_REFERENCE . $i * 2 + $j));
+                    $object->addUser($this->getReference(UserFixtures::EMPLOYEE_REFERENCE . ($i * 2 + $j)));
                 }
 
             $manager->persist($object);

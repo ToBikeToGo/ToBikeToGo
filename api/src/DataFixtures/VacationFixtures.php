@@ -25,7 +25,7 @@ class VacationFixtures extends Fixture implements DependentFixtureInterface
             $vacation->setShop($this->getReference(ShopFixtures::SHOP_REFERENCE . $i));
             $vacation->setStartDate($startDate);
             $vacation->setEndDate($endDate);
-            $vacation->setStatus($faker->boolean(80));
+            $vacation->setStatus(random_int(0, 2));
 
             $manager->persist($vacation);
         }
@@ -40,7 +40,7 @@ class VacationFixtures extends Fixture implements DependentFixtureInterface
                 ->setDescription($faker->text(200))
                 ->setStartDate($startDate)
                 ->setEndDate($endDate)
-                ->setStatus($faker->boolean(80));
+                ->setStatus(random_int(0, 2));
 
             $manager->persist($vacation);
         }

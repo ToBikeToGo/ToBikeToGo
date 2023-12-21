@@ -29,10 +29,6 @@ class GetSlotsAction extends AbstractController
     private $date = '';
     private $dow = '';
 
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
-    }
-
     /**
      * Get the available slots for a given shop.
      *
@@ -217,7 +213,7 @@ class GetSlotsAction extends AbstractController
         return array_map(function ($time) {
             $startTime = new \DateTime($time);
             $roundedMinutes = ($startTime->format('i') >= 30) ? 30 : 0;
-            $startTime->setTime($startTime->format('H'), $roundedMinutes)->modify('+30 minutes');
+            $startTime->setTime(intval($startTime->format('H')), $roundedMinutes)->modify('+30 minutes');
             return $startTime->format('H:i');
         }, $this->startTimeArray);
     }
@@ -232,7 +228,7 @@ class GetSlotsAction extends AbstractController
         return array_map(function ($time) {
             $endTime = new \DateTime($time);
             $roundedMinutes = ($endTime->format('i') >= 30) ? 30 : 0;
-            $endTime->setTime($endTime->format('H'), $roundedMinutes);
+            $endTime->setTime(intval($endTime->format('H')), $roundedMinutes);
             return $endTime->format('H:i');
         }, $this->endTimeArray);
     }

@@ -20,8 +20,8 @@ class PropositionFixtures extends Fixture implements DependentFixtureInterface
             for ($j=0; $j < 3; $j++) {
                 $object = (new Proposition())
                     ->setLabel($faker->sentence())
-                    ->setQuestion($this->getReference(QuestionFixtures::QUESTION_REFERENCE . $i * 3 + $j))
-                    ->addBike($this->getReference(BikeFixtures::BIKE_REFERENCE . $i * 5 + $j));
+                    ->setQuestion($this->getReference(QuestionFixtures::QUESTION_REFERENCE . ($i * 3 + $j)))
+                    ->addBike($this->getReference(BikeFixtures::BIKE_REFERENCE . ($i * 5 + $j)));
 
                 $manager->persist($object);
             }

@@ -18,7 +18,7 @@ class PaymentFixtures extends Fixture implements DependentFixtureInterface
             $object = (new \App\Entity\Payment())
                 ->setPrice($faker->numberBetween(10, 1000))
                 ->setCommission($faker->numberBetween(1, 20))
-                ->setStripeId($faker->randomDigit())
+                ->setStripeId(strval($faker->randomDigit()))
                 ->setStatus($faker->boolean(80))
                 ->setPaymentDate($this->getReference(BookingFixtures::BOOKING_REFERENCE. $i)->getEndDate())
                 ->setBooking($this->getReference(BookingFixtures::BOOKING_REFERENCE. $i))

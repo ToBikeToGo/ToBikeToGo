@@ -91,7 +91,7 @@ class Schedule
         return $this;
     }
 
-    public function getStartTime(): ?\DateTime
+    public function getStartTime(): ?\DateTimeInterface
     {
         return $this->startTime;
     }
@@ -103,7 +103,7 @@ class Schedule
         return $this;
     }
 
-    public function getEndTime(): ?\DateTime
+    public function getEndTime(): ?\DateTimeInterface
     {
         return $this->endTime;
     }
