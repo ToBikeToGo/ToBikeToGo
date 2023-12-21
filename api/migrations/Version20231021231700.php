@@ -45,7 +45,7 @@ final class Version20231021231700 extends AbstractMigration
         $this->addSql('CREATE TABLE bike_proposition (bike_id INT NOT NULL, proposition_id INT NOT NULL, PRIMARY KEY(bike_id, proposition_id))');
         $this->addSql('CREATE INDEX IDX_548ADB76D5A4816F ON bike_proposition (bike_id)');
         $this->addSql('CREATE INDEX IDX_548ADB76DB96F9E ON bike_proposition (proposition_id)');
-        $this->addSql('CREATE TABLE booking (id INT NOT NULL, user_id INT NOT NULL, bike_id INT DEFAULT NULL, start_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, end_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, rating DOUBLE PRECISION NOT NULL, status VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE booking (id INT NOT NULL, user_id INT NOT NULL, bike_id INT DEFAULT NULL, start_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, end_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, rating DOUBLE PRECISION NOT NULL, status BOOLEAN NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_E00CEDDEA76ED395 ON booking (user_id)');
         $this->addSql('CREATE INDEX IDX_E00CEDDED5A4816F ON booking (bike_id)');
         $this->addSql('CREATE TABLE category (id INT NOT NULL, type_category_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, label VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
@@ -68,7 +68,7 @@ final class Version20231021231700 extends AbstractMigration
         $this->addSql('CREATE TABLE notification_user (notification_id INT NOT NULL, user_id INT NOT NULL, PRIMARY KEY(notification_id, user_id))');
         $this->addSql('CREATE INDEX IDX_35AF9D73EF1A9D84 ON notification_user (notification_id)');
         $this->addSql('CREATE INDEX IDX_35AF9D73A76ED395 ON notification_user (user_id)');
-        $this->addSql('CREATE TABLE payment (id INT NOT NULL, booking_id INT DEFAULT NULL, price DOUBLE PRECISION NOT NULL, commission INT NOT NULL, stripe_id VARCHAR(255) NOT NULL, status VARCHAR(255) DEFAULT NULL, payment_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE payment (id INT NOT NULL, booking_id INT DEFAULT NULL, price DOUBLE PRECISION NOT NULL, commission INT NOT NULL, stripe_id VARCHAR(255) NOT NULL, status BOOLEAN DEFAULT NULL, payment_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_6D28840D3301C60 ON payment (booking_id)');
         $this->addSql('CREATE TABLE payment_shop (payment_id INT NOT NULL, shop_id INT NOT NULL, PRIMARY KEY(payment_id, shop_id))');
         $this->addSql('CREATE INDEX IDX_8DE9DBD64C3A3BB ON payment_shop (payment_id)');

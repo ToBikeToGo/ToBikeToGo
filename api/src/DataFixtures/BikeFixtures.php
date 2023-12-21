@@ -27,7 +27,7 @@ class BikeFixtures extends Fixture implements DependentFixtureInterface
 
                     $manager->persist($object);
 
-                    $this->addReference(self::BIKE_REFERENCE. $i * 5 + $j, $object);
+                    $this->addReference(self::BIKE_REFERENCE . ($i * 5 + $j), $object);
             }
         }
 

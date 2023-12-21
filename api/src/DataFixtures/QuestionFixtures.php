@@ -26,7 +26,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
 
                 $manager->persist($object);
 
-                $this->addReference(self::QUESTION_REFERENCE . $i * 3 + $j, $object);
+                $this->addReference(self::QUESTION_REFERENCE . ($i * 3 + $j), $object);
             }
         }
 

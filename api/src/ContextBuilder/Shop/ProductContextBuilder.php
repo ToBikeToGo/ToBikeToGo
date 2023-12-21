@@ -34,11 +34,6 @@ class ProductContextBuilder implements SerializerContextBuilderInterface
             return $context;
         }
 
-        $user = $this->security->getUser();
-        if (null !== $user) {
-            $context['groups'][] = ProductGroupsEnum::READ_AS_LOGGED_USER->value;
-        }
-
         return $context;
     }
 }
