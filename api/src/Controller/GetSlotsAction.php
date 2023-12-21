@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Shop;
 use App\Constants\Globals;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Auth\User;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,8 +26,8 @@ class GetSlotsAction extends AbstractController
     private array $endTimeArrayVacation = [];
     private array $notAvailableEmployees = [];
     private array $bookings = [];
-    private $date = '';
-    private $dow = '';
+    private \DateTime|string $date = '';
+    private string $dow = '';
 
     /**
      * Get the available slots for a given shop.
@@ -175,7 +175,7 @@ class GetSlotsAction extends AbstractController
      */
     private function processVacations
     (
-        $employee,
+        User $employee,
         array $vacations,
         \DateTime $scheduleStartTime,
         \DateTime $scheduleEndTime

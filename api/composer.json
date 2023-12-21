@@ -1,4 +1,6 @@
 {
+    "name": "tobiketogo/api",
+    "description": "API for the ToBikeToGo project",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",

@@ -17,7 +17,7 @@ class SlotsProcessor implements ProcessorInterface
      * @param array $context
      * @return T
      */
-    public function process($data, Operation $operation, array $uriVariables = [], array $context = [])
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         if ($data instanceof \DateTimeInterface) {
             $data = $data->format('Y-m-d');
