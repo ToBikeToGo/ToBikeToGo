@@ -67,7 +67,7 @@ class GetSlotsAction extends AbstractController
 
         // If there are no available start or end times, return an empty array
         if (empty($this->startTimeArray) || empty($this->endTimeArray)) {
-            return json_decode(json_encode(['slots' => []]), false);
+            return new JsonResponse(['slots' => []], Response::HTTP_OK);
         }
 
         // Round the start times and end times to the nearest 30 minutes
