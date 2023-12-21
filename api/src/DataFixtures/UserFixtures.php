@@ -32,7 +32,7 @@ class UserFixtures extends Fixture
 
         $manager->persist($user);
 
-        for ($i=0; $i < 20; $i++) {
+        for ($i=0; $i < 22; $i++) {
             $object = (new User())
                 ->setEmail($faker->email())
                 ->setPassword($faker->password())
@@ -50,7 +50,7 @@ class UserFixtures extends Fixture
             $this->addReference(self::PROVIDER_REFERENCE . $i, $object);
         }
 
-        for ($i=0; $i < 40; $i++) {
+        for ($i=0; $i < 41; $i++) {
             $object = (new User())
                 ->setEmail($faker->email())
                 ->setPassword($faker->password())
