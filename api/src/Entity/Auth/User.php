@@ -2,18 +2,19 @@
 
 namespace App\Entity\Auth;
 
-use ApiPlatform\Metadata\HttpOperation;
+use App\Controller\ActivateAction;
+use App\Controller\RegisterAction;
 use App\Controller\UserController;
 use App\Entity\Booking;
 use App\Entity\Franchise;
 use App\Entity\Notification;
 use App\Entity\Payment;
 use App\Entity\Vacation;
+use App\State\UserPasswordHasher;
 use DateTime;
 use App\Entity\Blog\Comment;
 use App\Entity\Shop\Product;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use App\Entity\Blog\Publication;
@@ -23,7 +24,7 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\HttpFoundation\Request;
+use Ramsey\Uuid\Rfc4122\UuidV4;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -31,22 +32,32 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity()]
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
-    denormalizationContext: ['groups' => ['user:write:update', 'user:write']],
-    normalizationContext: ['groups' => ['user:read']],
-
     operations: [
         new Get(
             uriTemplate: '/me',
             controller: UserController::class,
             read: false,
         ),
+        new Get(
+            uriTemplate: '/activate/{token}/{user}',
+            controller: ActivateAction::class,
+            read: false,
+        ),
         new GetCollection(),
-        new Post(),
+        new Post(denormalizationContext: ['groups' => ['user:write']]),
+        new Post(
+            uriTemplate: '/register',
+            controller: RegisterAction::class,
+            read: false,
+        ),
         new Get(normalizationContext: ['groups' => ['user:read', 'user:read:full']]),
         new Patch(denormalizationContext: ['groups' => ['user:write:update']]),
         // new Put(), // I don't use PUT, only PATCH
         // new Delete(), // Disable DELETE method, do soft delete instead
-    ]
+    ],
+    normalizationContext: ['groups' => ['user:read']],
+
+    denormalizationContext: ['groups' => ['user:write:update', 'user:write']]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -54,7 +65,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
@@ -81,31 +92,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read'])]
     #[ORM\ManyToMany(targetEntity: Franchise::class, mappedBy: 'users')]
     private Collection $franchises;
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $email = null;
 
+    #[Groups(['user:write'])]
     #[ORM\Column(length: 255)]
     private ?string $password = null;
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $locale = null;
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     #[ORM\Column]
     private ?bool $status = null;
 
+    ##[Groups(['user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $verification_key = null;
+
+    #[ORM\Column(length: 40, nullable: true)]
+    private ?string $token = null;
 
 
     public function __construct()
@@ -119,6 +135,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->vacations = new ArrayCollection();
         $this->notifications = new ArrayCollection();
         $this->franchises = new ArrayCollection();
+        $this->verification_key = UuidV4::uuid4()->toString();
+
     }
 
     public function getId(): ?int
@@ -474,5 +492,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(?string $token): static
+    {
+        $this->token = $token;
+
+        return $this;
     }
 }

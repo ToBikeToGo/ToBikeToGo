@@ -2,22 +2,20 @@
 
 namespace App\Controller;
 
-use App\Entity\Auth\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserController extends AbstractController
 {
     public function __construct(
-        private Security $security
+        private readonly Security $security
     )
     {
     }
 
 
-    public function __invoke()
+    public function __invoke() :UserInterface
     {
         return $this->security->getUser();
     }
