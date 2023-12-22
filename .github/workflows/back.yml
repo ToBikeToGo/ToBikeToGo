@@ -1,0 +1,67 @@
+name: Test Back
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - 'api/**'
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+jobs:
+    sonarqube:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  sparse-checkout: |
+                    .github
+                    api
+                    vendor
+                    phpstan.dist.neon
+                  fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: '8.2'
+                coverage: 'xdebug'
+
+            - name: Validate composer.json and composer.lock
+              run: |
+                cd api/
+                composer validate --strict
+
+            - name: Cache Composer packages
+              uses: actions/cache@v3
+              with:
+                path: |
+                  **/vendor
+                key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                restore-keys: |
+                  ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                    
+            - name: Install dependencies
+              run: |
+                cd api/
+                composer install --prefer-dist --no-progress --no-interaction
+                mkdir -p test-reports
+                mkdir -p tests
+                composer run-script phpstan
+
+            - name: Run tests
+              run: |
+                cd api/
+                php bin/console --env=test doctrine:database:drop -f
+                php bin/console --env=test doctrine:schema:create
+                php bin/console --env=test doctrine:fixtures:load -n
+                vendor/bin/phpunit --coverage-clover test-reports/coverage-report.xml --log-junit test-reports/phpunit-report.xml
+
+            - name: SonarQube Scan
+              uses: sonarsource/sonarqube-scan-action@master
+              with: 
+                projectBaseDir: ./api
+              env:
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
+                  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}

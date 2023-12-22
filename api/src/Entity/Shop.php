@@ -2,16 +2,29 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Link;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ShopRepository;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;
+use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity()]
 #[ApiResource]
+#[ApiResource(
+    operations: [new GetCollection(
+        uriTemplate: "/franchises/{franchiseId}/shops",
+        uriVariables: [
+            "franchiseId" => new Link(
+                fromClass: Franchise::class,
+                fromProperty: "shops"
+            )
+        ],
+    )]
+)]
 class Shop
 {
     use TimestampableTrait;
@@ -38,7 +51,7 @@ class Shop
     #[ORM\JoinColumn(nullable: false)]
     private ?Franchise $franchise = null;
 
-    #[ORM\ManyToMany(targetEntity: Schedule::class, mappedBy: 'shops')]
+    #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'shops')]
     private Collection $schedules;
 
     #[ORM\ManyToMany(targetEntity: Payment::class, mappedBy: 'shop')]
@@ -150,7 +163,6 @@ class Shop
     {
         if (!$this->schedules->contains($schedule)) {
             $this->schedules->add($schedule);
-            $schedule->addShop($this);
         }
 
         return $this;
@@ -158,9 +170,7 @@ class Shop
 
     public function removeSchedule(Schedule $schedule): static
     {
-        if ($this->schedules->removeElement($schedule)) {
-            $schedule->removeShop($this);
-        }
+        $this->schedules->removeElement($schedule);
 
         return $this;
     }

@@ -2,10 +2,13 @@
 
 namespace App\Entity;
 
+use App\Entity\Auth\User;
+use ApiPlatform\Metadata\Link;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ScheduleRepository;
+use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,6 +16,28 @@ use Symfony\Component\Validator\Constraints\Date;
 
 #[ORM\Entity()]
 #[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: "/shops/{shopId}/schedules",
+            uriVariables: [
+                "shopId" => new Link(
+                    fromClass: Shop::class,
+                    fromProperty: "schedules"
+                )
+            ],
+        ),
+        new GetCollection(
+            uriTemplate: "/users/{userId}/schedules",
+            uriVariables: [
+                "userId" => new Link(
+                    fromClass: User::class,
+                    fromProperty: "schedules"
+                )
+            ],
+        )
+    ]
+)]
 class Schedule
 {
     use TimestampableTrait;
@@ -25,18 +50,28 @@ class Schedule
     #[ORM\Column]
     private ?int $dow = null;
 
-    #[ORM\Column]
-    private ?\DateTime $startTime = null;
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTimeInterface $startTime = null;
 
-    #[ORM\Column]
-    private ?\DateTime $endTime = null;
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTimeInterface $endTime = null;
 
-    #[ORM\ManyToMany(targetEntity: Shop::class, inversedBy: 'schedules')]
+    #[ORM\ManyToMany(targetEntity: Shop::class, mappedBy: 'schedules')]
     private Collection $shops;
+
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'schedules')]
+    private Collection $users;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $startValidity = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $endValidity = null;
 
     public function __construct()
     {
         $this->shops = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -56,7 +91,7 @@ class Schedule
         return $this;
     }
 
-    public function getStartTime(): ?\DateTime
+    public function getStartTime(): ?\DateTimeInterface
     {
         return $this->startTime;
     }
@@ -68,7 +103,7 @@ class Schedule
         return $this;
     }
 
-    public function getEndTime(): ?\DateTime
+    public function getEndTime(): ?\DateTimeInterface
     {
         return $this->endTime;
     }
@@ -92,6 +127,7 @@ class Schedule
     {
         if (!$this->shops->contains($shop)) {
             $this->shops->add($shop);
+            $shop->addSchedule($this);
         }
 
         return $this;
@@ -99,7 +135,60 @@ class Schedule
 
     public function removeShop(Shop $shop): static
     {
-        $this->shops->removeElement($shop);
+        if ($this->shops->removeElement($shop)) {
+            $shop->removeSchedule($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addSchedule($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeSchedule($this);
+        }
+
+        return $this;
+    }
+
+    public function getStartValidity(): ?\DateTimeInterface
+    {
+        return $this->startValidity;
+    }
+
+    public function setStartValidity(?\DateTimeInterface $startValidity): static
+    {
+        $this->startValidity = $startValidity;
+
+        return $this;
+    }
+
+    public function getEndValidity(): ?\DateTimeInterface
+    {
+        return $this->endValidity;
+    }
+
+    public function setEndValidity(?\DateTimeInterface $endValidity): static
+    {
+        $this->endValidity = $endValidity;
 
         return $this;
     }

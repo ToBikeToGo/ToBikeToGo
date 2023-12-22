@@ -1,0 +1,52 @@
+name: Test Front
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - 'front/**'
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+jobs:
+    sonarqube:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  sparse-checkout: |
+                    front
+                    .github
+                    .eslintrc.cjs
+                  fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '18.2'
+
+            - name: Cache node modules
+              uses: actions/cache@v3
+              id: yarn-cache
+              with:
+                  path: |
+                    **/node_modules
+                    **/.eslintcache
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+
+            - name: Install dependencies
+              run: |
+                cd front
+                yarn install --prefix front --no-audit --no-optional --no-fund --progress=false --loglevel=error --frozen-lockfile
+                yarn run lint:report
+                  
+            - name: SonarQube Scan
+              uses: sonarsource/sonarqube-scan-action@master
+              with: 
+                projectBaseDir: ./front
+              env:
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
+                  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}

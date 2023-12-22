@@ -2,14 +2,98 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
+use App\Dto\SlotsDto;
 use App\Entity\Auth\User;
-use App\Entity\Traits\TimestampableTrait;
-use App\Repository\BookingRepository;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
+use App\Processor\SlotsProcessor;
+use App\Controller\GetSlotsAction;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\Parameter;
+use App\Entity\Traits\TimestampableTrait;
+use ApiPlatform\OpenApi\Model\RequestBody;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity()]
 #[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: "/bikes/{bikeId}/bookings",
+            uriVariables: [
+                "bikeId" => new Link(
+                    fromClass: Bike::class,
+                    fromProperty: "bookings"
+                )
+            ],
+            normalizationContext: [
+                'groups' => ['booking:read']
+            ],
+        ),
+        new Post(
+            input: SlotsDto::class,
+            processor: SlotsProcessor::class,
+            uriTemplate: "/shops/{id}/slots",
+            controller: GetSlotsAction::class,
+            read: false,
+            openapi: new Operation(
+                summary: "Get slots for a shop by date",
+                tags: ["Slot"],
+                requestBody: new RequestBody(
+                    description: "Date to get slots for",
+                    required: true,
+                    content: new \ArrayObject(
+                        [
+                            "application/json" => [
+                                "schema" => [
+                                    "type" => "object",
+                                    "properties" => [
+                                        "date" => [
+                                            "type" => "string",
+                                            "format" => "date",
+                                        ],
+                                    ],
+                                ],
+                                "example" => [
+                                    "date" => "2021-01-01",
+                                ],
+                            ],
+                        ]
+                    )
+                ),
+                responses: [
+                    '200' => [
+                        'description' => 'Slots for a shop',
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    'type' => 'array',
+                                    'items' => [
+                                        // Array of slots for a shop
+                                        '$ref' => '#/components/schemas/Slot',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                    '400' => [
+                        'description' => 'Invalid input',
+                    ],
+                    '404' => [
+                        'description' => 'Shop not found',
+                    ],
+                    '422' => [
+                        'description' => 'Invalid input',
+                    ],
+                ],
+            ),
+        )
+    ]
+)]
 class Booking
 {
     use TimestampableTrait;
@@ -17,19 +101,22 @@ class Booking
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['booking:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['booking:read'])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
+    #[Groups(['booking:read'])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column]
     private ?float $rating = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(length: 255, type: 'boolean')]
+    private ?bool $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
     #[ORM\JoinColumn(nullable: false)]
@@ -82,12 +169,12 @@ class Booking
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?bool
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(bool $status): static
     {
         $this->status = $status;
 

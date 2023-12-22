@@ -8,7 +8,6 @@ use App\DataFixtures\ShopFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-;
 
 class BikeFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -19,7 +18,7 @@ class BikeFixtures extends Fixture implements DependentFixtureInterface
         $faker = Factory::create('fr_FR');
 
         for ($i=0; $i < 30; $i++) {
-            for ($j=0; $j < 5; $j++) { 
+            for ($j=0; $j < 5; $j++) {
                 $object = (new Bike())
                     ->setLabel($faker->word())
                     ->setBrand($faker->company())
@@ -28,7 +27,7 @@ class BikeFixtures extends Fixture implements DependentFixtureInterface
 
                     $manager->persist($object);
 
-                    $this->addReference(self::BIKE_REFERENCE. $i * 5 + $j, $object);
+                    $this->addReference(self::BIKE_REFERENCE . ($i * 5 + $j), $object);
             }
         }
 

@@ -1,4 +1,6 @@
 {
+    "name": "tobiketogo/api",
+    "description": "API for the ToBikeToGo project",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
@@ -79,7 +81,8 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "phpstan": "vendor/bin/phpstan analyse -c phpstan.dist.neon --error-format=json > test-reports/phpstan-report.json || echo"
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -91,8 +94,15 @@
         }
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^8.0",
+        "phpstan/phpstan": "^1.10",
+        "phpunit/phpunit": "^10.5",
+        "symfony/browser-kit": "6.4.*",
+        "symfony/css-selector": "6.4.*",
         "symfony/debug-bundle": "6.4.*",
+        "symfony/http-client": "6.4.*",
         "symfony/maker-bundle": "^1.50",
+        "symfony/phpunit-bridge": "^7.0",
         "symfony/stopwatch": "6.4.*",
         "symfony/web-profiler-bundle": "6.4.*"
     }

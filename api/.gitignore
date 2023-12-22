@@ -141,3 +141,29 @@ yarn-error.log
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+
+###> sonarlint ###
+.scannerwork/
+###< sonarlint ###
+
+###> Static testing ###
+test-reports/
+###< Static testing ###
+
+###> phpstan/phpstan ###
+###< phpstan/phpstan ###
+
+###> qossmic/deptrac-shim ###
+/.deptrac.cache
+###< qossmic/deptrac-shim ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+.phpunit.cache/
+###< phpunit/phpunit ###

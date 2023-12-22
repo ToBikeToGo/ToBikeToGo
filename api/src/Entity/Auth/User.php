@@ -9,6 +9,7 @@ use App\Entity\Booking;
 use App\Entity\Franchise;
 use App\Entity\Notification;
 use App\Entity\Payment;
+use App\Entity\Schedule;
 use App\Entity\Vacation;
 use App\State\UserPasswordHasher;
 use DateTime;
@@ -58,6 +59,15 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     normalizationContext: ['groups' => ['user:read']],
 
     denormalizationContext: ['groups' => ['user:write:update', 'user:write']]
+)]
+#[ApiResource(
+    operations:
+    [
+        new GetCollection(
+            uriTemplate: '/vacations/{id}/users',
+
+        ),
+    ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -123,6 +133,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 40, nullable: true)]
     private ?string $token = null;
 
+    #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'users')]
+    private Collection $schedules;
 
     public function __construct()
     {
@@ -136,7 +148,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->notifications = new ArrayCollection();
         $this->franchises = new ArrayCollection();
         $this->verification_key = UuidV4::uuid4()->toString();
-
+        $this->schedules = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -502,6 +514,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setToken(?string $token): static
     {
         $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Schedule>
+     */
+    public function getSchedules(): Collection
+    {
+        return $this->schedules;
+    }
+
+    public function addSchedule(Schedule $schedule): static
+    {
+        if (!$this->schedules->contains($schedule)) {
+            $this->schedules->add($schedule);
+        }
+
+        return $this;
+    }
+
+    public function removeSchedule(Schedule $schedule): static
+    {
+        $this->schedules->removeElement($schedule);
 
         return $this;
     }
