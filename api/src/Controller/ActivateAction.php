@@ -25,6 +25,9 @@ class ActivateAction extends AbstractController
         $user = $this->userRepository->findOneBy(["id" => $userId, "token" => $token]);
         if ($user) {
             $user->setStatus(true);
+            $this->em->persist($user);
+            $this->em->flush();
+
             $json = [
                 'status' => 'success',
                 'code' => '200',
