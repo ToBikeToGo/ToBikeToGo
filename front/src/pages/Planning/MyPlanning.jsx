@@ -11,8 +11,9 @@ import { useUserContext } from '../../hooks/UserContext.jsx';
 import Avatar from '@mui/material/Avatar';
 import { addDays, isWeekend, startOfDay } from 'date-fns';
 import { MemberList } from '../../components/Planning/MemberList.jsx';
-import { useShop } from '../../components/Planning/hooks/useShop.jsx';
 import { useEffect } from 'react';
+import { useShopContext } from '../../hooks/UseShop.jsx';
+import { usePlanning } from '../../components/Planning/hooks/usePlanning.jsx';
 
 const locales = {
   'en-US': enUS,
@@ -35,90 +36,20 @@ const mockedEvents = [
   },
 ];
 
-const workScheduleByDay = [
-  {
-    day: 'Monday',
-    start: '9:00',
-    end: '18:00',
-  },
-  {
-    day: 'Tuesday',
-    start: '9:00',
-    end: '18:00',
-  },
-  {
-    day: 'Wednesday',
-    start: '9:00',
-    end: '18:00',
-  },
-  {
-    day: 'Thursday',
-    start: '9:00',
-    end: '18:00',
-  },
-  {
-    day: 'Friday',
-    start: '9:00',
-    end: '18:00',
-  },
-  {
-    day: 'Saturday',
-    start: '9:00',
-    end: '18:00',
-  },
-  {
-    day: 'Sunday',
-    start: '9:00',
-    end: '18:00',
-  },
-];
-const getWorkingHours = (dayOfWeek) => {
-  const day = workScheduleByDay.find((schedule) => schedule.day === dayOfWeek);
-  if (day) {
-    return {
-      start: day.start,
-      end: day.end,
-    };
-  }
-  return null;
-};
-
-const isWorkingDay = (date) => {
-  const dayOfWeek = date.toLocaleString('en-US', { weekday: 'long' });
-  const workingHours = getWorkingHours(dayOfWeek);
-  return workingHours !== null && !isWeekend(date);
-};
-
-const getWorkingDays = (start, end) => {
-  const events = [];
-  let current = startOfDay(start);
-  while (current < end) {
-    if (isWorkingDay(current)) {
-      const dayOfWeek = current.toLocaleString('en-US', { weekday: 'long' });
-      const workingHours = getWorkingHours(dayOfWeek);
-      const workStart = new Date(current);
-      const [startHour, startMinute] = workingHours.start
-        .split(':')
-        .map(Number);
-      workStart.setHours(startHour, startMinute, 0);
-      const workEnd = new Date(current);
-      const [endHour, endMinute] = workingHours.end.split(':').map(Number);
-      workEnd.setHours(endHour, endMinute, 0);
-      events.push({
-        start: workStart,
-        end: workEnd,
-        title: 'Jour de travail',
-      });
-    }
-    current = addDays(current, 1);
-  }
-  return events;
-};
-
-function MyPlanning({ isUser = false }) {
+function MyPlanning({ isUser = true }) {
   const { user } = useUserContext();
-  const { members, name, activeMember, setActiveMember } = useShop();
+  const { members, name, activeMember, setActiveMember } = useShopContext();
+  const { getWorkingDays } = usePlanning({
+    fromConnectedUser: true,
+  });
   const events = getWorkingDays(new Date(), addDays(new Date(), 30));
+
+  console.log(events, user?.schedules, 'schedulessss');
+
+  console.log(events, 'events');
+  console.log(user, user?.schedules, 'schedules');
+
+  // add status to
 
   useEffect(() => {
     if (activeMember === null && members.length > 0) {

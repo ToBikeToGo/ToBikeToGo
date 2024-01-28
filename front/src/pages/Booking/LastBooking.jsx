@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import { today } from 'react-big-calendar/lib/utils/dates.js';
+import { useShopContext } from '../../hooks/UseShop.jsx';
 
 const LastBooking = () => {
   const mockedLastBookings = [
@@ -57,6 +58,8 @@ const LastBooking = () => {
       price: 12000,
     },
   ];
+
+  const { shop } = useShopContext();
 
   return (
     <div
@@ -122,7 +125,13 @@ const LastBooking = () => {
           </div>
         ))}
       </Container>
-      <Pagination count={10} variant="outlined" />
+      <div
+        className={
+          'p-5 px-8 rounded-xl bg-white shadow-xl  m-5 flex items-center justify-center '
+        }
+      >
+        <Pagination count={10} variant="outlined" />
+      </div>
     </div>
   );
 };

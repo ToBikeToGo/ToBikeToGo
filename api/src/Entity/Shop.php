@@ -16,6 +16,13 @@ use App\Constants\Groups as ConstantsGroups;
 
 #[ORM\Entity()]
 #[ApiResource(
+    uriTemplate: '/shops/vacations/{id}',
+    operations: [new Get()],
+    normalizationContext: ['groups' => ['shop:vacations:read']],
+)]
+#[ApiResource(
+    uriTemplate: '/shops/members/{id}',
+    operations: [new Get()],
     normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ]],
 )]
 #[ApiResource(
@@ -29,6 +36,9 @@ use App\Constants\Groups as ConstantsGroups;
         ],
     )]
 )]
+#[ApiResource(
+    normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ]],
+)]
 class Shop
 {
     use TimestampableTrait;
@@ -40,12 +50,16 @@ class Shop
     #[Groups([ConstantsGroups::SHOP_READ])]
     private ?int $id = null;
 
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'shops')]
+    #[Groups(["shop:members:read"])]
+    private Collection $users;
+
     #[ORM\Column(length: 255)]
-    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
+    #[Groups(["booking:read", "request:read", "shop:members:read"])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
+    #[Groups(["request:read", "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $address = null;
 
     #[ORM\Column]
@@ -65,7 +79,7 @@ class Shop
     private Collection $schedules;
 
     #[ORM\ManyToMany(targetEntity: Payment::class, mappedBy: 'shop')]
-    #[Groups([ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::SHOP_READ, "request:read", "shop:members:read"])]
     private Collection $payments;
 
     #[ORM\OneToMany(mappedBy: 'shop', targetEntity: Vacation::class)]
@@ -82,6 +96,7 @@ class Shop
         $this->schedules = new ArrayCollection();
         $this->payments = new ArrayCollection();
         $this->vacations = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -224,6 +239,13 @@ class Shop
         return $this->vacations;
     }
 
+
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+
     public function addVacation(Vacation $vacation): static
     {
         if (!$this->vacations->contains($vacation)) {
@@ -234,25 +256,37 @@ class Shop
         return $this;
     }
 
-    public function removeVacation(Vacation $vacation): static
+    public function addMember(User $user): static
     {
-        if ($this->vacations->removeElement($vacation) && $vacation->getShop() === $this) {
-            // set the owning side to null (unless already changed)
-            $vacation->setShop(null);
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addShop($this);
         }
 
         return $this;
     }
 
-    public function getMedia(): ?Media
-    {
-        return $this->media;
-    }
 
-    public function setMedia(?Media $media): static
-    {
-        $this->media = $media;
+   public function removeVacation(Vacation $vacation): static
+     {
+         if ($this->vacations->removeElement($vacation) && $vacation->getShop() === $this) {
+             // set the owning side to null (unless already changed)
+             $vacation->setShop(null);
+         }
 
-        return $this;
+         return $this;
+     }
+
+        public function getMedia(): ?Media
+        {
+            return $this->media;
+        }
+
+        public function setMedia(?Media $media): static
+        {
+            $this->media = $media;
+
+            return $this;
+        }
     }
 }

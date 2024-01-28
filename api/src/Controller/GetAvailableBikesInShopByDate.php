@@ -25,28 +25,28 @@ class GetAvailableBikesInShopByDate extends AbstractController
     // get all shops with available bikes by date
     public function __invoke(\Symfony\Component\HttpFoundation\Request $request, Shop $shop): Response
     {
-
         $content = $request->getContent();
         $params = json_decode($content, true);
-        $startDate = new \DateTime($params['startDate']);
-        $endDate = new \DateTime($params['endDate']);
 
+        $startDate = isset($params['startDate']) ? new \DateTime($params['startDate']) : null;
+        $endDate = isset($params['endDate']) ? new \DateTime($params['endDate']) : null;
 
-
-       $bikes = $this->entityManager->getRepository(Bike::class)->createQueryBuilder('b')
+        $queryBuilder = $this->entityManager->getRepository(Bike::class)->createQueryBuilder('b')
             ->select('b.id, b.label, b.price, b.brand')
             ->innerJoin('b.shop', 's')
-            ->leftJoin('b.bookings', 'bookings')
-            ->where('bookings.startDate NOT BETWEEN :startDate AND :endDate')
-            ->andWhere('bookings.endDate NOT BETWEEN :startDate AND :endDate')
             ->andWhere('s.id = :shop')
-            ->setParameter('startDate', $startDate)
-            ->setParameter('endDate', $endDate)
-            ->setParameter('shop', $shop)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('shop', $shop);
+
+        if ($startDate && $endDate) {
+            $queryBuilder->leftJoin('b.bookings', 'bookings')
+                ->andWhere('bookings.startDate NOT BETWEEN :startDate AND :endDate')
+                ->andWhere('bookings.endDate NOT BETWEEN :startDate AND :endDate')
+                ->setParameter('startDate', $startDate)
+                ->setParameter('endDate', $endDate);
+        }
+
+        $bikes = $queryBuilder->getQuery()->getResult();
 
         return $this->json($bikes);
-
     }
 }

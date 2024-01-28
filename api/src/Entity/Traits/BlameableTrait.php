@@ -5,15 +5,18 @@ namespace App\Entity\Traits;
 use App\Entity\Auth\User;
 use Gedmo\Mapping\Annotation\Blameable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 trait BlameableTrait
 {
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[Blameable(on: 'create')]
+    #[Groups(["request:read"])]
     private ?User $createdBy = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[Blameable(on: 'update')]
+    #[Groups(["request:read"])]
     private ?User $updatedBy = null;
 
     /**

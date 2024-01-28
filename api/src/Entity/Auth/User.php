@@ -4,6 +4,10 @@ namespace App\Entity\Auth;
 
 use DateTime;
 use App\Entity\Media;
+use App\Controller\ActivateAction;
+use App\Controller\RegisterAction;
+use App\Controller\RegisterMemberAction;
+use App\Controller\UserController;
 use App\Entity\Booking;
 use App\Entity\Payment;
 use App\Entity\Request;
@@ -38,9 +42,14 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     operations: [
+    new GetCollection(
+                uriTemplate: '/vacations/{id}/users',
+
+            ),
         new Get(
             uriTemplate: '/me',
             controller: UserController::class,
+            denormalizationContext: ['groups' => ['user:read', 'schedule:read']],
             read: false,
         ),
         new Get(
@@ -49,19 +58,26 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             read: false,
         ),
         new GetCollection(),
-        new GetCollection(
-            uriTemplate: '/vacations/{id}/users',
+                new GetCollection(
+                    uriTemplate: '/vacations/{id}/users',
 
-        ),
-        new GetCollection(
-            uriTemplate: '/franchises/{id}/users',
-            controller: FranchiseUsersAdminAction::class,
-            read: false,
-        ),
+                ),
+                new GetCollection(
+                    uriTemplate: '/franchises/{id}/users',
+                    controller: FranchiseUsersAdminAction::class,
+                    read: false,
+                ),
+        new Post(denormalizationContext: ['groups' => ['user:write']]),
         new Post(
             uriTemplate: '/register',
             controller: RegisterAction::class,
             read: false,
+        ),
+        New Post(
+            uriTemplate: '/register/member',
+            controller: RegisterMemberAction::class,
+            read: false,
+            denormalizationContext: ['groups' => ['shop:members:write', 'user:write']],
         ),
         new Get(normalizationContext: ['groups' => [ConstantsGroups::USER_READ, 'user:read:full']]),
         new Patch(denormalizationContext: ['groups' => ['user:write:update']]),
@@ -69,7 +85,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         // new Delete(), // Disable DELETE method, do soft delete instead
     ],
     normalizationContext: ['groups' => [ConstantsGroups::USER_READ]],
-
     denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -180,6 +195,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $token = null;
 
     #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'users')]
+    #[Groups(['user:read', 'user:write', 'shop:vacations:read', "shop:members:write", "user:write:update"])]
     #[Groups([ConstantsGroups::USER_READ])]
     private Collection $schedules;
 
@@ -204,6 +220,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->franchises = new ArrayCollection();
         $this->verification_key = UuidV4::uuid4()->toString();
         $this->schedules = new ArrayCollection();
+        $this->shops = new ArrayCollection();
+    }
+
+
+
+    public function addShop(Shop $shop): static
+    {
+        if (!$this->shops->contains($shop)) {
+            $this->shops->add($shop);
+        }
+
+        return $this;
+    }
+
+    public function getShops(): Collection
+    {
+        return $this->shops;
     }
 
     public function getId(): ?int
@@ -630,4 +663,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
 }

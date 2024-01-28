@@ -3,7 +3,12 @@
 namespace App\Entity;
 
 use App\Entity\Media;
-use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use App\Controller\GetAvailableBikesInShopByDate;
+use App\Controller\GetAvailableShopsWithBikeByDate;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityRepository;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model;
 use Doctrine\ORM\Mapping as ORM;
@@ -47,53 +52,71 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => [ConstantsGroups::BIKE_READ]]
 )]
 #[ApiResource(
-    normalizationContext: ['groups' => [ConstantsGroups::BIKE_READ]],
     operations: [
-        new GetCollection(
-            uriTemplate: "/shops/{shopId}/bikes",
-            uriVariables: [
-                "shopId" => new Link(
-                    fromClass: Shop::class,
-                    fromProperty: "bikes"
-                )
-            ],
-        ),
-        new Post(
-            openapi: new Model\Operation(
-                requestBody: new Model\RequestBody(
-                    content: new \ArrayObject([
-                        'application/json' => [
-                            'schema' => [
-                                'type' => 'object',
-                                'properties' => [
-                                    'brand' => [
-                                        'type' => 'string',
-                                    ],
-                                    'label' => [
-                                        'type' => 'string',
-                                    ],
-                                    'price' => [
-                                        'type' => 'number',
-                                    ],
-                                    'isElectric' => [
+            new GetCollection(
+                uriTemplate: "/shops/{shopId}/bikes",
+                uriVariables: [
+                    "shopId" => new Link(
+                        fromClass: Shop::class,
+                        fromProperty: "bikes"
+                    )
+                ],
+            ),
+      new Post(
+                uriTemplate: '/bikes/available',
+                controller: GetAvailableShopsWithBikeByDate::class,
+                name: 'api_shops_available',
+
+            ),
+            new Post(
+                uriTemplate: '/bikes/available/shop/{id}',
+                controller: GetAvailableBikesInShopByDate::class,
+                name: 'api_bikes_available'
+            ),
+           new Post(
+                openapi: new Model\Operation(
+                    requestBody: new Model\RequestBody(
+                        content: new \ArrayObject([
+                            'application/json' => [
+                                'schema' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'brand' => [
+                                            'type' => 'string',
+                                        ],
+                                        'label' => [
+                                            'type' => 'string',
+                                        ],
+                                        'price' => [
+                                            'type' => 'number',
+                                        ],
+                                        'isElectric' => [
                                         'type' => 'boolean',
                                     ],
                                     'category' => [
                                         'type' => BikeCategory::class,
                                     ],
                                     'shop' => [
-                                        'type' => Shop::class,
+                                            'type' => Shop::class,
+                                        ],
                                     ],
                                 ],
                             ],
-                        ],
-                    ]),
-                ),
+                        ]),
+                    ),
+                )
+            ),
+    new GetCollection(
+        uriTemplate: "/shops/{shopId}/bikes",
+        uriVariables: [
+            "shopId" => new Link(
+                fromClass: Shop::class,
+                fromProperty: "bikes"
             )
-        )
-    ]
+        ],
+    )]
 )]
-class Bike
+class Bike extends EntityRepository
 {
     use TimestampableTrait;
     use BlameableTrait;

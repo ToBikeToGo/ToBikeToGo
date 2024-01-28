@@ -33,7 +33,7 @@ const Calendar = ({
           size={'small'}
           label={'End date'}
           variant="outlined"
-          value={format(dates[0]?.startDate, 'dd/MM/yyyy')}
+          value={format(dates[0]?.endDate, 'dd/MM/yyyy')}
           mb={2}
           onClick={handleOpen}
         />
