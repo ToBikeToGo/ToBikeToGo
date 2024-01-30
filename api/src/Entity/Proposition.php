@@ -9,9 +9,14 @@ use App\Entity\Traits\TimestampableTrait;
 use App\Repository\PropositionRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use App\Constants\Groups as ConstantsGroups;
+
 
 #[ORM\Entity()]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => [ConstantsGroups::PROPOSITION_READ]],
+)]
 class Proposition
 {
     use TimestampableTrait;
@@ -20,15 +25,19 @@ class Proposition
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([ConstantsGroups::PROPOSITION_READ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::PROPOSITION_READ, ConstantsGroups::BIKE_READ])]
     private ?string $label = null;
 
     #[ORM\ManyToOne(inversedBy: 'propositions')]
+    #[Groups([ConstantsGroups::PROPOSITION_READ, ConstantsGroups::BIKE_READ])]
     private ?Question $question = null;
 
     #[ORM\ManyToMany(targetEntity: Bike::class, mappedBy: 'propositions')]
+    #[Groups([ConstantsGroups::PROPOSITION_READ])]
     private Collection $bikes;
 
     public function __construct()

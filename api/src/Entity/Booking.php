@@ -17,9 +17,12 @@ use ApiPlatform\OpenApi\Model\Parameter;
 use App\Entity\Traits\TimestampableTrait;
 use ApiPlatform\OpenApi\Model\RequestBody;
 use Symfony\Component\Serializer\Attribute\Groups;
+use App\Constants\Groups as ConstantsGroups;
 
 #[ORM\Entity()]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => [ConstantsGroups::BOOKING_READ]],
+)]
 #[ApiResource(
     operations: [
         new GetCollection(
@@ -31,7 +34,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
                 )
             ],
             normalizationContext: [
-                'groups' => ['booking:read']
+                'groups' => [ConstantsGroups::BOOKING_READ]
             ],
         ),
         new Post(
@@ -101,31 +104,36 @@ class Booking
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['booking:read'])]
+    #[Groups([ConstantsGroups::BOOKING_READ])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['booking:read'])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
-    #[Groups(['booking:read'])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ])]
     private ?float $rating = null;
 
     #[ORM\Column(length: 255, type: 'boolean')]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ])]
     private ?bool $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
+    #[Groups([ConstantsGroups::BOOKING_READ])]
     private ?Bike $bike = null;
 
     #[ORM\OneToOne(mappedBy: 'booking', cascade: ['persist', 'remove'])]
+    #[Groups([ConstantsGroups::BOOKING_READ])]
     private ?Payment $payment = null;
 
     public function getId(): ?int

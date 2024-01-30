@@ -2,14 +2,19 @@
 
 namespace App\Entity;
 
+use App\Entity\Auth\User;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;
 use App\Repository\RequestRepository;
 use App\Entity\Traits\TimestampableTrait;
+use App\Constants\Groups as ConstantsGroups;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity()]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => [ConstantsGroups::REQUEST_READ]],
+)]
 class Request
 {
     use TimestampableTrait;
@@ -18,16 +23,24 @@ class Request
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([ConstantsGroups::REQUEST_READ])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups([ConstantsGroups::REQUEST_READ])]
     private ?\DateTime $requestDate = null;
 
     #[ORM\Column]
+    #[Groups([ConstantsGroups::REQUEST_READ])]
     private ?bool $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'requests')]
+    #[Groups([ConstantsGroups::REQUEST_READ])]
     private ?Franchise $franchise = null;
+
+    #[ORM\OneToOne(inversedBy: 'request', cascade: ['persist', 'remove'])]
+    #[Groups([ConstantsGroups::REQUEST_READ])]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -66,6 +79,18 @@ class Request
     public function setFranchise(?Franchise $franchise): static
     {
         $this->franchise = $franchise;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

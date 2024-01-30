@@ -9,6 +9,8 @@ use App\Entity\Traits\TimestampableTrait;
 use App\Repository\TypeCategoryRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Constants\Groups as ConstantsGroups;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity()]
 #[ApiResource]
@@ -23,6 +25,7 @@ class TypeCategory
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::CATEGORY_READ])]
     private ?string $label = null;
 
     #[ORM\OneToMany(mappedBy: 'typeCategory', targetEntity: Category::class)]
@@ -70,11 +73,9 @@ class TypeCategory
 
     public function removeCategory(Category $category): static
     {
-        if ($this->categories->removeElement($category)) {
+        if ($this->categories->removeElement($category) && $category->getTypeCategory() === $this) {
             // set the owning side to null (unless already changed)
-            if ($category->getTypeCategory() === $this) {
-                $category->setTypeCategory(null);
-            }
+            $category->setTypeCategory(null);
         }
 
         return $this;

@@ -10,9 +10,13 @@ use App\Repository\FranchiseRepository;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use App\Constants\Groups as ConstantsGroups;
 
 #[ORM\Entity()]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => [ConstantsGroups::FRANCHISE_READ]],
+)]
 class Franchise
 {
     use TimestampableTrait;
@@ -21,22 +25,42 @@ class Franchise
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([ConstantsGroups::FRANCHISE_READ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([
+        ConstantsGroups::FRANCHISE_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::USER_READ,
+        ConstantsGroups::REQUEST_READ
+    ])]
     private ?string $label = null;
 
     #[ORM\Column]
+    #[Groups([ConstantsGroups::FRANCHISE_READ, ConstantsGroups::REQUEST_READ])]
     private ?bool $isActive = null;
 
     #[ORM\OneToMany(mappedBy: 'franchise', targetEntity: Shop::class, orphanRemoval: true)]
+    #[Groups([ConstantsGroups::FRANCHISE_READ, ConstantsGroups::USER_READ])]
     private Collection $shops;
 
     #[ORM\OneToMany(mappedBy: 'franchise', targetEntity: Request::class)]
+    #[Groups([ConstantsGroups::FRANCHISE_READ, ConstantsGroups::USER_READ])]
     private Collection $requests;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'franchises')]
+    #[Groups([ConstantsGroups::FRANCHISE_READ])]
     private Collection $users;
+
+    #[ORM\ManyToOne(inversedBy: 'franchises')]
+    #[Groups([
+        ConstantsGroups::FRANCHISE_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::USER_READ,
+        ConstantsGroups::REQUEST_READ
+    ])]
+    private ?Media $media = null;
 
     public function __construct()
     {
@@ -154,6 +178,18 @@ class Franchise
     public function removeUser(User $user): static
     {
         $this->users->removeElement($user);
+
+        return $this;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Media $media): static
+    {
+        $this->media = $media;
 
         return $this;
     }

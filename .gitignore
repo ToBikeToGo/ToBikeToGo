@@ -16,3 +16,7 @@
 
 ### Taskfile ###
 Taskfile.yml
+
+### Testing ###
+# Unit test / coverage reports
+coverage/

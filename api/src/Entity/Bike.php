@@ -2,27 +2,66 @@
 
 namespace App\Entity;
 
+use App\Entity\Media;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\OpenApi\Model;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;
 use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use App\Constants\Groups as ConstantsGroups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity()]
-#[ApiResource]
 #[ApiResource(
-    operations: [new GetCollection(
-        uriTemplate: "/shops/{shopId}/bikes",
-        uriVariables: [
-            "shopId" => new Link(
-                fromClass: Shop::class,
-                fromProperty: "bikes"
+    normalizationContext: ['groups' => [ConstantsGroups::BIKE_READ]]
+)]
+#[ApiResource(
+    normalizationContext: ['groups' => [ConstantsGroups::BIKE_READ]],
+    operations: [
+        new GetCollection(
+            uriTemplate: "/shops/{shopId}/bikes",
+            uriVariables: [
+                "shopId" => new Link(
+                    fromClass: Shop::class,
+                    fromProperty: "bikes"
+                )
+            ],
+        ),
+        new Post(
+            openapi: new Model\Operation(
+                requestBody: new Model\RequestBody(
+                    content: new \ArrayObject([
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'brand' => [
+                                        'type' => 'string',
+                                    ],
+                                    'label' => [
+                                        'type' => 'string',
+                                    ],
+                                    'price' => [
+                                        'type' => 'number',
+                                    ],
+                                    'shop' => [
+                                        'type' => Shop::class,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ]),
+                ),
             )
-        ],
-    )]
+        )
+    ]
 )]
 class Bike
 {
@@ -32,26 +71,38 @@ class Bike
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([ConstantsGroups::BIKE_READ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ])]
     private ?string $brand = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ])]
     private ?string $label = null;
 
     #[ORM\Column]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ])]
     private ?float $price = null;
 
     #[ORM\ManyToOne(inversedBy: 'bikes')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Shop $shop = null;
+    #[Assert\NotNull]
+    #[Groups([ConstantsGroups::BIKE_READ])]
+    private Shop $shop;
 
     #[ORM\OneToMany(mappedBy: 'bike', targetEntity: Booking::class)]
+    #[Groups([ConstantsGroups::BIKE_READ])]
     private Collection $bookings;
 
     #[ORM\ManyToMany(targetEntity: Proposition::class, inversedBy: 'bikes')]
+    #[Groups([ConstantsGroups::BIKE_READ])]
     private Collection $propositions;
+
+    #[ORM\ManyToOne(inversedBy: 'bikes')]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::MEDIA_READ, ConstantsGroups::SHOP_READ])]
+    private ?Media $media = null;
 
     public function __construct()
     {
@@ -162,6 +213,18 @@ class Bike
     public function removeProposition(Proposition $proposition): static
     {
         $this->propositions->removeElement($proposition);
+
+        return $this;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Media $media): static
+    {
+        $this->media = $media;
 
         return $this;
     }
