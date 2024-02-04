@@ -9,9 +9,13 @@ use App\Repository\QuestionRepository;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use App\Constants\Groups as ConstantsGroups;
 
 #[ORM\Entity()]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => [ConstantsGroups::QUESTION_READ]],
+)]
 class Question
 {
     use TimestampableTrait;
@@ -20,19 +24,24 @@ class Question
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([ConstantsGroups::QUESTION_READ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::QUESTION_READ, ConstantsGroups::PROPOSITION_READ, ConstantsGroups::CATEGORY_READ])]
     private ?string $label = null;
 
     #[ORM\ManyToOne(inversedBy: 'questions')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups([ConstantsGroups::QUESTION_READ, ConstantsGroups::CATEGORY_READ])]
     private ?TypeQuestion $typeQuestion = null;
 
     #[ORM\OneToMany(mappedBy: 'question', targetEntity: Proposition::class)]
+    #[Groups([ConstantsGroups::QUESTION_READ, ConstantsGroups::CATEGORY_READ])]
     private Collection $propositions;
 
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'questions')]
+    #[Groups([ConstantsGroups::QUESTION_READ])]
     private Collection $categories;
 
     public function __construct()
@@ -90,11 +99,9 @@ class Question
 
     public function removeProposition(Proposition $proposition): static
     {
-        if ($this->propositions->removeElement($proposition)) {
+        if ($this->propositions->removeElement($proposition) && $proposition->getQuestion() === $this) {
             // set the owning side to null (unless already changed)
-            if ($proposition->getQuestion() === $this) {
-                $proposition->setQuestion(null);
-            }
+            $proposition->setQuestion(null);
         }
 
         return $this;

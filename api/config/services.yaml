@@ -22,5 +22,14 @@ services:
             # - '../src/Entity/'
             - '../src/Kernel.php'
 
+    vich_uploader.storage.default:
+        class: Vich\UploaderBundle\Storage\FileSystemStorage
+
+    App\Serializer\MediaNormalizer:
+        arguments:
+            $storage: '@vich_uploader.storage.default'
+        tags:
+            - { name: 'serializer.normalizer' }
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

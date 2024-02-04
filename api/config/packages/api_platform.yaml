@@ -14,6 +14,11 @@ api_platform:
         jsonld: ['application/ld+json']
         jsonhal: ['application/hal+json']
         json: ['application/json']
+        html: ['text/html']
+        multipart: ['multipart/form-data']
+    # eager_loading:
+    #     enabled: true
+    #     max_joins: 1000
     graphql:
         graphql_playground:
             enabled: false

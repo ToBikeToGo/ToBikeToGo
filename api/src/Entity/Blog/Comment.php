@@ -13,11 +13,12 @@ use App\Entity\Auth\User;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Constants\Groups as ConstantsGroups;
 
 #[ORM\Entity()]
 #[ApiResource(
-    normalizationContext: ['groups' => ['comment:read']],
-    denormalizationContext: ['groups' => ['comment:write']],
+    normalizationContext: ['groups' => [ConstantsGroups::COMMENT_READ]],
+    denormalizationContext: ['groups' => [ConstantsGroups::COMMENT_WRITE]],
     operations: [
         new GetCollection(),
         new Post(),
@@ -32,20 +33,20 @@ class Comment
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['comment:read', 'comment:write'])]
+    #[Groups([ConstantsGroups::COMMENT_READ, ConstantsGroups::COMMENT_WRITE])]
     #[ORM\Column(length: 255)]
     private string $content = '';
 
-    #[Groups(['comment:read'])]
+    #[Groups([ConstantsGroups::COMMENT_READ])]
     #[ORM\Column]
     private DateTime $createdAt;
 
-    #[Groups(['comment:write'])]
+    #[Groups([ConstantsGroups::COMMENT_WRITE])]
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Publication $post = null;
 
-    #[Groups(['comment:read', 'comment:write'])]
+    #[Groups([ConstantsGroups::COMMENT_READ, ConstantsGroups::COMMENT_WRITE])]
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;

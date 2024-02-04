@@ -11,9 +11,13 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use App\Constants\Groups as ConstantsGroups;
 
 #[ORM\Entity()]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ]],
+)]
 #[ApiResource(
     operations: [new GetCollection(
         uriTemplate: "/franchises/{franchiseId}/shops",
@@ -33,32 +37,44 @@ class Shop
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([ConstantsGroups::SHOP_READ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $address = null;
 
     #[ORM\Column]
     private ?bool $isOpened = null;
 
     #[ORM\OneToMany(mappedBy: 'shop', targetEntity: Bike::class, orphanRemoval: true)]
+    #[Groups([ConstantsGroups::SHOP_READ])]
     private Collection $bikes;
 
     #[ORM\ManyToOne(inversedBy: 'shops')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups([ConstantsGroups::SHOP_READ])]
     private ?Franchise $franchise = null;
 
     #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'shops')]
+    #[Groups([ConstantsGroups::SHOP_READ])]
     private Collection $schedules;
 
     #[ORM\ManyToMany(targetEntity: Payment::class, mappedBy: 'shop')]
+    #[Groups([ConstantsGroups::SHOP_READ])]
     private Collection $payments;
 
     #[ORM\OneToMany(mappedBy: 'shop', targetEntity: Vacation::class)]
+    #[Groups([ConstantsGroups::SHOP_READ])]
     private Collection $vacations;
+
+    #[ORM\ManyToOne(inversedBy: 'shops')]
+    #[Groups([ConstantsGroups::SHOP_READ])]
+    private ?Media $media = null;
 
     public function __construct()
     {
@@ -129,11 +145,9 @@ class Shop
 
     public function removeBike(Bike $bike): static
     {
-        if ($this->bikes->removeElement($bike)) {
+        if ($this->bikes->removeElement($bike) && $bike->getShop() === $this) {
             // set the owning side to null (unless already changed)
-            if ($bike->getShop() === $this) {
-                $bike->setShop(null);
-            }
+            $bike->setShop(null);
         }
 
         return $this;
@@ -222,12 +236,22 @@ class Shop
 
     public function removeVacation(Vacation $vacation): static
     {
-        if ($this->vacations->removeElement($vacation)) {
+        if ($this->vacations->removeElement($vacation) && $vacation->getShop() === $this) {
             // set the owning side to null (unless already changed)
-            if ($vacation->getShop() === $this) {
-                $vacation->setShop(null);
-            }
+            $vacation->setShop(null);
         }
+
+        return $this;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Media $media): static
+    {
+        $this->media = $media;
 
         return $this;
     }

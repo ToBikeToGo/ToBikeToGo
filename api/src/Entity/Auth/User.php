@@ -2,30 +2,34 @@
 
 namespace App\Entity\Auth;
 
-use App\Controller\ActivateAction;
-use App\Controller\RegisterAction;
-use App\Controller\UserController;
+use DateTime;
+use App\Entity\Media;
 use App\Entity\Booking;
-use App\Entity\Franchise;
-use App\Entity\Notification;
 use App\Entity\Payment;
+use App\Entity\Request;
 use App\Entity\Schedule;
 use App\Entity\Vacation;
-use App\State\UserPasswordHasher;
-use DateTime;
+use App\Entity\Franchise;
 use App\Entity\Blog\Comment;
+use App\Entity\Notification;
 use App\Entity\Shop\Product;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use Ramsey\Uuid\Rfc4122\UuidV4;
 use App\Entity\Blog\Publication;
 use Doctrine\ORM\Mapping as ORM;
+use App\State\UserPasswordHasher;
+use App\Controller\ActivateAction;
+use App\Controller\RegisterAction;
+use App\Controller\UserController;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
+use App\Constants\Groups as ConstantsGroups;
+use App\Controller\FranchiseUsersAdminAction;
 use Doctrine\Common\Collections\ArrayCollection;
-use Ramsey\Uuid\Rfc4122\UuidV4;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -45,88 +49,130 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             read: false,
         ),
         new GetCollection(),
-        new Post(denormalizationContext: ['groups' => ['user:write']]),
+        new GetCollection(
+            uriTemplate: '/vacations/{id}/users',
+
+        ),
+        new GetCollection(
+            uriTemplate: '/franchises/{id}/users',
+            controller: FranchiseUsersAdminAction::class,
+            read: false,
+        ),
         new Post(
             uriTemplate: '/register',
             controller: RegisterAction::class,
             read: false,
         ),
-        new Get(normalizationContext: ['groups' => ['user:read', 'user:read:full']]),
+        new Get(normalizationContext: ['groups' => [ConstantsGroups::USER_READ, 'user:read:full']]),
         new Patch(denormalizationContext: ['groups' => ['user:write:update']]),
         // new Put(), // I don't use PUT, only PATCH
         // new Delete(), // Disable DELETE method, do soft delete instead
     ],
-    normalizationContext: ['groups' => ['user:read']],
+    normalizationContext: ['groups' => [ConstantsGroups::USER_READ]],
 
-    denormalizationContext: ['groups' => ['user:write:update', 'user:write']]
-)]
-#[ApiResource(
-    operations:
-    [
-        new GetCollection(
-            uriTemplate: '/vacations/{id}/users',
-
-        ),
-    ]
+    denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableTrait;
 
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
+    #[Groups(ConstantsGroups::ALL_READ)]
     private ?int $id = null;
-    #[Groups(['user:read', 'user:write'])]
+
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE])]
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Publication::class)]
+    #[Groups([ConstantsGroups::USER_READ])]
     private Collection $posts;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Comment::class)]
+    #[Groups([ConstantsGroups::USER_READ])]
     private Collection $comments;
 
     #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'buyers')]
+    #[Groups([ConstantsGroups::USER_READ])]
     private Collection $products;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Booking::class)]
+    #[Groups([ConstantsGroups::USER_READ])]
     private Collection $bookings;
 
     #[ORM\ManyToMany(targetEntity: Payment::class, mappedBy: 'user')]
+    #[Groups([ConstantsGroups::USER_READ])]
     private Collection $payments;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Vacation::class)]
+    #[Groups([ConstantsGroups::USER_READ])]
     private Collection $vacations;
 
     #[ORM\ManyToMany(targetEntity: Notification::class, mappedBy: 'users')]
+    #[Groups([ConstantsGroups::USER_READ])]
     private Collection $notifications;
-    #[Groups(['user:read'])]
+
     #[ORM\ManyToMany(targetEntity: Franchise::class, mappedBy: 'users')]
+    #[Groups([ConstantsGroups::USER_READ])]
     private Collection $franchises;
-    #[Groups(['user:read', 'user:write'])]
+
+    #[Groups([
+        ConstantsGroups::USER_READ,
+        ConstantsGroups::USER_WRITE,
+        ConstantsGroups::FRANCHISE_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::BIKE_READ,
+        ConstantsGroups::REQUEST_READ
+    ])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
-    #[Groups(['user:read', 'user:write'])]
+
+    #[Groups([
+        ConstantsGroups::USER_READ,
+        ConstantsGroups::USER_WRITE,
+        ConstantsGroups::FRANCHISE_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::BIKE_READ,
+        ConstantsGroups::REQUEST_READ
+    ])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups([
+        ConstantsGroups::USER_READ,
+        ConstantsGroups::USER_WRITE,
+        ConstantsGroups::FRANCHISE_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::BIKE_READ,
+        ConstantsGroups::REQUEST_READ
+    ])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $email = null;
 
-    #[Groups(['user:write'])]
+    #[Groups([ConstantsGroups::USER_WRITE])]
     #[ORM\Column(length: 255)]
     private ?string $password = null;
-    #[Groups(['user:read', 'user:write'])]
+
+    #[Groups([
+        ConstantsGroups::USER_READ,
+        ConstantsGroups::USER_WRITE,
+        ConstantsGroups::FRANCHISE_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::BIKE_READ,
+        ConstantsGroups::REQUEST_READ
+    ])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
-    #[Groups(['user:read', 'user:write'])]
+
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $locale = null;
-    #[Groups(['user:read', 'user:write'])]
+
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE])]
     #[ORM\Column]
     private ?bool $status = null;
 
-    ##[Groups(['user:write'])]
+    ##[Groups([ConstantsGroups::USER_WRITE])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $verification_key = null;
 
@@ -134,7 +180,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $token = null;
 
     #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'users')]
+    #[Groups([ConstantsGroups::USER_READ])]
     private Collection $schedules;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::REQUEST_READ])]
+    private ?Media $media = null;
+
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    #[Groups([ConstantsGroups::USER_READ])]
+    private ?Request $request = null;
 
     public function __construct()
     {
@@ -538,6 +593,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeSchedule(Schedule $schedule): static
     {
         $this->schedules->removeElement($schedule);
+
+        return $this;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Media $media): static
+    {
+        $this->media = $media;
+
+        return $this;
+    }
+
+    public function getRequest(): ?Request
+    {
+        return $this->request;
+    }
+
+    public function setRequest(?Request $request): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($request === null && $this->request !== null) {
+            $this->request->setUser(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($request !== null && $request->getUser() !== $this) {
+            $request->setUser($this);
+        }
+
+        $this->request = $request;
 
         return $this;
     }

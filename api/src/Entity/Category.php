@@ -9,9 +9,13 @@ use App\Repository\CategoryRepository;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Constants\Groups as ConstantsGroups;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity()]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => [ConstantsGroups::CATEGORY_READ]],
+)]
 class Category
 {
     use TimestampableTrait;
@@ -20,15 +24,19 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([ConstantsGroups::CATEGORY_READ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::CATEGORY_READ])]
     private ?string $label = null;
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
+    #[Groups([ConstantsGroups::CATEGORY_READ])]
     private ?TypeCategory $typeCategory = null;
 
     #[ORM\ManyToMany(targetEntity: Question::class, inversedBy: 'categories')]
+    #[Groups([ConstantsGroups::CATEGORY_READ])]
     private Collection $questions;
 
     public function __construct()
