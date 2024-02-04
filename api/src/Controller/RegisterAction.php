@@ -6,7 +6,6 @@ use App\Entity\Auth\User;
 use App\Service\Emailing;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -15,7 +14,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class RegisterAction extends AbstractController
 {
     public function __construct(
-        private readonly Security $security,
         private readonly EntityManagerInterface $em,
         private readonly Emailing $emailing
     )

@@ -12,8 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 class ActivateAction extends AbstractController
 {
     public function __construct(
-        private readonly EntityManagerInterface $em,
-        private readonly UserRepository         $userRepository
+        private readonly UserRepository $userRepository
     )
     {
     }
@@ -38,6 +37,6 @@ class ActivateAction extends AbstractController
                 'message' => 'User not found or account validation failed'
             ];
         }
-        return New JsonResponse($json);
+        return new JsonResponse($json);
     }
 }
