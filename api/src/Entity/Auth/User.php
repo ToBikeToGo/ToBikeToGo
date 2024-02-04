@@ -2,34 +2,35 @@
 
 namespace App\Entity\Auth;
 
-use App\Controller\ActivateAction;
-use App\Controller\RegisterAction;
-use App\Controller\UserController;
-use App\Entity\Booking;
-use App\Entity\Franchise;
+use DateTime;
 use App\Entity\Media;
-use App\Entity\Notification;
+use App\Entity\Booking;
 use App\Entity\Payment;
 use App\Entity\Request;
 use App\Entity\Schedule;
 use App\Entity\Vacation;
-use App\State\UserPasswordHasher;
-use DateTime;
+use App\Entity\Franchise;
 use App\Entity\Blog\Comment;
+use App\Entity\Notification;
 use App\Entity\Shop\Product;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use Ramsey\Uuid\Rfc4122\UuidV4;
 use App\Entity\Blog\Publication;
 use Doctrine\ORM\Mapping as ORM;
+use App\State\UserPasswordHasher;
+use App\Controller\ActivateAction;
+use App\Controller\RegisterAction;
+use App\Controller\UserController;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
-use Ramsey\Uuid\Rfc4122\UuidV4;
-use Symfony\Component\Serializer\Annotation\Groups;
 use App\Constants\Groups as ConstantsGroups;
+use App\Controller\FranchiseUsersAdminAction;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
@@ -48,6 +49,15 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             read: false,
         ),
         new GetCollection(),
+        new GetCollection(
+            uriTemplate: '/vacations/{id}/users',
+
+        ),
+        new GetCollection(
+            uriTemplate: '/franchises/{id}/users',
+            controller: FranchiseUsersAdminAction::class,
+            read: false,
+        ),
         new Post(
             uriTemplate: '/register',
             controller: RegisterAction::class,
@@ -61,15 +71,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     normalizationContext: ['groups' => [ConstantsGroups::USER_READ]],
 
     denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]]
-)]
-#[ApiResource(
-    operations:
-    [
-        new GetCollection(
-            uriTemplate: '/vacations/{id}/users',
-
-        ),
-    ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
