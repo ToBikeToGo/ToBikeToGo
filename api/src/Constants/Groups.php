@@ -44,4 +44,6 @@ final class Groups {
     const BOOKING_WRITE = 'booking:write';
     const REQUEST_READ = 'request:read';
     const REQUEST_WRITE = 'request:write';
+    const BIKE_CATEGORY_READ = 'bike_category:read';
+    const BIKE_CATEGORY_WRITE = 'bike_category:write';
 }
