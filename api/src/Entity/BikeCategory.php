@@ -85,11 +85,8 @@ class BikeCategory
 
     public function removeBike(Bike $bike): static
     {
-        if ($this->bikes->removeElement($bike)) {
-            // set the owning side to null (unless already changed)
-            if ($bike->getCategory() === $this) {
+        if ($this->bikes->removeElement($bike) && $bike->getCategory() === $this){
                 $bike->setCategory(null);
-            }
         }
 
         return $this;
