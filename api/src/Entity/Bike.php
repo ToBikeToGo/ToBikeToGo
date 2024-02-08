@@ -7,18 +7,42 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\BikeRepository;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;
+use App\Controller\BikeFilteredAction;
 use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use App\Constants\Groups as ConstantsGroups;
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity()]
+#[ApiFilter(
+    BooleanFilter::class, properties: ['isElectric']
+)]
+#[ApiFilter(
+    NumericFilter::class, properties: ['price']
+)]
+#[ApiFilter(
+    RangeFilter::class, properties: ['price']
+)]
+#[ApiFilter(
+    SearchFilter::class, properties: [
+        'brand' => SearchFilter::STRATEGY_IPARTIAL,
+        'label' => SearchFilter::STRATEGY_IPARTIAL,
+        'category.name' => SearchFilter::STRATEGY_EXACT,
+        'category.type' => SearchFilter::STRATEGY_EXACT,
+    ]
+)]
 #[ApiResource(
     normalizationContext: ['groups' => [ConstantsGroups::BIKE_READ]]
 )]
@@ -51,6 +75,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                                     'price' => [
                                         'type' => 'number',
                                     ],
+                                    'isElectric' => [
+                                        'type' => 'boolean',
+                                    ],
+                                    'category' => [
+                                        'type' => BikeCategory::class,
+                                    ],
                                     'shop' => [
                                         'type' => Shop::class,
                                     ],
@@ -75,16 +105,24 @@ class Bike
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::BIKE_CATEGORY_READ])]
     private ?string $brand = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::BIKE_CATEGORY_READ])]
     private ?string $label = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::BIKE_CATEGORY_READ])]
     private ?float $price = null;
+
+    #[ORM\Column(options: ["default" => false])]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::BIKE_CATEGORY_READ])]
+    private ?bool $isElectric = false;
+
+    #[ORM\ManyToOne(inversedBy: 'bikes')]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ])]
+    private ?BikeCategory $category = null;
 
     #[ORM\ManyToOne(inversedBy: 'bikes')]
     #[ORM\JoinColumn(nullable: false)]
@@ -225,6 +263,30 @@ class Bike
     public function setMedia(?Media $media): static
     {
         $this->media = $media;
+
+        return $this;
+    }
+
+    public function getCategory(): ?BikeCategory
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?BikeCategory $category): static
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function isIsElectric(): ?bool
+    {
+        return $this->isElectric;
+    }
+
+    public function setIsElectric(bool $isElectric): static
+    {
+        $this->isElectric = $isElectric;
 
         return $this;
     }

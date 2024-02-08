@@ -6,6 +6,7 @@ use Faker\Factory;
 use App\Entity\Bike;
 use App\DataFixtures\ShopFixtures;
 use Doctrine\Persistence\ObjectManager;
+use App\DataFixtures\BikeCategoryFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
@@ -23,7 +24,9 @@ class BikeFixtures extends Fixture implements DependentFixtureInterface
                     ->setLabel($faker->word())
                     ->setBrand($faker->company())
                     ->setPrice($faker->numberBetween(10, 100))
-                    ->setShop($this->getReference(ShopFixtures::SHOP_REFERENCE. $i));
+                    ->setShop($this->getReference(ShopFixtures::SHOP_REFERENCE. $i))
+                    ->setCategory($this->getReference(BikeCategoryFixtures::BIKE_CATEGORY_REFERENCE . rand(0, 23)))
+                    ->setIsElectric($faker->boolean());
 
                     $manager->persist($object);
 
@@ -38,6 +41,7 @@ class BikeFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             ShopFixtures::class,
+            BikeCategoryFixtures::class
         ];
     }
 }
