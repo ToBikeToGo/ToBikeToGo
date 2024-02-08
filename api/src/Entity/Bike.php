@@ -93,12 +93,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                                             'type' => 'number',
                                         ],
                                         'isElectric' => [
-                                        'type' => 'boolean',
-                                    ],
-                                    'category' => [
-                                        'type' => BikeCategory::class,
-                                    ],
-                                    'shop' => [
+                                            'type' => 'boolean',
+                                        ],
+                                        'category' => [
+                                            'type' => BikeCategory::class,
+                                        ],
+                                        'shop' => [
                                             'type' => Shop::class,
                                         ],
                                     ],

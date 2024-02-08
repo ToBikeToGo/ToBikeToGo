@@ -48,9 +48,8 @@ final class Groups {
     const REQUEST_WRITE = 'request:write';
     const BIKE_CATEGORY_READ = 'bike_category:read';
     const BIKE_CATEGORY_WRITE = 'bike_category:write';
-
     const VACATION_READ = 'vacation:read';
     const VACATION_WRITE = 'vacation:write';
-
     const SHOP_VACATIONS_READ = 'shop:vacations:read';
+
 }
