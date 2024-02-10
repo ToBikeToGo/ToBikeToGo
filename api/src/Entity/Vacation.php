@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\GetCollection;
+use App\Constants\Groups as ConstantsGroups;
 use App\Entity\Auth\User;
 use ApiPlatform\Metadata\Link;
 use Doctrine\DBAL\Types\Types;
@@ -39,11 +40,11 @@ class Vacation
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['shop:vacations:read'])]
+    #[Groups(['shop:vacations:read', ConstantsGroups::USER_READ])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
-    #[Groups(['shop:vacations:read'])]
+    #[Groups(['shop:vacations:read', ConstantsGroups::USER_READ])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
@@ -58,7 +59,7 @@ class Vacation
     private ?User $user = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['shop:vacations:read'])]
+    #[Groups(['shop:vacations:read', ConstantsGroups::USER_READ])]
     private ?string $description = null;
 
     public function getId(): ?int

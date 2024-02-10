@@ -1,6 +1,5 @@
 import withToast from '../../../../components/HOC/WithToastHOC.jsx';
 import { useFranchiseRequestValidation } from './hooks/useFranchiseRequestValidation.jsx';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {
   CircularProgress,

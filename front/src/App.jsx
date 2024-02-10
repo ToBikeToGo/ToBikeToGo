@@ -29,6 +29,9 @@ import { ShopForOwner } from './pages/Shop/ShopForOwner.jsx';
 import { AddMemberPage } from './pages/Shop/MyShops/AddMember.jsx';
 import { EditMember } from './pages/Shop/MyShops/EditMember.jsx';
 import { EditProfile } from './pages/User/EditProfile.jsx';
+import { SearchBikes } from './pages/Bikes/SearchBikes.jsx';
+import { CreateBikePage } from './pages/Bikes/CreateBike.jsx';
+import { EditBike } from './pages/Bikes/EditBike.jsx';
 const StyledApp = styled.div`
   background-color: ${theme.palette.background.default};
   min-height: 100vh;
@@ -39,13 +42,13 @@ const StyledApp = styled.div`
 function App() {
   return (
     <>
-      <ThemeProvider theme={theme}>
-        <StyledApp>
-          <UserProvider>
-            <ShopProvider>
-              <BookingProvider>
-                <VacationProvider>
-                  <BrowserRouter>
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <StyledApp>
+            <UserProvider>
+              <ShopProvider>
+                <BookingProvider>
+                  <VacationProvider>
                     <Navbar />
 
                     <Routes>
@@ -59,6 +62,11 @@ function App() {
                       <Route
                         exact
                         path="/my-planning"
+                        element={<MyPlanning />}
+                      />{' '}
+                      <Route
+                        exact
+                        path="/my-planning/:userId"
                         element={<MyPlanning />}
                       />
                       <Route
@@ -98,6 +106,15 @@ function App() {
                         element={<ListRequest />}
                       />
                       <Route path="/bikes/:shopId" element={<BikesByShop />} />
+                      <Route
+                        path="/bikes/edit/:bikeId"
+                        element={<EditBike />}
+                      />
+                      <Route
+                        path="/create-bike/:shopId"
+                        element={<CreateBikePage />}
+                      />
+                      <Route path="/search-bikes" element={<SearchBikes />} />
                       <Route path="/my-shops" element={<MyShops />} />
                       <Route
                         path="/my-shops/add-member/:shopId"
@@ -117,15 +134,15 @@ function App() {
                       />
                       <Route path="*" element={<h1>404</h1>} />
                     </Routes>
-                  </BrowserRouter>
-                </VacationProvider>
+                  </VacationProvider>
 
-                <Footer />
-              </BookingProvider>
-            </ShopProvider>
-          </UserProvider>
-        </StyledApp>
-      </ThemeProvider>
+                  <Footer />
+                </BookingProvider>
+              </ShopProvider>
+            </UserProvider>
+          </StyledApp>
+        </ThemeProvider>
+      </BrowserRouter>
     </>
   );
 }

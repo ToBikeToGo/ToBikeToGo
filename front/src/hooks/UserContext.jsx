@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { getApirUrl } from '../helpers/getApirUrl.js';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { getApirUrl, getMediaUrl } from '../helpers/getApirUrl.js';
 import fetchApi from '../helpers/fetchApi.js';
+import { useLocation } from 'react-router-dom';
 //import jwt from 'jsonwebtoken';
 
 const UserContext = React.createContext('');
@@ -12,6 +13,7 @@ const useUser = () => {
 
   useEffect(() => {
     const apiUrl = getApirUrl();
+    const mediaUrl = getMediaUrl();
     fetchApi(`${apiUrl}/me`)
       .then((response) => {
         if (!response.ok) {
@@ -28,7 +30,13 @@ const useUser = () => {
             email: data.email,
             shops: data.shops,
             phone: data.phone,
+            locale: data.locale,
             schedules: data.schedules,
+            vacations: data.vacations,
+            avatar: data.media?.contentUrl
+              ? `${mediaUrl}${data.media.contentUrl}`
+              : `${mediaUrl}/default-avatar.png`,
+            roles: data.roles,
           });
         } else {
           throw new Error('Data is not in the expected format');
@@ -39,6 +47,10 @@ const useUser = () => {
       });
   }, []);
 
+  const isAdmin = useMemo(() => {
+    return user?.roles && user.roles.includes('ROLE_ADMIN');
+  }, [user]);
+
   const value = React.useMemo(() => {
     return {
       user,
@@ -46,8 +58,10 @@ const useUser = () => {
       //isLogged,
       setUserToRegister,
       userToRegister,
+      isAdmin,
     };
   }, [
+    isAdmin,
     user,
     error,
     // isLogged

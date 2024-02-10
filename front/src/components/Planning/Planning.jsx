@@ -35,8 +35,25 @@ const Planning = ({ events = mockedEvents }) => {
       events={events}
       startAccessor="start"
       endAccessor="end"
-      style={{ height: 1000, backgroundColor: theme.palette.primary.main }}
+      style={{ height: 1000, backgroundColor: theme.palette.common.white }}
       defaultView="week"
+      eventPropGetter={(event, start, end, isSelected) => {
+        let newStyle = {
+          backgroundColor: event.bg || 'lightblue',
+          color: 'black',
+          borderRadius: '0px',
+          border: 'none',
+        };
+
+        if (event.status === 'APPROVED') {
+          newStyle.backgroundColor = 'green';
+        }
+
+        return {
+          className: '',
+          style: newStyle,
+        };
+      }}
     />
   );
 };

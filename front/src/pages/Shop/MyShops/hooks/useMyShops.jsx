@@ -19,7 +19,6 @@ export const useMyShops = ({ franchiseId }) => {
       .then((response) => response.json())
       .then((data) => {
         setIsLoading(false);
-        console.log('data', data['hydra:member'], 'response', data);
         setMyShops(data['hydra:member']);
       });
     setIsLoading(false);

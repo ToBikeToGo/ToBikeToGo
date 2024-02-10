@@ -31,14 +31,18 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
   };
 
   const handleChange = (e) => {
-    console.log('e.target', e.target, datas);
+    let value = e.target.value;
+
+    if (e.target.type === 'number') {
+      value = Number(value);
+    }
     if (e.target.type === 'file') {
       setDatas({ ...datas, ['file']: e.target.files[0] });
       setSelectedImage(URL.createObjectURL(e.target.files[0]));
     } else {
       setDatas((prev) => ({
         ...prev,
-        [e.target.name]: e.target.value,
+        [e.target.name]: value,
       }));
     }
   };
@@ -80,10 +84,8 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
           return response.json();
         })
         .then((data) => {
-          console.log('data from API', data);
           const updatedDatas = { ...datas, media: data['@id'] };
 
-          console.log('datas', datas);
           return fetchApi(`${apiUrl}${form.call.link}`, {
             method: form.call.method,
             headers: {
@@ -96,9 +98,7 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
           });
         })
         .then((response) => {
-          console.log(response);
           if (!response.ok) {
-            console.log('error');
             setToast({
               open: true,
               message: 'An error occured',
@@ -130,7 +130,6 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
         body: JSON.stringify(datas),
       })
         .then((response) => {
-          console.log(response);
           if (!response.ok) {
             console.log('error');
             setToast({
@@ -144,8 +143,6 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
         })
         .then((data) => {
           setEntity(data);
-
-          console.log('data from API', data);
           setToast({
             open: true,
             message: form?.successMessage,
@@ -238,6 +235,55 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
                 ))}
               </Select>
             </FormControl>
+          );
+        } else if (field.type === 'hidden') {
+          return (
+            <input
+              type="hidden"
+              id={field.id}
+              name={field.name}
+              value={field.value}
+              onChange={handleChange}
+            />
+          );
+        } else if (field.type === 'checkbox') {
+          return (
+            <FormControl fullWidth>
+              <InputLabel>{field.label}</InputLabel>
+              <Select
+                value={datas[field.name] || ''}
+                onChange={handleChange}
+                name={field.name}
+                fullWidth
+                required
+                sx={{ mb: 2 }}
+              >
+                <MenuItem value={true}>Oui</MenuItem>
+                <MenuItem value={false}>Non</MenuItem>
+              </Select>
+            </FormControl>
+          );
+        } else if (field.type === 'number') {
+          return (
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id={field.id}
+              label={field.label}
+              name={field.name}
+              autoFocus
+              sx={{ mb: 2 }}
+              value={
+                datas[field.name] !== undefined
+                  ? datas[field.name]
+                  : field.value
+              }
+              onChange={handleChange}
+              disabled={!field.isEditable}
+              type="number"
+            />
           );
         }
       })}

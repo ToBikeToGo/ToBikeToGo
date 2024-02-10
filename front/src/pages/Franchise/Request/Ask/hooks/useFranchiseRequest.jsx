@@ -85,18 +85,17 @@ const FranchiseRequestProvider = ({ children }) => {
         body: JSON.stringify({
           requestDate: new Date(),
           franchise: franchise['@id'],
+          status: false,
         }),
         headers: {
           'Content-Type': 'application/json',
         },
       });
       const franchiseRequest = await franchiseRequestResponse.json();
-      console.log('franchiseRequest', franchiseRequest);
     } catch (error) {
       console.error('Error while creating franchise request', error);
       setError(error);
     } finally {
-      console.log('franchiseRequest', franchiseRequest);
       setLoading(false);
       setRequestSend(true);
     }
@@ -115,7 +114,6 @@ const FranchiseRequestProvider = ({ children }) => {
     if (address.length > 0 && address.length < 55) {
       return null;
     } else {
-      console.log('address is not valid');
       return 'Address is not valid';
     }
   };
@@ -125,7 +123,6 @@ const FranchiseRequestProvider = ({ children }) => {
   };
 
   const handleNext = (data = {}) => {
-    console.log('data', data);
     setStep((prevStep) => prevStep + 1);
   };
 
@@ -134,8 +131,6 @@ const FranchiseRequestProvider = ({ children }) => {
       ...prevFranchiseRequest,
       ...data,
     }));
-
-    console.log('franchiseRequest', franchiseRequest);
   };
 
   return (

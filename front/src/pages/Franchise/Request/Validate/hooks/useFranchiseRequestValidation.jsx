@@ -24,7 +24,6 @@ const useFranchiseRequestValidation = () => {
         },
       });
       const data = await response.json();
-      console.log('data franchiserequest', data);
       setFranchiseRequestValidation(() => data['hydra:member']);
       setTotalPage(Math.ceil(data['hydra:totalItems'] / 10));
       setIsLoading(false);
@@ -49,8 +48,6 @@ const useFranchiseRequestValidation = () => {
 
       const data = await response.json();
       await getFranchiseRequestValidation();
-
-      console.log('Request approved:', data);
     } catch (error) {
       console.error('Error while approving request:', error);
     }
@@ -71,7 +68,6 @@ const useFranchiseRequestValidation = () => {
       });
 
       const data = await response.json();
-      console.log('Request declined:', data);
       await getFranchiseRequestValidation();
     } catch (error) {
       console.error('Error while declining request:', error);
@@ -79,7 +75,7 @@ const useFranchiseRequestValidation = () => {
   };
 
   useEffect(() => {
-    getFranchiseRequestValidation().then((r) => console.log(r));
+    getFranchiseRequestValidation();
   }, [getFranchiseRequestValidation]);
 
   const value = useMemo(() => {

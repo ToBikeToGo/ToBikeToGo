@@ -15,8 +15,6 @@ const daysOfWeek = [
 const mapOpeningHoursToDays = (openingHours) => {
   let mappedOpeningHours = [];
   Object.keys(openingHours).forEach((key, t) => {
-    console.log('key', key);
-    console.log('t', openingHours[key], openingHours);
     mappedOpeningHours.push({
       dow: t,
       startTime: openingHours[key],

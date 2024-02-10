@@ -28,7 +28,7 @@ export const Shop = ({ shop }) => {
           variant="contained"
           color="black"
           component={Link}
-          to={`/my-shops/${shop.id}`}
+          to={`/bikes/${shop.id}`}
           href="#contained-buttons"
           sx={{ mt: 2, color: theme.palette.common.white }}
         >

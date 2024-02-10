@@ -15,17 +15,8 @@ export const MyShops = () => {
   const { myShops, isLoading: isShopLoading } = useMyShops({
     franchiseId: myFranchises[0]?.id,
   });
-  console.log(myShops);
 
   const isLoading = isFranchiseLoading || isShopLoading;
-
-  console.log(
-    isFranchiseLoading,
-    isShopLoading,
-    isLoading,
-    myShops,
-    myFranchises
-  );
 
   return (
     <Box

@@ -10,7 +10,6 @@ import { MemberTable } from '../../components/Member/MemberTable.jsx';
 export const ShopForOwner = () => {
   const { getShopWithMembers, shop } = useShopContext();
   const theme = useTheme();
-  console.log('shop', shop);
   const { shopId } = useParams();
 
   useEffect(() => {

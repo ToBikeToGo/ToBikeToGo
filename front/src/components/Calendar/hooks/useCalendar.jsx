@@ -35,7 +35,7 @@ export const useCalendar = ({ onChangeDateCallback, disabledDates = [] }) => {
   };
   const handeInputBlur = (e) => {
     // si ce n'est pas un input
-    if (e.target.tagName !== 'INPUT') {
+    if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
       e.preventDefault();
     }
 

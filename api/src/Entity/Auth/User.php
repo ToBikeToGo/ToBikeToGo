@@ -2,6 +2,8 @@
 
 namespace App\Entity\Auth;
 
+use AllowDynamicProperties;
+use App\Entity\Shop;
 use DateTime;
 use App\Entity\Media;
 use App\Controller\ActivateAction;
@@ -24,9 +26,6 @@ use Ramsey\Uuid\Rfc4122\UuidV4;
 use App\Entity\Blog\Publication;
 use Doctrine\ORM\Mapping as ORM;
 use App\State\UserPasswordHasher;
-use App\Controller\ActivateAction;
-use App\Controller\RegisterAction;
-use App\Controller\UserController;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
@@ -38,13 +37,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
-#[ORM\Entity()]
+#[AllowDynamicProperties] #[ORM\Entity()]
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     operations: [
     new GetCollection(
                 uriTemplate: '/vacations/{id}/users',
-
             ),
         new Get(
             uriTemplate: '/me',
@@ -80,7 +78,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             denormalizationContext: ['groups' => ['shop:members:write', 'user:write']],
         ),
         new Get(normalizationContext: ['groups' => [ConstantsGroups::USER_READ, 'user:read:full']]),
-        new Patch(denormalizationContext: ['groups' => ['user:write:update']]),
+        new Patch(denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]]),
         // new Put(), // I don't use PUT, only PATCH
         // new Delete(), // Disable DELETE method, do soft delete instead
     ],
@@ -183,7 +181,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $locale = null;
 
-    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE])]
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE, ConstantsGroups::SHOP_READ])]
     #[ORM\Column]
     private ?bool $status = null;
 
@@ -195,17 +193,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $token = null;
 
     #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'users')]
-    #[Groups(['user:read', 'user:write', 'shop:vacations:read', "shop:members:write", "user:write:update"])]
     #[Groups([ConstantsGroups::USER_READ])]
     private Collection $schedules;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::REQUEST_READ])]
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::REQUEST_READ, ConstantsGroups::USER_WRITE])]
     private ?Media $media = null;
 
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     #[Groups([ConstantsGroups::USER_READ])]
     private ?Request $request = null;
+
+
+    #[ORM\ManyToMany(targetEntity: Shop::class, inversedBy: 'users')]
+    #[Groups([ConstantsGroups::USER_READ])]
+    private Collection $shops;
 
     public function __construct()
     {

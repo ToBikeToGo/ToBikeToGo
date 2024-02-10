@@ -14,7 +14,7 @@ const Calendar = ({
 }) => {
   return (
     <>
-      <div className={'flex justify-center mt-4 ba'} style={{}}>
+      <div className={'flex justify-center mt-4 ba w-full'} style={{}}>
         <TextField
           InputProps={{
             color: 'primary',

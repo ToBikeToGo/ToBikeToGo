@@ -11,40 +11,17 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { Link } from 'react-router-dom';
-import { InputBase } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import { InputBase, TextField } from '@mui/material';
 import styled from 'styled-components';
 import theme from '../../theme/theme.js';
 import { Calendar } from '../Calendar/Calendar.jsx';
 import { useCalendar } from '../Calendar/hooks/useCalendar.jsx';
 import { useBookingContext } from '../../hooks/useBooking.jsx';
+import { useUserContext } from '../../hooks/UserContext.jsx';
+import { useTranslation } from '../../locales/hooks/getTranslation.js';
+import { useEffect } from 'react';
 
-const pages = [
-  {
-    label: 'Rent a bike',
-    path: '/rent/bike/31',
-  },
-  {
-    label: 'My planning',
-    path: '/my-planning',
-  },
-  {
-    label: 'Ask vacation',
-    path: '/ask-vacation',
-  },
-  {
-    label: 'Vacations request',
-    path: '/vacations-request/31',
-  },
-  {
-    label: 'Last booking',
-    path: '/last-booking/682',
-  },
-  {
-    label: 'Shops',
-    path: '/shops',
-  },
-];
 const Search = styled('div')(() => ({
   display: 'flex',
   position: 'relative',
@@ -75,27 +52,92 @@ const StyledInputBase = styled(InputBase)(({}) => ({
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { changeBookingDates } = useBookingContext();
+  const [setAnchorElUser] = React.useState(null);
+  const navigate = useNavigate();
+
+  const {
+    changeBookingDates,
+    setSearchParams,
+    searchParams,
+    getAvailableBikes,
+  } = useBookingContext();
   const { calendarRef, dates, isOpen, onChangeDate, handleOpen } = useCalendar({
     onChangeDateCallback: (d) => {
       changeBookingDates(d?.startDate, d?.endDate);
     },
   });
+  const searchRef = React.useRef(null);
+  const [showSearchOptions, setShowSearchOptions] = React.useState(false);
+
+  const handleSearchClick = () => {
+    setShowSearchOptions(true);
+  };
+
+  const handleCLickOutsideSearch = (e) => {
+    if (searchRef.current && !searchRef.current.contains(e.target)) {
+      setShowSearchOptions(false);
+    }
+  };
+
+  const handleSearch = async () => {
+    console.log(searchParams);
+    navigate('/search-bikes');
+    getAvailableBikes();
+  };
+
+  const onChangeInput = (e) => {
+    setSearchParams((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleCLickOutsideSearch);
+    return () => {
+      document.removeEventListener('click', handleCLickOutsideSearch);
+    };
+  }, [handleCLickOutsideSearch]);
+
+  const { getTranslation } = useTranslation();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const pages = [
+    {
+      label: getTranslation('Navbar.rent.bike'),
+      path: '/rent/bike/31',
+    },
+    {
+      label: getTranslation('Navbar.planning'),
+      path: '/my-planning',
+    },
+    {
+      label: 'Vacations request',
+      path: '/vacations-request/31',
+    },
+    {
+      label: 'Last booking',
+      path: '/last-booking/682',
+    },
+    {
+      label: 'Shops',
+      path: '/shops',
+    },
+  ];
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
   };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const { user } = useUserContext();
 
   return (
     <AppBar
@@ -117,6 +159,9 @@ function ResponsiveAppBar() {
               display: { xs: 'none', md: 'flex' },
               fontWeight: 700,
               textDecoration: 'none',
+              // Add these lines
+              overflow: 'visible', // Make sure the logo is not cut off
+              whiteSpace: 'normal', // Allow the logo to wrap to the next line if necessary
             }}
           >
             BikeToGo
@@ -196,25 +241,104 @@ function ResponsiveAppBar() {
               </Button>
             ))}
           </Box>
-          <Search>
+          <Search ref={searchRef}>
             <StyledInputBase
               placeholder="Find a bike…"
               inputProps={{ 'aria-label': 'search' }}
+              onClick={handleSearchClick}
+              onChange={onChangeInput}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              name={'label'}
             />
-            <Calendar
-              calendarRef={calendarRef}
-              handleOpen={handleOpen}
-              onChangeDate={onChangeDate}
-              dates={dates}
-              isOpen={isOpen}
-            />
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                width: '100%',
+                flexDirection: 'column',
+              }}
+            >
+              <Calendar
+                calendarRef={calendarRef}
+                handleOpen={handleOpen}
+                onChangeDate={onChangeDate}
+                dates={dates}
+                isOpen={isOpen}
+              />
+              {showSearchOptions && (
+                <div
+                  style={{
+                    margin: '1em',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: showSearchOptions ? 1 : 0,
+                    transition: 'opacity 1s ease-in-out',
+                  }}
+                  className="search-options"
+                >
+                  <TextField
+                    label="Max Price"
+                    type="number"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    sx={{ m: 2 }}
+                    name="maxPrice"
+                    onChange={onChangeInput}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  />
+                  <TextField
+                    label="Brand"
+                    type="text"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    name="brand"
+                    onChange={onChangeInput}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  />
+                </div>
+              )}
+            </Box>
 
             <SearchIconWrapper></SearchIconWrapper>
           </Search>
           <Box sx={{ flexGrow: 0 }}>
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+            <IconButton onClick={handleMenu} sx={{ p: 0 }}>
+              <Avatar alt={user.firstname} src={user.avatar} />
             </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem
+                onClick={handleClose}
+                component={Link}
+                to={`/user/edit-profile/${user.id}`}
+              >
+                Edit Profile
+              </MenuItem>
+              <MenuItem onClick={handleClose} component={Link} to="/settings">
+                Settings
+              </MenuItem>
+              <MenuItem onClick={handleClose} component={Link} to="/my-shops">
+                My shops
+              </MenuItem>
+            </Menu>
           </Box>
         </Toolbar>
       </Container>

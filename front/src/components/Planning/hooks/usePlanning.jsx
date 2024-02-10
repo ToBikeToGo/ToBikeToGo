@@ -1,96 +1,93 @@
-import { addDays, isWeekend, startOfDay } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { addDays, isWeekend, startOfDay, isWithinInterval } from 'date-fns';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useUserContext } from '../../../hooks/UserContext.jsx';
 
 const usePlanning = ({ fromConnectedUser = false }) => {
   const { user } = useUserContext();
-  const [workdScheduleByDay, setWorkScheduleByDay] = useState([
-    {
-      day: 'Monday',
-      start: '9:00',
-      end: '18:00',
-    },
-    {
-      day: 'Tuesday',
-      start: '9:00',
-      end: '18:00',
-    },
-    {
-      day: 'Wednesday',
-      start: '9:00',
-      end: '18:00',
-    },
-    {
-      day: 'Thursday',
-      start: '9:00',
-      end: '18:00',
-    },
-    {
-      day: 'Friday',
-      start: '9:00',
-      end: '18:00',
-    },
-    {
-      day: 'Saturday',
-      start: '9:00',
-      end: '18:00',
-    },
-    {
-      day: 'Sunday',
-      start: '9:00',
-      end: '18:00',
-    },
-  ]);
-  const getWorkingHours = (dayOfWeek) => {
-    const day = workdScheduleByDay?.find(
-      (schedule) => schedule.day === dayOfWeek
-    );
-    if (day) {
-      return {
-        start: day.start,
-        end: day.end,
-      };
-    }
-    return null;
+  const [workdScheduleByDay, setWorkScheduleByDay] = useState([]);
+
+  const formatVacations = (vacations) => {
+    return vacations?.map((vacation) => ({
+      id: vacation.id,
+      title: vacation.description,
+      start: new Date(vacation.startDate),
+      end: new Date(vacation.endDate),
+      status: vacation.status ? 'APPROVED' : 'PENDING',
+    }));
   };
 
-  const isWorkingDay = (date) => {
-    const dayOfWeek = date.toLocaleString('en-US', { weekday: 'long' });
-    const workingHours = getWorkingHours(dayOfWeek);
+  const vacations = useMemo(() => {
+    return formatVacations(user?.vacations);
+  }, [user?.vacations]);
 
-    return workingHours !== null;
-  };
-
-  const getWorkingDays = (start, end) => {
-    const events = [];
-    let current = startOfDay(start);
-    while (current < end) {
-      if (!isWorkingDay(current)) {
-        console.log('getWorkingDays NOWOORK-> current', current);
+  const getWorkingHours = useCallback(
+    (dayOfWeek) => {
+      const day = workdScheduleByDay?.find(
+        (schedule) => schedule.day === dayOfWeek
+      );
+      if (day) {
+        return {
+          start: day.start,
+          end: day.end,
+        };
       }
+      return null;
+    },
+    [workdScheduleByDay]
+  );
 
-      if (isWorkingDay(current)) {
-        console.log('getWorkingDays -> current', current);
-        const dayOfWeek = current.toLocaleString('en-US', { weekday: 'long' });
-        const workingHours = getWorkingHours(dayOfWeek);
-        const workStart = new Date(current);
-        const [startHour, startMinute] = workingHours.start
-          .split(':')
-          .map(Number);
-        workStart.setHours(startHour, startMinute, 0);
-        const workEnd = new Date(current);
-        const [endHour, endMinute] = workingHours.end.split(':').map(Number);
-        workEnd.setHours(endHour, endMinute, 0);
-        events.push({
-          start: workStart,
-          end: workEnd,
-          title: 'Jour de travail',
-        });
+  const isWorkingDay = useCallback(
+    (date) => {
+      const dayOfWeek = date.toLocaleString('en-US', { weekday: 'long' });
+      const workingHours = getWorkingHours(dayOfWeek);
+
+      return workingHours !== null;
+    },
+    [getWorkingHours]
+  );
+
+  const getWorkingDays = useCallback(
+    (start, end) => {
+      const events = [];
+      let current = startOfDay(start);
+      while (current < end) {
+        if (isWorkingDay(current)) {
+          const dayOfWeek = current.toLocaleString('en-US', {
+            weekday: 'long',
+          });
+          const workingHours = getWorkingHours(dayOfWeek);
+          const workStart = new Date(current);
+          const [startHour, startMinute] = workingHours.start
+            .split(':')
+            .map(Number);
+          workStart.setHours(startHour, startMinute, 0);
+          const workEnd = new Date(current);
+          const [endHour, endMinute] = workingHours.end.split(':').map(Number);
+          workEnd.setHours(endHour, endMinute, 0);
+
+          const isVacationDay = vacations.some((vacation) =>
+            isWithinInterval(current, {
+              start: vacation.start,
+              end: vacation.end,
+            })
+          );
+
+          // If it's not a vacation day, add it to the events
+          if (!isVacationDay) {
+            events.push({
+              start: workStart,
+              end: workEnd,
+              title: 'Jour de travail',
+              bg: 'red',
+            });
+          }
+        }
+        current = addDays(current, 1);
       }
-      current = addDays(current, 1);
-    }
-    return events;
-  };
+      return events;
+    },
+    [getWorkingHours, isWorkingDay, vacations]
+  );
 
   const getDayOfWeek = (dow) => {
     const days = [
@@ -105,28 +102,38 @@ const usePlanning = ({ fromConnectedUser = false }) => {
     return days[dow - 1];
   };
 
-  const transformedSchedules = (schedules) => {
-    return schedules?.map((schedule) => {
-      const startTime = new Date(schedule.startTime).getHours();
-      const endTime = new Date(schedule.endTime).getHours();
-      const day = getDayOfWeek(schedule.dow);
-      return {
-        day,
-        start: `${startTime}:00`,
-        end: `${endTime}:00`,
-      };
-    });
-  };
+  const transformedSchedules = useCallback(
+    (schedules) => {
+      return schedules?.map((schedule) => {
+        const startTime = new Date(schedule.startTime).getHours();
+        const endTime = new Date(schedule.endTime).getHours();
+        const day = getDayOfWeek(schedule.dow);
+        return {
+          day,
+          start: `${startTime}:00`,
+          end: `${endTime}:00`,
+        };
+      });
+    },
+    [
+      user?.schedules,
+      user?.schedules?.length,
+      user?.schedules?.[0]?.startTime,
+      user?.schedules?.[0]?.endTime,
+    ]
+  );
 
   useEffect(() => {
     if (fromConnectedUser) {
       setWorkScheduleByDay(transformedSchedules(user?.schedules));
     }
-  }, [fromConnectedUser, user?.schedules]);
+  }, [user?.schedules, transformedSchedules]);
 
   return {
     getWorkingDays,
     transformedSchedules,
+    formatVacations,
+    vacations,
   };
 };
 

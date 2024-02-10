@@ -8,7 +8,6 @@ export const useMyFranchises = () => {
   const [myFranchises, setMyFranchises] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useUserContext();
-  console.log(user);
 
   const getMyFranchises = useCallback(async () => {
     if (!user.id) return;

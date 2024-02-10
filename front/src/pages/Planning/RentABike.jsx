@@ -48,9 +48,7 @@ const disneyWorldLatLng = [28.3852, -81.5639];
 const disneyLandLatLng = [33.8121, -117.919];
 function RentABike() {
   const { calendarRef, dates, isOpen, onChangeDate, handleOpen } = useCalendar({
-    onChangeDateCallback: () => {
-      console.log('dates', dates);
-    },
+    onChangeDateCallback: () => {},
   });
   // TODO replace this with a call to the API
   const [bike, setBike] = useState({

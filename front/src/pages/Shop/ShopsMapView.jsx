@@ -111,7 +111,6 @@ const ShopsMapView = () => {
         shopId: shopId,
       });
       stopLoadingBikes();
-      console.log('data', data);
     } catch (error) {
       console.error(
         'Une erreur est survenue lors de la récupération des vélos disponibles :',

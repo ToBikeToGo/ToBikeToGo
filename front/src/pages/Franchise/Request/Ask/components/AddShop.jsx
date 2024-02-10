@@ -50,17 +50,9 @@ const CreateShops = ({ handleNext, setToast }) => {
       [event.target.name]: event.target.checked,
     });
   };
-
-  const openingHoursTest = {
-    MondayStart: '2024-01-27T02:00:00.000Z',
-    MondayEnd: '2024-01-27T00:00:00.000Z',
-  };
-
-  const transformOpeningHours = (openingHours) => {};
   const handleTimeChange = (name) => (time) => {
     setOpeningHours({ ...openingHours, [name]: time });
   };
-
   const handleSubmit = () => {
     let error = checkLabel(label);
     error = checkAddress(address);
@@ -74,7 +66,6 @@ const CreateShops = ({ handleNext, setToast }) => {
       return;
     }
 
-    console.log('openingHours', openingHours, openingDays);
     onSave({
       shopLabel: label,
       shopAddress: address,

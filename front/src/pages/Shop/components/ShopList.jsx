@@ -1,7 +1,6 @@
 import Container from '@mui/material/Container';
 import { Link } from 'react-router-dom';
 import { Language } from '@mui/icons-material';
-import Typography from '@mui/material/Typography';
 import { Shop } from './Shop.jsx';
 import { Pagination } from '@mui/material';
 import React from 'react';

@@ -83,7 +83,6 @@ const Register = ({ setToast, Toast }) => {
         }
       )
         .then((response) => {
-          console.log(response);
           if (!response.ok) {
             setToast({
               open: true,
@@ -96,7 +95,6 @@ const Register = ({ setToast, Toast }) => {
         })
         .then(async (data) => {
           stopLoading();
-          console.log(data);
           setToast({
             open: true,
             message: 'Register successful',
@@ -104,7 +102,6 @@ const Register = ({ setToast, Toast }) => {
           });
 
           if (data.token) {
-            console.log(data.token, 'token');
             saveTokeInLocalStorage(data.token);
           }
 

@@ -14,7 +14,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints\Date;
-use Symfony\Component\Serializer\Annotation\Groups;
 use App\Constants\Groups as ConstantsGroups;
 
 #[ORM\Entity()]

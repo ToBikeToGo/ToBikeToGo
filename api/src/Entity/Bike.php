@@ -2,28 +2,24 @@
 
 namespace App\Entity;
 
-use App\Entity\Media;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Controller\GetAvailableBikesInShopByDate;
 use App\Controller\GetAvailableShopsWithBikeByDate;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityRepository;
-use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BikeRepository;
 use ApiPlatform\Metadata\ApiFilter;
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;
 use App\Controller\BikeFilteredAction;
-use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
-use Doctrine\Common\Collections\Collection;
 use App\Constants\Groups as ConstantsGroups;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
-use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
@@ -110,10 +106,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         uriTemplate: "/shops/{shopId}/bikes",
         uriVariables: [
             "shopId" => new Link(
-                fromClass: Shop::class,
-                fromProperty: "bikes"
+                fromProperty: "bikes",
+                fromClass: Shop::class
             )
         ],
+        normalizationContext: ['groups' => [ConstantsGroups::BIKE_READ]]
     )]
 )]
 class Bike extends EntityRepository
@@ -150,7 +147,7 @@ class Bike extends EntityRepository
     #[ORM\ManyToOne(inversedBy: 'bikes')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull]
-    #[Groups([ConstantsGroups::BIKE_READ])]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::BOOKING_READ])]
     private Shop $shop;
 
     #[ORM\OneToMany(mappedBy: 'bike', targetEntity: Booking::class)]
@@ -162,7 +159,7 @@ class Bike extends EntityRepository
     private Collection $propositions;
 
     #[ORM\ManyToOne(inversedBy: 'bikes')]
-    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::MEDIA_READ, ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::MEDIA_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::BOOKING_READ])]
     private ?Media $media = null;
 
     public function __construct()

@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Link;
+use App\Entity\Auth\User;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ShopRepository;
 use ApiPlatform\Metadata\ApiResource;
@@ -51,11 +53,11 @@ class Shop
     private ?int $id = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'shops')]
-    #[Groups(["shop:members:read"])]
+    #[Groups(ConstantsGroups::SHOP_READ)]
     private Collection $users;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["booking:read", "request:read", "shop:members:read"])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::REQUEST_READ, "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255)]
@@ -79,7 +81,7 @@ class Shop
     private Collection $schedules;
 
     #[ORM\ManyToMany(targetEntity: Payment::class, mappedBy: 'shop')]
-    #[Groups([ConstantsGroups::SHOP_READ, "request:read", "shop:members:read"])]
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::BOOKING_READ, "shop:members:read"])]
     private Collection $payments;
 
     #[ORM\OneToMany(mappedBy: 'shop', targetEntity: Vacation::class)]
@@ -256,7 +258,7 @@ class Shop
         return $this;
     }
 
-    public function addMember(User $user): static
+    public function addUsers(User $user): static
     {
         if (!$this->users->contains($user)) {
             $this->users->add($user);
@@ -288,5 +290,5 @@ class Shop
 
             return $this;
         }
-    }
+
 }

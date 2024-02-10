@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use App\Dto\SlotsDto;
 use App\Entity\Auth\User;
 use ApiPlatform\Metadata\Get;
@@ -97,6 +99,7 @@ use App\Constants\Groups as ConstantsGroups;
         )
     ]
 )]
+#[ApiFilter(SearchFilter::class, properties: ['user', 'bike'])]
 class Booking
 {
     use TimestampableTrait;

@@ -5,18 +5,18 @@ import fetchApi from '../helpers/fetchApi.js';
 
 const ShopContext = React.createContext('');
 
-const useShop = () => {
+export const useShop = () => {
   const [shop, setShop] = React.useState({});
   const [error, setError] = React.useState(null);
   const [bikes, setBikes] = React.useState(null);
   const [activeMember, setActiveMember] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const apiUrl = getApirUrl();
 
   const getShopWithMembers = useCallback((id) => {
     fetchApi(`${apiUrl}/shops/members/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('data', data);
         if (data && data['@id']) {
           setShop({
             ...shop,
@@ -62,16 +62,20 @@ const useShop = () => {
     name: 'Shop 1',
   };
 
-  useEffect(() => {
-    fetchApi(`${apiUrl}/shops/31`)
+  const getShopById = useCallback((shopId) => {
+    setIsLoading(true);
+    fetchApi(`${apiUrl}/shops/${shopId}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
+
         return response.json();
       })
       .then((data) => {
         if (data && data['@id']) {
+          setShop(data);
+          setIsLoading(false);
         } else {
           throw new Error('Data is not in the expected format');
         }
@@ -101,6 +105,8 @@ const useShop = () => {
     getAvailableBikesByShop,
     bikes,
     getShopWithMembers,
+    getShopById,
+    isLoading,
   };
 };
 

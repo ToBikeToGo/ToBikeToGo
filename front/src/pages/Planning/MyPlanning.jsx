@@ -11,7 +11,7 @@ import { useUserContext } from '../../hooks/UserContext.jsx';
 import Avatar from '@mui/material/Avatar';
 import { addDays, isWeekend, startOfDay } from 'date-fns';
 import { MemberList } from '../../components/Planning/MemberList.jsx';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useShopContext } from '../../hooks/UseShop.jsx';
 import { usePlanning } from '../../components/Planning/hooks/usePlanning.jsx';
 
@@ -39,15 +39,18 @@ const mockedEvents = [
 function MyPlanning({ isUser = true }) {
   const { user } = useUserContext();
   const { members, name, activeMember, setActiveMember } = useShopContext();
-  const { getWorkingDays } = usePlanning({
+  const { getWorkingDays, vacations } = usePlanning({
     fromConnectedUser: true,
   });
-  const events = getWorkingDays(new Date(), addDays(new Date(), 30));
 
-  console.log(events, user?.schedules, 'schedulessss');
+  const [events, setEvents] = useState(mockedEvents);
 
-  console.log(events, 'events');
-  console.log(user, user?.schedules, 'schedules');
+  useEffect(() => {
+    if (user?.schedules) {
+      const workingDays = getWorkingDays(new Date(), addDays(new Date(), 3000));
+      setEvents([...workingDays, ...vacations]);
+    }
+  }, [getWorkingDays, user?.schedules, vacations]);
 
   // add status to
 
@@ -64,14 +67,14 @@ function MyPlanning({ isUser = true }) {
   return activeMember ? (
     <div className={'flex flex-col w-full p-12 '}>
       <Typography variant={'h1'} className={'text-center p-12'}>
-        {name}
+        Work at {name}
       </Typography>
-      <MemberList members={members} onMemberClick={onMemberClick} />
+      {/*<MemberList members={members} onMemberClick={onMemberClick} />*/}
       <div>
         <div className="flex mx-auto p-2">
           <Avatar
             className={'m-4'}
-            src={activeMember.profilePicture}
+            src={user?.avatar}
             sx={{
               width: '100px',
               height: '100px',
