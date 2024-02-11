@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { getApirUrl } from '../helpers/getApirUrl.js';
 import fetchApi from '../helpers/fetchApi.js';
 

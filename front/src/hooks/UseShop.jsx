@@ -10,27 +10,38 @@ export const useShop = () => {
   const [error, setError] = React.useState(null);
   const [bikes, setBikes] = React.useState(null);
   const [activeMember, setActiveMember] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [shops, setShops] = useState([]);
+  const [members, setMembers] = useState([]);
+
   const apiUrl = getApirUrl();
 
-  const getShopWithMembers = useCallback((id) => {
-    fetchApi(`${apiUrl}/shops/members/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data['@id']) {
-          setShop({
-            ...shop,
-            id: data['@id'],
-            ...data,
-          });
-        } else {
-          throw new Error('Data is not in the expected format');
-        }
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  }, []);
+  const getShopWithMembers = useCallback(
+    (id) => {
+      setIsLoading(true);
+      fetchApi(`${apiUrl}/shops/members/${id}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data && data['@id']) {
+            setShop({
+              id: data['@id'],
+              ...data,
+            });
+            setMembers(data?.users);
+            setActiveMember(data?.users[0]);
+          } else {
+            throw new Error('Data is not in the expected format');
+          }
+
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          setError(error);
+        });
+    },
+    [apiUrl]
+  );
 
   const getAvailableBikesByShop = ({ startDate, endDate, shopId }) => {
     return fetchApi(`${apiUrl}/bikes/available/shop/${shopId}`, {
@@ -49,54 +60,58 @@ export const useShop = () => {
       });
   };
 
-  const { id, members, name } = {
-    id: 1,
-    members: [
-      {
-        id: 1,
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'test',
-      },
-    ],
-    name: 'Shop 1',
-  };
+  const getShopById = useCallback(
+    (shopId) => {
+      setIsLoading(true);
+      fetchApi(`${apiUrl}/shops/${shopId}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
 
-  const getShopById = useCallback((shopId) => {
-    setIsLoading(true);
-    fetchApi(`${apiUrl}/shops/${shopId}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+          return response.json();
+        })
+        .then((data) => {
+          if (data && data['@id']) {
+            setShop(data);
+            setIsLoading(false);
+          } else {
+            throw new Error('Data is not in the expected format');
+          }
+        })
+        .catch((error) => {
+          setError(error);
+        });
+    },
+    [apiUrl]
+  );
 
-        return response.json();
-      })
-      .then((data) => {
-        if (data && data['@id']) {
-          setShop(data);
+  const getAllShops = useCallback(
+    (params) => {
+      setIsLoading(true);
+      const { label } = params || {};
+      const urlSearchParams = new URLSearchParams();
+      if (label) {
+        urlSearchParams.append('label', label);
+      }
+
+      return fetchApi(`${apiUrl}/shops?${urlSearchParams.toString()}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setShops(data['hydra:member']);
           setIsLoading(false);
-        } else {
-          throw new Error('Data is not in the expected format');
-        }
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  }, []);
+        });
+    },
+    [apiUrl]
+  );
 
-  const getAllShops = useCallback(() => {
-    return fetchApi(`${apiUrl}/shops`)
-      .then((response) => response.json())
-      .then((data) => {
-        return data['hydra:member'];
-      });
-  }, [apiUrl]);
+
+
 
   return {
+    shops,
     shop,
     error,
-    id,
     members,
     name,
     activeMember,
@@ -107,6 +122,8 @@ export const useShop = () => {
     getShopWithMembers,
     getShopById,
     isLoading,
+    search,
+    setSearch,
   };
 };
 

@@ -7,6 +7,22 @@ export const useBooking = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [rating, setRating] = useState(2);
 
+  const formatBookingsPlanning = (bookings) => {
+    return bookings?.map((b) =>
+      {
+        const startDateDate = new Date(b.startDate);
+
+        return {
+        id: b.id,
+        title: b.bike.label || 'Bike reservation',
+        start: startDateDate,
+        end:new Date(startDateDate.getTime() + 30 * 60000),
+       bgColor: 'red'
+      }
+      }
+      );
+  };
+
   const fetchBookingByUserId = useCallback(async (userId) => {
     setIsLoading(true);
     const apiUrl = getApirUrl();
@@ -38,7 +54,50 @@ export const useBooking = () => {
     [rating]
   );
 
+  const getBookingByBike = useCallback(async (bikeId) => {
+    const apiUrl = getApirUrl();
+    try {
+      setIsLoading(true);
+      const response = await fetchApi(`${apiUrl}/bookings?bike=${bikeId}`);
+      const data = await response.json();
+      setIsLoading(false);
+      return data['hydra:member'];
+    } catch (error) {
+      console.error('Error fetching bookings', error);
+    }
+  }, []);
+
+  const getBookingsByShop = useCallback(async (shopId) => {
+    const apiUrl = getApirUrl();
+    try {
+      setIsLoading(true);
+      const response = await fetchApi(`${apiUrl}/shops/${shopId}/bookings`);
+      const data = await response.json();
+      setBookings(data);1
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching bookings', error);
+    }
+  }, []);
+
+  const getBookingsByUser = useCallback(async (userId) => {
+    const apiUrl = getApirUrl();
+    try {
+      setIsLoading(true);
+      const response = await fetchApi(`${apiUrl}/bookings?customer=${userId}`);
+      const data = await response.json();
+      setIsLoading(false);
+     setBookings(bookings);
+    } catch (error) {
+      console.error('Error fetching bookings', error);
+    }
+  }, []);
+
   return {
+    formatBookingsPlanning,
+    getBookingsByUser,
+    getBookingsByShop,
+    getBookingByBike,
     fetchBookingByUserId,
     bookings,
     isLoading,
