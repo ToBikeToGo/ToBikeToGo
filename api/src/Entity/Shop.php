@@ -2,8 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use App\Controller\ShopStatsAction;
 use App\Entity\Auth\User;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ShopRepository;
@@ -20,12 +24,12 @@ use App\Constants\Groups as ConstantsGroups;
 #[ApiResource(
     uriTemplate: '/shops/vacations/{id}',
     operations: [new Get()],
-    normalizationContext: ['groups' => ['shop:vacations:read']],
+    normalizationContext: ['groups' => [ConstantsGroups::SHOP_VACATIONS_READ]],
 )]
 #[ApiResource(
     uriTemplate: '/shops/members/{id}',
     operations: [new Get()],
-    normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ]],
+    normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ, 'shop:members:read']],
 )]
 #[ApiResource(
     operations: [new GetCollection(
@@ -39,8 +43,18 @@ use App\Constants\Groups as ConstantsGroups;
     )]
 )]
 #[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: "/shops/{id}/stats",
+            controller: ShopStatsAction::class,
+            normalizationContext: ['groups' => [ConstantsGroups::FRANCHISE_READ]]
+        )
+    ],
+)]
+#[ApiResource(
     normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ]],
 )]
+#[ApiFilter(SearchFilter::class, properties: ['label' => 'partial'])]
 class Shop
 {
     use TimestampableTrait;
@@ -49,7 +63,7 @@ class Shop
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups([ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::BIKE_READ])]
     private ?int $id = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'shops')]
@@ -77,7 +91,7 @@ class Shop
     private ?Franchise $franchise = null;
 
     #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'shops')]
-    #[Groups([ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::SHOP_READ, 'shop:members:read'])]
     private Collection $schedules;
 
     #[ORM\ManyToMany(targetEntity: Payment::class, mappedBy: 'shop')]

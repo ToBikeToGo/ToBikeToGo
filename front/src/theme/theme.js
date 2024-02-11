@@ -22,10 +22,17 @@ const theme = createTheme({
       main: '#f17878',
     },
     background: {
-      default: '#fff6f6',
+      default: '#fff',
     },
     success: {
       main: '#53dc75',
+    },
+  },
+  overrides: {
+    MuiTextField: {
+      root: {
+        backgroundColor: '#fff',
+      },
     },
   },
   typography: {
