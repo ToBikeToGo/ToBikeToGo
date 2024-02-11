@@ -110,7 +110,7 @@ function ResponsiveAppBar() {
     },
     {
       label: 'Vacations request',
-      path: '/vacations-request/31',
+      path: '/vacations-request/52',
     },
     {
       label: 'Last booking',
@@ -143,7 +143,7 @@ function ResponsiveAppBar() {
     <AppBar
       position="static"
       sx={{
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: '#fff6f6',
         boxShadow: 'none',
       }}
     >

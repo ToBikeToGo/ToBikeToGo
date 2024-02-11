@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FormBuilder } from '../../components/Form/FormBuilder.jsx';
-import fetchApi from '../../helpers/fetchApi.js';
-import { getApirUrl } from '../../helpers/getApirUrl.js';
 import { CircularProgress } from '@mui/material';
 import { useBikes } from './hooks/useBike.jsx';
 

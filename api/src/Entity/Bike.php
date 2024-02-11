@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Controller\GetAvailableBikesInShopByDate;
+use App\Controller\GetAvailableDateForABike;
 use App\Controller\GetAvailableShopsWithBikeByDate;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -63,6 +65,10 @@ use Symfony\Component\Validator\Constraints as Assert;
                 controller: GetAvailableShopsWithBikeByDate::class,
                 name: 'api_shops_available',
 
+            ),      new Get(
+                uriTemplate: '/bikes/{id}/unavailable',
+                controller: GetAvailableDateForABike::class,
+                name: 'api_bikes_unavailable_dates'
             ),
             new Post(
                 uriTemplate: '/bikes/available/shop/{id}',
@@ -121,7 +127,7 @@ class Bike extends EntityRepository
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups([ConstantsGroups::BIKE_READ])]
+    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::BOOKING_READ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

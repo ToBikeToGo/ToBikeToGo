@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import 'react-date-range/dist/styles.css'; // main css file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import styled from 'styled-components';
 import theme from '../../theme/theme.js';
-import { Typography, Button } from '@mui/material';
+import { Typography, Button, CircularProgress } from '@mui/material';
 import './../../style/dayPicker.css';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -12,11 +12,16 @@ import PinImg from './../../assets/images/pin-map.png';
 import { Calendar } from '../../components/Calendar/Calendar.jsx';
 import { useCalendar } from '../../components/Calendar/hooks/useCalendar.jsx';
 import { TimeSlots } from '../../components/TimeSlots/Timeslot.jsx';
+import { useBikes } from '../Bikes/hooks/useBike.jsx';
+import { getMediaUrl } from '../../helpers/getApirUrl.js';
+import { useParams } from 'react-router-dom';
+import { useSlots } from '../../hooks/useSlots.jsx';
+import { getMapCoordonate } from '../../helpers/getMapCoordonate.js';
 const legalIcon = new Icon({
   iconUrl: PinImg,
-  iconSize: [35, 35], // size of the icon
-  iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-  popupAnchor: [0, 0], // point from which the popup should open relative to the iconAnchor
+  iconSize: [35, 35],
+  iconAnchor: [22, 94],
+  popupAnchor: [0, 0],
 });
 
 const StyledPage = styled.div`
@@ -46,23 +51,57 @@ const StyledImage = styled.img`
 
 const disneyWorldLatLng = [28.3852, -81.5639];
 const disneyLandLatLng = [33.8121, -117.919];
+
 function RentABike() {
+  const { bikeId } = useParams();
+  const {
+    slots,
+    getAvailableSlotsForDateAndShop,
+    getUnavailableDatesForTheBike,
+    isLoading: isLoadingSlots,
+    setDates,
+    unavailableDates,
+  } = useSlots();
+  const mediaUrl = getMediaUrl();
+  const { bike, getBikeById, isLoading } = useBikes();
+  const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
+
+  const [isLoadingMap, setIsLoadingMap] = useState(true);
+
+  useEffect(() => {
+    if (bike?.shop?.address) {
+      setIsLoadingMap(true);
+      getMapCoordonate(bike.shop.address)
+        .then((coordinates) => {
+          setMapCenter(coordinates);
+          setIsLoadingMap(false);
+        })
+        .catch((error) => {
+          console.error('Error getting coordinates from address', error);
+          setIsLoadingMap(false);
+        });
+    }
+  }, [bike?.shop?.address]);
+
   const { calendarRef, dates, isOpen, onChangeDate, handleOpen } = useCalendar({
-    onChangeDateCallback: () => {},
+    onChangeDateCallback: (d) => {
+      //setDates(d);
+      getAvailableSlotsForDateAndShop({
+        shopId: 22,
+        dates: d,
+      });
+    },
   });
-  // TODO replace this with a call to the API
-  const [bike, setBike] = useState({
-    name: 'City Bike 300ksZA',
-    image:
-      'https://ezeryders.com/cdn/shop/products/ScreenShot2022-02-23at5.37.41PM.png?v=1645666853',
-    dayPrice: 10,
-  });
+
+  const isDateUnavailable = (date) => {
+    return unavailableDates.some(
+      (unavailableDate) =>
+        date >= new Date(unavailableDate.startDate) &&
+        date <= new Date(unavailableDate.endDate)
+    );
+  };
 
   const mapRef = useRef();
-
-  /**
-   * handleOnSetView
-   */
 
   function handleOnSetView() {
     const { current = {} } = mapRef;
@@ -71,9 +110,15 @@ function RentABike() {
     map.setView(disneyWorldLatLng, 14);
   }
 
-  /**
-   * handleOnFlyTo
-   */
+  useEffect(() => {
+    getBikeById(bikeId).then((data) => {
+      if (bike) {
+        getUnavailableDatesForTheBike({
+          bikeId: bikeId,
+        });
+      }
+    });
+  }, [bikeId, getAvailableSlotsForDateAndShop, getBikeById]);
 
   function handleOnFlyTo() {
     const { current = {} } = mapRef;
@@ -84,16 +129,23 @@ function RentABike() {
     });
   }
 
-  const unavailableSlots = ['10:00-11:00', '13:30-14:30'];
+  if (isLoading || isLoadingSlots) return <CircularProgress sx={{ m: 5 }} />;
 
   return (
     <StyledPage>
       <StyledWrapper className={'flex-col sm:flex-row'}>
         <div className={' md:w-1/2 w-full flex flex-col items-center'}>
           <Typography variant="h2" component="h4" gutterBottom>
-            {bike.name}
+            {bike.label}
           </Typography>
-          <StyledImage src={bike.image} alt={bike.name} />
+          <StyledImage
+            src={
+              bike?.media?.contentUrl
+                ? mediaUrl + bike.media.contentUrl
+                : 'https://ezeryders.com/cdn/shop/products/ScreenShot2022-02-23at5.37.41PM.png?v=1645666853'
+            }
+            alt={bike.label}
+          />
         </div>
         <div
           ref={calendarRef}
@@ -107,6 +159,7 @@ function RentABike() {
             calendarRef={calendarRef}
             handleOpen={handleOpen}
             onChangeDate={onChangeDate}
+            disabledDateCallback={(date) => isDateUnavailable(date)}
             dates={dates}
             isOpen={isOpen}
           />
@@ -116,30 +169,32 @@ function RentABike() {
               borderColor: theme.palette.secondary.main,
             }}
           >
-            <MapContainer
-              center={[51.505, -0.09]}
-              zoom={33}
-              style={{
-                height: '200px',
-                width: '100%',
-              }}
-            >
-              <TileLayer
-                url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-              />
-              <Marker position={[51.505, -0.09]} icon={legalIcon}>
-                <Popup>
-                  A pretty CSS3 popup. <br /> Easily customizable.
-                </Popup>
-              </Marker>
-            </MapContainer>
+            {!isLoadingMap && (
+              <MapContainer
+                center={[mapCenter.lat, mapCenter.lon]}
+                zoom={33}
+                style={{
+                  height: '200px',
+                  width: '100%',
+                }}
+              >
+                <TileLayer
+                  url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                />
+                <Marker position={[51.505, -0.09]} icon={legalIcon}>
+                  <Popup>
+                    A pretty CSS3 popup. <br /> Easily customizable.
+                  </Popup>
+                </Marker>
+              </MapContainer>
+            )}
           </div>
           <Typography variant="h3" component="h4" gutterBottom>
             Pickup time
           </Typography>
           <TimeSlots
-            unavailableSlots={unavailableSlots}
+            unavailableSlots={slots}
             onChange={(time) => console.log(time, 'TODO add api call')}
           />
 
@@ -153,16 +208,16 @@ function RentABike() {
           >
             Book Now
           </Button>
+          <Typography variant="h2" component="h4" gutterTop m={4}>
+            {dates[0]?.startDate &&
+              dates[0]?.endDate &&
+              `Price : ${(
+                (bike.price * (dates[0]?.endDate - dates[0]?.startDate)) /
+                (1000 * 60 * 60 * 24)
+              ).toFixed(2)} €`}{' '}
+          </Typography>
         </div>
       </StyledWrapper>
-      <Typography variant="h2" component="h4" gutterTop m={4}>
-        {dates[0]?.startDate &&
-          dates[0]?.endDate &&
-          `Price : ${(
-            (bike.dayPrice * (dates[0]?.endDate - dates[0]?.startDate)) /
-            (1000 * 60 * 60 * 24)
-          ).toFixed(2)} €`}{' '}
-      </Typography>
     </StyledPage>
   );
 }
