@@ -7,28 +7,30 @@ const VacationContext = React.createContext('');
 
 const useVacation = () => {
   const [error, setError] = React.useState(null);
-  const { shopId } = useParams();
   const apiUrl = getApirUrl();
 
-  const getShopVacations = useCallback(async () => {
-    return fetchApi(`${apiUrl}/shops/vacations/31`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data && data['@id']) {
-          return data;
-        } else {
-          throw new Error('Data is not in the expected format');
-        }
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  }, [apiUrl]);
+  const getShopVacations = useCallback(
+    async (shopId) => {
+      return fetchApi(`${apiUrl}/shops/${shopId}/vacations`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data && data['@id']) {
+            return data;
+          } else {
+            throw new Error('Data is not in the expected format');
+          }
+        })
+        .catch((error) => {
+          setError(error);
+        });
+    },
+    [apiUrl]
+  );
 
   const changeVacationRequestStatus = (vacationId, status) => {
     return fetchApi(`${apiUrl}/vacations/${vacationId}`, {

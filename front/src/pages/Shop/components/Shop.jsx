@@ -1,12 +1,15 @@
 import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Visibility } from '@mui/icons-material';
 import React from 'react';
 import { useTheme } from '@mui/material';
 import theme from '../../../theme/theme.js';
+import { AdminCrudMolette } from '../../../components/AdminCrudMolette/index.jsx';
+import { getMediaUrl } from '../../../helpers/getApirUrl.js';
 
 export const Shop = ({ shop }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   return (
     <div
       key={shop.id}
@@ -14,9 +17,16 @@ export const Shop = ({ shop }) => {
         'bg-white p-5 m-10 rounded-xl shadow-xl md:w-2/5 hover:shadow-2xl hover:scale-105 transform transition-all duration-500'
       }
     >
+      <AdminCrudMolette
+        entityName={'shop'}
+        handleEdit={() => navigate(`/shop/${shop.id}/edit`)}
+        handleRemove={() => console.log('remove')}
+      />
       <img
         src={
-          'https://media.gettyimages.com/id/912819604/fr/vectoriel/ic%C3%B4ne-du-site-e-commerce-vitrine-design-plat.jpg?s=612x612&w=gi&k=20&c=1ORkFTN_MAUixOP-jWzpELTYyiAob1cYDTXoQiGYf6I='
+          shop.media?.contentUrl
+            ? getMediaUrl() + shop.media.contentUrl
+            : 'https://media.gettyimages.com/id/912819604/fr/vectoriel/ic%C3%B4ne-du-site-e-commerce-vitrine-design-plat.jpg?s=612x612&w=gi&k=20&c=1ORkFTN_MAUixOP-jWzpELTYyiAob1cYDTXoQiGYf6I='
         }
         alt={shop.label}
       />

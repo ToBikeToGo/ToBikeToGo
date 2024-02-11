@@ -3,12 +3,13 @@
 namespace App\Entity\Auth;
 
 use AllowDynamicProperties;
+use App\Controller\FranchiseUsersAdminAction;
+use App\Controller\RegisterMemberAction;
 use App\Entity\Shop;
 use DateTime;
 use App\Entity\Media;
 use App\Controller\ActivateAction;
 use App\Controller\RegisterAction;
-use App\Controller\RegisterMemberAction;
 use App\Controller\UserController;
 use App\Entity\Booking;
 use App\Entity\Payment;
@@ -31,7 +32,6 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use App\Constants\Groups as ConstantsGroups;
-use App\Controller\FranchiseUsersAdminAction;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -74,8 +74,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         New Post(
             uriTemplate: '/register/member',
             controller: RegisterMemberAction::class,
-            read: false,
             denormalizationContext: ['groups' => ['shop:members:write', 'user:write']],
+            read: false,
         ),
         new Get(normalizationContext: ['groups' => [ConstantsGroups::USER_READ, 'user:read:full']]),
         new Patch(denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]]),
@@ -118,7 +118,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $payments;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Vacation::class)]
-    #[Groups([ConstantsGroups::USER_READ])]
+    #[Groups([ConstantsGroups::USER_READ, "shop:members:read"])]
     private Collection $vacations;
 
     #[ORM\ManyToMany(targetEntity: Notification::class, mappedBy: 'users')]
@@ -193,7 +193,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $token = null;
 
     #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'users')]
-    #[Groups([ConstantsGroups::USER_READ])]
+    #[Groups([ConstantsGroups::USER_READ, 'shop:members:read'])]
     private Collection $schedules;
 
     #[ORM\ManyToOne(inversedBy: 'users')]

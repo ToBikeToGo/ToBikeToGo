@@ -1,40 +1,14 @@
 import withToast from '../../components/HOC/WithToastHOC.jsx';
 import { FormBuilder } from '../../components/Form/FormBuilder.jsx';
 import { useEffect, useState } from 'react';
-import { getApirUrl } from '../../helpers/getApirUrl.js';
+import { getApirUrl, getMediaUrl } from '../../helpers/getApirUrl.js';
 import fetchApi from '../../helpers/fetchApi.js';
 import { CircularProgress } from '@mui/material';
+import { useUserContext } from '../../hooks/UserContext.jsx';
 
 const EditProfile = () => {
-  const [user, setUser] = useState({});
-
-  useEffect(() => {
-    const apiUrl = getApirUrl();
-    fetchApi(`${apiUrl}/me`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data && data['@id']) {
-          setUser({
-            id: data['id'],
-            firstname: data.firstname,
-            lastname: data.lastname,
-            email: data.email,
-            shops: data.shops,
-            phone: data.phone,
-          });
-        } else {
-          throw new Error('Data is not in the expected format');
-        }
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  }, []);
+  const [error, setError] = useState(null);
+  const { user } = useUserContext();
 
   const form = {
     title: 'Edit my profile',
@@ -107,6 +81,7 @@ const EditProfile = () => {
       email: '',
       status: false,
     },
+    initialSelectedImage: user?.avatar ? user.avatar : null,
   };
 
   if (user.lastname === undefined) {

@@ -26,7 +26,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
                     fromProperty: "vacations"
                 )
             ],
-        )
+            normalizationContext: ["groups" => ["shop:vacations:read"]],
+        ),
     ]
 )]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'], arguments: ['orderParameterName' => 'order'])]
@@ -40,11 +41,11 @@ class Vacation
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['shop:vacations:read', ConstantsGroups::USER_READ])]
+    #[Groups(['shop:vacations:read', 'shop:members:read' ,ConstantsGroups::USER_READ])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
-    #[Groups(['shop:vacations:read', ConstantsGroups::USER_READ])]
+    #[Groups(['shop:vacations:read','shop:members:read', ConstantsGroups::USER_READ])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
@@ -59,7 +60,7 @@ class Vacation
     private ?User $user = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['shop:vacations:read', ConstantsGroups::USER_READ])]
+    #[Groups(['shop:vacations:read', 'shop:members:read', ConstantsGroups::USER_READ])]
     private ?string $description = null;
 
     public function getId(): ?int

@@ -23,6 +23,7 @@ import { getMediaUrl } from '../../helpers/getApirUrl.js';
 import Box from '@mui/material/Box';
 import { calculateTotalPrice } from '../../helpers/calculateTotalPrice.js';
 import { BookmarkBorder, ElectricBike, RateReview } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
 
 const LastBooking = () => {
   const { user } = useUserContext();
@@ -136,7 +137,7 @@ const LastBooking = () => {
               <Button
                 variant="contained"
                 color="secondary"
-                sx={{
+                style={{
                   marginTop: '1em',
                   color: 'white',
                 }}
@@ -158,6 +159,8 @@ const LastBooking = () => {
               <Button
                 variant="outlined"
                 color="black"
+                component={Link}
+                to={`/rent/bike/${reservation.bike.id}`}
                 sx={{
                   marginTop: '1em',
                   color: 'white',

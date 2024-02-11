@@ -14,7 +14,7 @@ const FranchiseRequestStepper = () => {
   };
   return (
     <Box
-      sx={{
+      style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

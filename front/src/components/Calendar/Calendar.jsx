@@ -42,7 +42,7 @@ const Calendar = ({
       {isOpen && (
         <DateRange
           disabledDay={(date) => {
-            disabledDateCallback?.();
+            return disabledDateCallback?.(date) || false;
             // not weekend
             return date.getDay() === 0 || date.getDay() === 6;
 

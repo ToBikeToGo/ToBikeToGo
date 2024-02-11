@@ -3,8 +3,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useUserContext } from '../../../hooks/UserContext.jsx';
 
 const usePlanning = ({ fromConnectedUser = false }) => {
-  const { user } = useUserContext();
+  const { user: initialUser } = useUserContext();
   const [workdScheduleByDay, setWorkScheduleByDay] = useState([]);
+  const [user, setUser] = useState(initialUser);
 
   const formatVacations = (vacations) => {
     return vacations?.map((vacation) => ({
@@ -17,7 +18,7 @@ const usePlanning = ({ fromConnectedUser = false }) => {
   };
 
   const vacations = useMemo(() => {
-    return formatVacations(user?.vacations);
+    return formatVacations(user?.vacations || []);
   }, [user?.vacations]);
 
   const getWorkingHours = useCallback(
@@ -124,9 +125,7 @@ const usePlanning = ({ fromConnectedUser = false }) => {
   );
 
   useEffect(() => {
-    if (fromConnectedUser) {
-      setWorkScheduleByDay(transformedSchedules(user?.schedules));
-    }
+    setWorkScheduleByDay(transformedSchedules(user?.schedules));
   }, [user?.schedules, transformedSchedules]);
 
   return {
@@ -134,6 +133,7 @@ const usePlanning = ({ fromConnectedUser = false }) => {
     transformedSchedules,
     formatVacations,
     vacations,
+    setUser,
   };
 };
 

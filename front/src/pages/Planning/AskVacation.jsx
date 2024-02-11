@@ -90,7 +90,9 @@ function AskVacation({ setToast, toast }) {
   const { user, error } = useUserContext();
   const apiUrl = getApirUrl();
   const [refresh, setRefresh] = useState(0); // Add this line
-  const { formatVacations } = usePlanning();
+  const { formatVacations } = usePlanning({
+    fromConnectedUser: true,
+  });
 
   // useEffect(() => {
   //   fetchApi('http://localhost:8888/api/vacations/1675/users')
@@ -118,7 +120,7 @@ function AskVacation({ setToast, toast }) {
         startDate,
         endDate,
         status: 0,
-        shop: user.shops[0],
+        shop: user.shops[0]['@id'],
         user: `/api/users/${user.id}`,
         description: data.description,
       }),

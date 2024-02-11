@@ -11,6 +11,10 @@ import ShopImage from '../../../../../assets/images/Shop.jpg';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useFranchiseRequest } from '../hooks/useFranchiseRequest.jsx';
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng,
+} from 'react-places-autocomplete';
 
 const daysOfWeek = [
   'Monday',
@@ -52,6 +56,18 @@ const CreateShops = ({ handleNext, setToast }) => {
   };
   const handleTimeChange = (name) => (time) => {
     setOpeningHours({ ...openingHours, [name]: time });
+  };
+
+  const handleAddressChange = (address) => {
+    setAddress(address);
+  };
+
+  const handleSelect = (address) => {
+    setAddress(address);
+    geocodeByAddress(address)
+      .then((results) => getLatLng(results[0]))
+      .then((latLng) => console.log('Success', latLng))
+      .catch((error) => console.error('Error', error));
   };
   const handleSubmit = () => {
     let error = checkLabel(label);
@@ -103,14 +119,45 @@ const CreateShops = ({ handleNext, setToast }) => {
             margin="normal"
             fullWidth
           />
-          <TextField
-            label="Address"
+          <PlacesAutocomplete
             value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            variant="outlined"
-            margin="normal"
-            fullWidth
-          />
+            onChange={handleAddressChange}
+            onSelect={handleSelect}
+          >
+            {({
+              getInputProps,
+              suggestions,
+              getSuggestionItemProps,
+              loading,
+            }) => (
+              <div>
+                <TextField
+                  {...getInputProps({
+                    label: 'Address',
+                    className: 'location-search-input',
+                  })}
+                  variant="outlined"
+                  margin="normal"
+                  fullWidth
+                />
+                <div className="autocomplete-dropdown-container">
+                  {loading && <div>Loading...</div>}
+                  {suggestions.map((suggestion) => {
+                    const className = suggestion.active
+                      ? 'suggestion-item--active'
+                      : 'suggestion-item';
+                    return (
+                      <div
+                        {...getSuggestionItemProps(suggestion, { className })}
+                      >
+                        <span>{suggestion.description}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </PlacesAutocomplete>
           {daysOfWeek.map((day, key) => (
             <div
               key={day}

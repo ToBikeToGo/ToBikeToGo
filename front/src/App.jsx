@@ -32,8 +32,12 @@ import { EditProfile } from './pages/User/EditProfile.jsx';
 import { SearchBikes } from './pages/Bikes/SearchBikes.jsx';
 import { CreateBikePage } from './pages/Bikes/CreateBike.jsx';
 import { EditBike } from './pages/Bikes/EditBike.jsx';
+import { ShopStats } from './pages/Stats/ShopStats.jsx';
+import { EditShop } from './pages/Shop/components/EditShop.jsx';
+import { ShopPlanningByUser } from './pages/Planning/ShopPlanningByUser.jsx';
+import { ShopBookingPlannings } from './pages/Planning/ShopBookingPlannings.jsx';
 const StyledApp = styled.div`
-  background-color: ${theme.palette.background.default};
+  background-color: #fff6f6;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -70,13 +74,14 @@ function App() {
                         element={<MyPlanning />}
                       />
                       <Route
+                        exact
                         path="/vacations-request/:shopId"
                         element={<VacationsRequestList />}
                       />
                       <Route
                         exact
                         path="/planning/:shopId"
-                        element={<MyPlanning />}
+                        element={<ShopPlanningByUser />}
                       />
                       <Route
                         exact
@@ -87,6 +92,12 @@ function App() {
                         exact
                         path="/last-booking/:shopId"
                         element={<LastBooking />}
+                      />
+
+                      <Route
+                        exact
+                        path="/shop-booking-planning/:shopId"
+                        element={<ShopBookingPlannings />}
                       />
                       <Route path="/shops" element={<ShopList />} />
                       <Route path="/shops/map" element={<ShopsMapView />} />
@@ -99,6 +110,16 @@ function App() {
                         exact
                         path={'/franchise/request/'}
                         element={<FranchiseRequest />}
+                      />
+                      <Route
+                        exact
+                        path={'/shop/stats/:shopId'}
+                        element={<ShopStats />}
+                      />{' '}
+                      <Route
+                        exact
+                        path={'/shop/:shopId/edit'}
+                        element={<EditShop />}
                       />
                       <Route
                         exact

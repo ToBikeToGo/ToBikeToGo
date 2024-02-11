@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { addDays, getDay } from 'date-fns';
+import { addDays, getDay, isAfter, isEqual } from 'date-fns';
 
 export const useCalendar = ({ onChangeDateCallback, disabledDates = [] }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,8 +26,14 @@ export const useCalendar = ({ onChangeDateCallback, disabledDates = [] }) => {
     ) {
       setIsOpen(false);
     }
-    setDates(item?.selection ? [item.selection] : []);
 
+    setDates(item?.selection ? [item.selection] : []);
+    if (
+      isAfter(item.selection?.startDate, item.selection?.endDate) ||
+      isEqual(item.selection?.startDate, item.selection?.endDate)
+    ) {
+      return;
+    }
     onChangeDateCallback?.(item?.selection);
   };
   const handleOpen = () => {

@@ -9,7 +9,7 @@ import FemmeWithABike from '../../assets/images/WomenWithABike.png';
 import { useState } from 'react';
 import fetchApi from '../../helpers/fetchApi.js';
 import withToast from '../../components/HOC/WithToastHOC.jsx';
-import { getApirUrl } from '../../helpers/getApirUrl.js';
+import { getApirUrl, getMediaUrl } from '../../helpers/getApirUrl.js';
 import { useNavigate } from 'react-router-dom';
 import { useLoading } from '../../hooks/useLoading.jsx';
 import { checkEmail } from '../../helpers/checkEmail.js';
@@ -55,64 +55,67 @@ const Login = ({ setToast, Toast }) => {
   };
 
   const handleSubmit = (event) => {
-    const apiUrl = getApirUrl();
-
-    // event.preventDefault();
-    startLoading();
-    if (checkEmail(email)) {
-      fetchApi(
-        `http://localhost:8888/auth
+    fetchApi(
+      `${getMediaUrl()}auth
 `,
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            email: email,
-            password: password,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          setToast({
+            open: true,
+            message: 'Email or password is not valid',
+            severity: 'error',
+          });
+          return Promise.reject(); // Add this line to stop the promise chain
         }
-      )
-        .then((response) => {
-          if (!response.ok) {
-            setToast({
-              open: true,
-              message: 'Email or password is not valid',
-              severity: 'error',
-            });
-          }
 
-          return response.json();
-        })
-        .then(async (data) => {
-          stopLoading();
+        return response;
+      })
+      .then(async (response) => {
+        const data = await response.json();
+        stopLoading();
+        if (data.token) {
+          saveTokeInLocalStorage(data.token);
+        }
+
+        if (response.status === 200) {
           setToast({
             open: true,
             message: 'Login successful',
             severity: 'success',
           });
 
-          if (data.token) {
-            saveTokeInLocalStorage(data.token);
+          const redirectAfterLogin = localStorage.getItem('redirectAfterLogin');
+          if (redirectAfterLogin) {
+            localStorage.removeItem('redirectAfterLogin');
+            window.location.href = redirectAfterLogin;
+            setTimeout(() => {
+              navigate(redirectAfterLogin);
+            }, 2000);
           }
-
-          setTimeout(() => {
-            navigate('/shops');
-          }, 2000);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } else {
-      setToast({
-        open: true,
-        message: 'Email is not valid',
-        severity: 'error',
+        } else {
+          // If the status code is not 200, display an error message
+          setToast({
+            open: true,
+            message: 'Something went wrong',
+            severity: 'error',
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
       });
-    }
   };
-
   return (
     <StyledWrapper>
       <StyleBigImage src={FemmeWithABike} />

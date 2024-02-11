@@ -18,7 +18,10 @@ import MenuItem from '@mui/material/MenuItem';
 const FormBuilder = ({ form, onSubmit, setToast }) => {
   const [datas, setDatas] = useState({});
   const [entity, setEntity] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(
+    form.initialSelectedImage || null
+  );
+  const [isLoading, setIsLoading] = useState(false);
   const inputFile = useRef(null);
   const apiUrl = getApirUrl();
   const mediaUrl = getMediaUrl();
@@ -64,6 +67,8 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
 
   const handleSubmit = (event) => {
     //event.preventDefault();
+
+    setIsLoading(true);
 
     if (selectedImage) {
       const formData = new FormData();
@@ -116,6 +121,7 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
             severity: 'success',
           });
           onSubmit?.();
+          setIsLoading(false);
         })
         .catch((error) => {});
     } else {
@@ -148,6 +154,8 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
             message: form?.successMessage,
             severity: 'success',
           });
+          setIsLoading(false);
+
           onSubmit?.();
         })
         .catch((error) => {});
@@ -321,7 +329,7 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
           color: theme.palette.common.white,
         }}
       >
-        {form.submitLabel}
+        {isLoading ? 'Loading...' : form.submitLabel}
       </Button>
       <input
         ref={inputFile}
