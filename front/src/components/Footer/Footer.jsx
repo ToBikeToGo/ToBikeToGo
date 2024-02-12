@@ -8,7 +8,12 @@ const Footer = () => {
       }}
       className={'flex justify-center items-center w-full h-20'}
     >
-      <Typography variant="h2" component="h4" gutterBottom color={'primary'}>
+      <Typography
+        variant="h2"
+        component="h4"
+        gutterBottom
+        style={{ color: theme.palette.common.white }}
+      >
         BikeToGo
       </Typography>
     </div>

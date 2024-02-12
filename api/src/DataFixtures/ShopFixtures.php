@@ -4,11 +4,10 @@ namespace App\DataFixtures;
 
 use Faker\Factory;
 use App\Entity\Shop;
-use App\DataFixtures\UserFixtures;
-use App\DataFixtures\FranchiseFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+;
 
 class ShopFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -17,7 +16,6 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
-
         $adresses = [
             '90 Bd Diderot, 75012 Paris',
             '1 Rue de la Pompe, 75116 Paris',
@@ -69,13 +67,15 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
         ];
 
         for ($i=0; $i < 21; $i++) {
+            $userIndex = $i % 136;
             $object = (new Shop())
                 ->setLabel($faker->streetName())
                 ->setAddress($adresses[$i])
                 ->setIsOpened($faker->boolean(80))
                 ->setFranchise($this->getReference(FranchiseFixtures::FRANCHISE_REFERENCE . $i))
-                ->setCreatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $i))
-                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $i));
+                ->setCreatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $userIndex))
+                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $userIndex))
+                ->addUsers($this->getReference(UserFixtures::PROVIDER_REFERENCE . $userIndex));
 
             $manager->persist($object);
 
@@ -91,7 +91,8 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
                 ->setIsOpened($faker->boolean(80))
                 ->setFranchise($this->getReference(FranchiseFixtures::FRANCHISE_REFERENCE . $random))
                 ->setCreatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE. $random))
-                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE. $random));
+                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE. $random))
+                ->addUsers($this->getReference(UserFixtures::PROVIDER_REFERENCE . $random));
 
             $manager->persist($object);
 

@@ -2,11 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use App\Controller\GetBookingsByShopAction;
 use App\Dto\SlotsDto;
 use App\Entity\Auth\User;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Processor\SlotsProcessor;
 use App\Controller\GetSlotsAction;
@@ -25,6 +29,11 @@ use App\Constants\Groups as ConstantsGroups;
 )]
 #[ApiResource(
     operations: [
+        new Get(
+            uriTemplate: '/shops/{id}/bookings',
+                controller: GetBookingsByShopAction::class,
+                name: 'booking_by_shop'
+            ),
         new GetCollection(
             uriTemplate: "/bikes/{bikeId}/bookings",
             uriVariables: [
@@ -37,37 +46,23 @@ use App\Constants\Groups as ConstantsGroups;
                 'groups' => [ConstantsGroups::BOOKING_READ]
             ],
         ),
+              new GetCollection(
+                  uriTemplate: "/bookings/{shopId}",
+            uriVariables: [
+                "shopId" => new Link(
+            fromProperty: "bikes",
+                    fromClass: Shop::class
+        )
+            ],
+            normalizationContext: [
+                'groups' => [ConstantsGroups::BOOKING_READ]
+            ],
+        ),
         new Post(
-            input: SlotsDto::class,
-            processor: SlotsProcessor::class,
             uriTemplate: "/shops/{id}/slots",
             controller: GetSlotsAction::class,
-            read: false,
             openapi: new Operation(
-                summary: "Get slots for a shop by date",
                 tags: ["Slot"],
-                requestBody: new RequestBody(
-                    description: "Date to get slots for",
-                    required: true,
-                    content: new \ArrayObject(
-                        [
-                            "application/json" => [
-                                "schema" => [
-                                    "type" => "object",
-                                    "properties" => [
-                                        "date" => [
-                                            "type" => "string",
-                                            "format" => "date",
-                                        ],
-                                    ],
-                                ],
-                                "example" => [
-                                    "date" => "2021-01-01",
-                                ],
-                            ],
-                        ]
-                    )
-                ),
                 responses: [
                     '200' => [
                         'description' => 'Slots for a shop',
@@ -93,11 +88,38 @@ use App\Constants\Groups as ConstantsGroups;
                         'description' => 'Invalid input',
                     ],
                 ],
+                summary: "Get slots for a shop by date",
+                requestBody: new RequestBody(
+                    description: "Date to get slots for",
+                    content: new \ArrayObject(
+                        [
+                            "application/json" => [
+                                "schema" => [
+                                    "type" => "object",
+                                    "properties" => [
+                                        "date" => [
+                                            "type" => "string",
+                                            "format" => "date",
+                                        ],
+                                    ],
+                                ],
+                                "example" => [
+                                    "date" => "2021-01-01",
+                                ],
+                            ],
+                        ]
+                    ),
+                    required: true
+                ),
             ),
+            input: SlotsDto::class,
+            read: false,
+            processor: SlotsProcessor::class,
         )
     ]
 )]
-class Booking
+#[ApiFilter(SearchFilter::class, properties: ['user', 'bike'])]
+class Booking extends EntityRepository
 {
     use TimestampableTrait;
 
@@ -234,4 +256,7 @@ class Booking
 
         return $this;
     }
+
+
+
 }

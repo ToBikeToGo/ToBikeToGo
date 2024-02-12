@@ -16,7 +16,7 @@ class BikeCategory
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups([ConstantsGroups::BIKE_CATEGORY_READ])]
+    #[Groups([ConstantsGroups::BIKE_CATEGORY_READ,ConstantsGroups::SHOP_READ ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

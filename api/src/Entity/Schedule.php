@@ -12,8 +12,8 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints\Date;
-use Symfony\Component\Serializer\Annotation\Groups;
 use App\Constants\Groups as ConstantsGroups;
 
 #[ORM\Entity()]
@@ -53,15 +53,15 @@ class Schedule
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::USER_READ, "shop:members:read"])]
     private ?int $dow = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::USER_READ, "shop:members:read"])]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::USER_READ, "shop:members:read"])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\ManyToMany(targetEntity: Shop::class, mappedBy: 'schedules')]
@@ -73,11 +73,11 @@ class Schedule
     private Collection $users;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::USER_READ])]
     private ?\DateTimeInterface $startValidity = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::USER_READ])]
     private ?\DateTimeInterface $endValidity = null;
 
     public function __construct()

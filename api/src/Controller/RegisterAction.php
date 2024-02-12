@@ -44,7 +44,7 @@ class RegisterAction extends AbstractController
         $user->setToken($bytes);
 
         $this->em->persist($user);
-        $this->emailing->sendEmailing([$user->getEmail()], 1, $user->getToken(), $user->getId());
+        $this->emailing->sendEmailingTemplate([$user->getEmail()], 1, $user->getToken(), $user->getId());
 
         $this->em->flush();
         $json = [

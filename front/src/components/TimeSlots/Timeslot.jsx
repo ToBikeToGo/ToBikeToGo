@@ -28,18 +28,12 @@ const generateTimeSlots = (
   return times;
 };
 
-const TimeSlots = ({ unavailableSlots = [], onChange }) => {
+const TimeSlots = ({ unavailableSlots = {}, onChange }) => {
   const [selectedTime, setSelectedTime] = useState(null);
   const timeSlots = generateTimeSlots(9, 0, 18, 0, 30); // de 9h00 à 18h00, intervalle de 30 minutes
-
   const isUnavailable = (time) => {
-    return unavailableSlots.some((unavailable) => {
-      const [start, end] = unavailable
-        .split('-')
-        .map((t) => parse(t, 'HH:mm', new Date()));
-      const currentTime = parse(time, 'HH:mm', new Date());
-      return isBefore(currentTime, end) && !isBefore(currentTime, start);
-    });
+    console.log('time', time, unavailableSlots, unavailableSlots[time]);
+    return unavailableSlots[time] === 0 || unavailableSlots[time] === undefined;
   };
   const buttonBaseWidth = timeSlots.length > 10 ? '50%' : '100%';
   const buttonWidth = `calc(${buttonBaseWidth} - 1rem)`;
@@ -63,27 +57,25 @@ const TimeSlots = ({ unavailableSlots = [], onChange }) => {
         justifyContent: 'flex-start',
       }}
     >
-      {timeSlots.map((time) =>
-        isUnavailable(time) ? null : (
-          <Button
-            key={time}
-            style={{
-              width: buttonWidth,
-              margin: '0.5rem',
-              boxSizing: 'border-box',
-            }}
-            variant={time === selectedTime ? 'contained' : 'outlined'}
-            color="black"
-            onClick={() => onTimeSlotClick(time)}
-            disabled={isUnavailable(time)}
-            sx={{
-              color: selectedTime === time ? 'white' : 'black',
-            }}
-          >
-            {time}
-          </Button>
-        )
-      )}
+      {timeSlots.map((time) => (
+        <Button
+          key={time}
+          style={{
+            width: buttonWidth,
+            margin: '0.5rem',
+            boxSizing: 'border-box',
+          }}
+          variant={time === selectedTime ? 'contained' : 'outlined'}
+          color="black"
+          onClick={() => onTimeSlotClick(time)}
+          disabled={isUnavailable(time)}
+          sx={{
+            color: selectedTime === time ? 'white !important' : 'black',
+          }}
+        >
+          {time}
+        </Button>
+      ))}
     </div>
   );
 };

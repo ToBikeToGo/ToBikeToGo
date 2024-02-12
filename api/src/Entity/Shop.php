@@ -2,7 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use App\Controller\ShopStatsAction;
+use App\Entity\Auth\User;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ShopRepository;
 use ApiPlatform\Metadata\ApiResource;
@@ -16,7 +22,14 @@ use App\Constants\Groups as ConstantsGroups;
 
 #[ORM\Entity()]
 #[ApiResource(
-    normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ]],
+    uriTemplate: '/shops/vacations/{id}',
+    operations: [new Get()],
+    normalizationContext: ['groups' => [ConstantsGroups::SHOP_VACATIONS_READ]],
+)]
+#[ApiResource(
+    uriTemplate: '/shops/members/{id}',
+    operations: [new Get()],
+    normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ, 'shop:members:read']],
 )]
 #[ApiResource(
     operations: [new GetCollection(
@@ -29,6 +42,19 @@ use App\Constants\Groups as ConstantsGroups;
         ],
     )]
 )]
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: "/shops/{id}/stats",
+            controller: ShopStatsAction::class,
+            normalizationContext: ['groups' => [ConstantsGroups::FRANCHISE_READ]]
+        )
+    ],
+)]
+#[ApiResource(
+    normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ]],
+)]
+#[ApiFilter(SearchFilter::class, properties: ['label' => 'partial'])]
 class Shop
 {
     use TimestampableTrait;
@@ -37,15 +63,19 @@ class Shop
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups([ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::BIKE_READ])]
     private ?int $id = null;
 
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'shops')]
+    #[Groups(ConstantsGroups::SHOP_READ)]
+    private Collection $users;
+
     #[ORM\Column(length: 255)]
-    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::REQUEST_READ, "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
+    #[Groups(["request:read", "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $address = null;
 
     #[ORM\Column]
@@ -61,11 +91,11 @@ class Shop
     private ?Franchise $franchise = null;
 
     #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'shops')]
-    #[Groups([ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::SHOP_READ, 'shop:members:read'])]
     private Collection $schedules;
 
     #[ORM\ManyToMany(targetEntity: Payment::class, mappedBy: 'shop')]
-    #[Groups([ConstantsGroups::SHOP_READ])]
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::BOOKING_READ, "shop:members:read"])]
     private Collection $payments;
 
     #[ORM\OneToMany(mappedBy: 'shop', targetEntity: Vacation::class)]
@@ -82,6 +112,7 @@ class Shop
         $this->schedules = new ArrayCollection();
         $this->payments = new ArrayCollection();
         $this->vacations = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -224,6 +255,13 @@ class Shop
         return $this->vacations;
     }
 
+
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+
     public function addVacation(Vacation $vacation): static
     {
         if (!$this->vacations->contains($vacation)) {
@@ -234,25 +272,37 @@ class Shop
         return $this;
     }
 
-    public function removeVacation(Vacation $vacation): static
+    public function addUsers(User $user): static
     {
-        if ($this->vacations->removeElement($vacation) && $vacation->getShop() === $this) {
-            // set the owning side to null (unless already changed)
-            $vacation->setShop(null);
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addShop($this);
         }
 
         return $this;
     }
 
-    public function getMedia(): ?Media
-    {
-        return $this->media;
-    }
 
-    public function setMedia(?Media $media): static
-    {
-        $this->media = $media;
+   public function removeVacation(Vacation $vacation): static
+     {
+         if ($this->vacations->removeElement($vacation) && $vacation->getShop() === $this) {
+             // set the owning side to null (unless already changed)
+             $vacation->setShop(null);
+         }
 
-        return $this;
-    }
+         return $this;
+     }
+
+        public function getMedia(): ?Media
+        {
+            return $this->media;
+        }
+
+        public function setMedia(?Media $media): static
+        {
+            $this->media = $media;
+
+            return $this;
+        }
+
 }

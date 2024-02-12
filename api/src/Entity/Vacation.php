@@ -2,15 +2,17 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\GetCollection;
+use App\Constants\Groups as ConstantsGroups;
 use App\Entity\Auth\User;
 use ApiPlatform\Metadata\Link;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity()]
 #[ApiResource]
@@ -24,7 +26,8 @@ use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
                     fromProperty: "vacations"
                 )
             ],
-        )
+            normalizationContext: ["groups" => ["shop:vacations:read"]],
+        ),
     ]
 )]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'], arguments: ['orderParameterName' => 'order'])]
@@ -38,21 +41,26 @@ class Vacation
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['shop:vacations:read', 'shop:members:read' ,ConstantsGroups::USER_READ])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
+    #[Groups(['shop:vacations:read','shop:members:read', ConstantsGroups::USER_READ])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
+    #[Groups(['shop:vacations:read'])]
     private ?int $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'vacations')]
     private ?Shop $shop = null;
 
     #[ORM\ManyToOne(inversedBy: 'vacations')]
+    #[Groups(['shop:vacations:read'])]
     private ?User $user = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['shop:vacations:read', 'shop:members:read', ConstantsGroups::USER_READ])]
     private ?string $description = null;
 
     public function getId(): ?int

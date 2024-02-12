@@ -2,7 +2,15 @@ import { Calendar } from '../../components/Calendar/Calendar';
 import { useCalendar } from '../../components/Calendar/hooks/useCalendar.jsx';
 import styled from 'styled-components';
 import { Planning } from '../../components/Planning/Planning.jsx';
-import { Button, TextField, useTheme } from '@mui/material';
+import {
+  Button,
+  TextField,
+  useTheme,
+  TextareaAutosize,
+  CircularProgress,
+} from '@mui/material';
+import { useForm } from 'react-hook-form';
+
 import {
   Box,
   IconButton,
@@ -18,10 +26,15 @@ import {
 
 import Typography from '@mui/material/Typography';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TablePaginationActions } from '@mui/base';
 import { VACATIONS_REQUEST_STATUS } from './constants/vacations.ts';
-import { CheckCircle } from '@mui/icons-material';
+import { CheckCircle, HourglassBottomOutlined } from '@mui/icons-material';
+import { useUserContext } from '../../hooks/UserContext.jsx';
+import { getApirUrl } from '../../helpers/getApirUrl.js';
+import withToast from '../../components/HOC/WithToastHOC.jsx';
+import fetchApi from '../../helpers/fetchApi.js';
+import { usePlanning } from '../../components/Planning/hooks/usePlanning.jsx';
 
 const StyledPage = styled.div`
   display: flex;
@@ -69,32 +82,70 @@ const rows = [
   },
 ];
 
-const formatVacations = (vacations) => {
-  return vacations.map((vacation) => ({
-    id: vacation.id,
-    title: vacation.description,
-    start: new Date(vacation.startDate),
-    end: new Date(vacation.endDate),
-    status: vacation.status ? 'APPROVED' : 'PENDING',
-  }));
-};
-
-function AskVacation() {
+function AskVacation({ setToast, toast }) {
   const [vacations, setVacations] = React.useState([]);
   const [isLoaded, setIsLoaded] = React.useState(false);
+  const [startDate, setStartDate] = React.useState(null);
+  const [endDate, setEndDate] = React.useState(null);
+  const { user, error } = useUserContext();
+  const apiUrl = getApirUrl();
+  const [refresh, setRefresh] = useState(0); // Add this line
+  const { formatVacations } = usePlanning({
+    fromConnectedUser: true,
+  });
 
-  useEffect(() => {
-    fetch('http://localhost:8888/api/vacations/user/162')
+  // useEffect(() => {
+  //   fetchApi('http://localhost:8888/api/vacations/1675/users')
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       setVacations(formatVacations(data));
+  //       setIsLoaded(true);
+  //       setRefresh((oldRefresh) => oldRefresh + 1); // Add this line
+  //     });
+  // }, [refresh]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const handleAskVacation = (data) => {
+    fetchApi(`${apiUrl}/vacations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        startDate,
+        endDate,
+        status: 0,
+        shop: user.shops[0]['@id'],
+        user: `/api/users/${user.id}`,
+        description: data.description,
+      }),
+    })
       .then((response) => response.json())
       .then((data) => {
-        setVacations(formatVacations(data));
-        setIsLoaded(true);
+        setToast({
+          open: true,
+          message: 'Requête envoyée avec succès!',
+          severity: 'success',
+        });
+      })
+      .catch((error) => {
+        console.error('Error:', error);
       });
-  }, []);
+  };
+
+  useEffect(() => {
+    setVacations(formatVacations(user?.vacations));
+  }, [user]);
 
   const { calendarRef, dates, isOpen, onChangeDate, handleOpen } = useCalendar({
-    onChangeDateCallback: () => {
-      console.log('dates', dates);
+    onChangeDateCallback: (dates) => {
+      setStartDate(dates?.startDate);
+      setEndDate(dates?.endDate);
     },
   });
 
@@ -114,6 +165,10 @@ function AskVacation() {
     setPage(0);
   };
 
+  if (!user?.vacations) {
+    return <CircularProgress sx={{ m: 5 }} />;
+  }
+
   return (
     <div className={'flex flex-col w-full '}>
       <StyledPage>
@@ -125,23 +180,40 @@ function AskVacation() {
             dates={dates}
             isOpen={isOpen}
           />
-          <TextField
-            id="outlined-basic"
-            label="Description"
-            variant="outlined"
-            sx={{
-              marginTop: '2em',
-            }}
-          />
-          <Button
-            variant="outlined"
-            color="black"
-            sx={{
-              marginTop: '2em',
+          <form
+            onSubmit={handleSubmit(handleAskVacation)}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
             }}
           >
-            Ask Vacation
-          </Button>
+            <TextareaAutosize
+              {...register('description', { required: true })}
+              minRows={3}
+              maxRows={6}
+              aria-label="description"
+              placeholder="Description"
+              style={{
+                marginTop: '2em',
+                width: '100%',
+                backgroundColor: '#F5F5F5',
+              }}
+            />
+            {errors.description && <p>Description is required</p>}
+            <Button
+              variant="outlined"
+              color="black"
+              sx={{
+                marginTop: '2em',
+              }}
+              onClick={handleSubmit(handleAskVacation)}
+            >
+              Envoyer la demande
+            </Button>
+          </form>
         </StyledVacationBox>
 
         <Planning events={vacations} />
@@ -162,7 +234,7 @@ function AskVacation() {
         >
           <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
             <TableBody>
-              {vacations.map((row) => (
+              {vacations?.map((row) => (
                 <TableRow key={row.name}>
                   <TableCell component="th" scope="row">
                     {row.title}
@@ -181,7 +253,7 @@ function AskVacation() {
                     {row.status === VACATIONS_REQUEST_STATUS.APPROVED ? (
                       <CheckCircle color={'success'} />
                     ) : (
-                      'pending'
+                      <HourglassBottomOutlined color={'warning'} />
                     )}
                   </TableCell>
                 </TableRow>
@@ -218,5 +290,6 @@ function AskVacation() {
     </div>
   );
 }
+const AskVacationWithToast = withToast(AskVacation);
 
-export { AskVacation };
+export { AskVacationWithToast as AskVacation };
