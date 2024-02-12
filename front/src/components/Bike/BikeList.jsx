@@ -13,8 +13,9 @@ import { getMediaUrl } from '../../helpers/getApirUrl.js';
 import { useBooking } from '../../pages/Booking/hooks/useBooking.jsx';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import * as React from 'react';
 
-const BikeList = ({ bikes }) => {
+const BikeList = ({ bikes, page, onChangePage, totalPage }) => {
   const theme = useTheme();
   const mediaUrl = getMediaUrl();
   const navigate = useNavigate();
@@ -101,7 +102,12 @@ const BikeList = ({ bikes }) => {
             'p-5 px-8 rounded-xl bg-white shadow-xl  m-5 flex items-center justify-center '
           }
         >
-          <Pagination count={10} variant="outlined" />
+          <Pagination
+            count={totalPage}
+            page={page}
+            variant="outlined"
+            onChange={onChangePage}
+          />
         </div>
       )}
     </>

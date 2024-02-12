@@ -51,6 +51,10 @@ const useUser = () => {
     return user?.roles && user.roles.includes('ROLE_ADMIN');
   }, [user]);
 
+  const isFranchiseProvider = useMemo(() => {
+    return user?.roles && user.roles.includes('ROLE_PROVIDER');
+  }, [user]);
+
   const value = React.useMemo(() => {
     return {
       user,
@@ -59,6 +63,7 @@ const useUser = () => {
       setUserToRegister,
       userToRegister,
       isAdmin,
+      isFranchiseProvider,
     };
   }, [
     isAdmin,
@@ -67,6 +72,7 @@ const useUser = () => {
     // isLogged
     setUserToRegister,
     userToRegister,
+    isFranchiseProvider,
   ]);
 
   return value;

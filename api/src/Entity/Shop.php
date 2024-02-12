@@ -71,11 +71,11 @@ class Shop
     private Collection $users;
 
     #[ORM\Column(length: 255)]
-    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::REQUEST_READ, "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
+    #[Groups(['request:validate',ConstantsGroups::USER_READ, ConstantsGroups::BOOKING_READ, ConstantsGroups::REQUEST_READ, "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["request:read", "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
+    #[Groups(['request:validate',"request:read", "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $address = null;
 
     #[ORM\Column]

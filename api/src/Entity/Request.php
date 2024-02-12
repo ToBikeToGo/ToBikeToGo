@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Odm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Odm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
@@ -19,10 +20,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use App\Constants\Groups as ConstantsGroups;
 
 #[ORM\Entity()]
-#[ApiResource]
-#[ApiResource(order: ['id' => 'DESC'])]
-#[GetCollection(normalizationContext: ['groups' => [ConstantsGroups::REQUEST_READ]]),
-Patch(), Post()]
+#[GetCollection(
+    normalizationContext: ['groups' => ['request:validate']]
+), Patch(), Post(), Get(
+    normalizationContext: ['groups' => [ConstantsGroups::REQUEST_READ]],
+)]
+#[ApiResource(
+    normalizationContext: ['groups' => [ConstantsGroups::REQUEST_READ]],
+    order: ['id' => 'DESC'],
+)]
 class Request
 {
     use TimestampableTrait;
@@ -31,7 +37,7 @@ class Request
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups([ConstantsGroups::REQUEST_READ])]
+    #[Groups(['request:validate'])]
     private ?int $id = null;
 
     #[ORM\Column]
@@ -39,15 +45,14 @@ class Request
     private ?\DateTime $requestDate = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::REQUEST_READ])]
+    #[Groups([ConstantsGroups::REQUEST_READ, 'request:validate'])]
     private ?bool $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'requests')]
-    #[Groups([ConstantsGroups::REQUEST_READ])]
+    #[Groups(['request:validate'])]
     private ?Franchise $franchise = null;
 
     #[ORM\OneToOne(inversedBy: 'request', cascade: ['persist', 'remove'])]
-    #[Groups([ConstantsGroups::REQUEST_READ])]
     private ?User $user = null;
 
     public function getId(): ?int

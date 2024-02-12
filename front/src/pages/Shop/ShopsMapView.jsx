@@ -220,11 +220,17 @@ const ShopsMapView = () => {
             )}
             {bikes?.length > 0 && (
               <>
-                <h3 className={'m-2'}>
-                  {' '}
-                  {bikes?.length} Vélos disponibles du {toShortDate(startDate)}{' '}
-                  au {toShortDate(endDate)}
-                </h3>
+                {startDate && endDate ? (
+                  <h3 className={'m-2'}>
+                    {bikes?.length} Vélos disponibles du{' '}
+                    {toShortDate(startDate)} au {toShortDate(endDate)}
+                  </h3>
+                ) : (
+                  <h3 className={'m-2'}>
+                    {bikes?.length}
+                    Vélos disponibles
+                  </h3>
+                )}
                 <BikeList bikes={bikes} />
               </>
             )}
