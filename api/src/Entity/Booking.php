@@ -2,24 +2,25 @@
 
 namespace App\Entity;
 
-use App\Dto\SlotsDto;
-use App\Entity\Auth\User;
-use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
-use Doctrine\ORM\Mapping as ORM;
-use App\Processor\SlotsProcessor;
-use App\Controller\GetSlotsAction;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\OpenApi\Model\Operation;
-use ApiPlatform\OpenApi\Model\Parameter;
-use App\Entity\Traits\TimestampableTrait;
 use ApiPlatform\OpenApi\Model\RequestBody;
-use Symfony\Component\Serializer\Attribute\Groups;
 use App\Constants\Groups as ConstantsGroups;
+use App\Controller\GetSlotsAction;
+use App\Controller\RemoveBookingAction;
+use App\Dto\SlotsDto;
+use App\Entity\Auth\User;
+use App\Entity\Traits\TimestampableTrait;
+use App\Processor\SlotsProcessor;
+use App\Repository\BookingRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
-#[ORM\Entity()]
+#[ORM\Entity(repositoryClass: BookingRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => [ConstantsGroups::BOOKING_READ]],
 )]
@@ -36,6 +37,10 @@ use App\Constants\Groups as ConstantsGroups;
             normalizationContext: [
                 'groups' => [ConstantsGroups::BOOKING_READ]
             ],
+        ),
+        new Delete(
+            uriTemplate: '/bookings/{id}/remove',
+            controller: RemoveBookingAction::class,
         ),
         new Post(
             input: SlotsDto::class,
@@ -233,5 +238,10 @@ class Booking
         $this->payment = $payment;
 
         return $this;
+    }
+
+    public function isStatus(): ?bool
+    {
+        return $this->status;
     }
 }

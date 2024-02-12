@@ -2,17 +2,24 @@
 
 namespace App\Entity;
 
-use App\Entity\Auth\User;
-use ApiPlatform\Metadata\Link;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
+use App\Constants\Groups as ConstantsGroups;
+use App\Controller\RemoveVacationAction;
+use App\Controller\ValidatedVacationAction;
+use App\Entity\Auth\User;
 use App\Entity\Traits\TimestampableTrait;
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use App\Repository\VacationRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity()]
+#[ORM\Entity(repositoryClass: VacationRepository::class)]
 #[ApiResource]
 #[ApiResource(
     operations: [
@@ -24,7 +31,17 @@ use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
                     fromProperty: "vacations"
                 )
             ],
-        )
+        ),
+        new Delete(
+            uriTemplate: '/vacations/{id}/remove',
+            controller: RemoveVacationAction::class,
+        ),
+        new Patch(
+            uriTemplate: '/vacations/{id}/validated',
+            controller: ValidatedVacationAction::class,
+        ),
+        new Patch(denormalizationContext: ['groups' => [ConstantsGroups::VACATION_WRITE]]),
+
     ]
 )]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'], arguments: ['orderParameterName' => 'order'])]
@@ -38,12 +55,15 @@ class Vacation
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups([ConstantsGroups::VACATION_WRITE])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
+    #[Groups([ConstantsGroups::VACATION_WRITE])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
+    #[Groups([ConstantsGroups::VACATION_WRITE])]
     private ?int $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'vacations')]
@@ -53,6 +73,7 @@ class Vacation
     private ?User $user = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups([ConstantsGroups::VACATION_WRITE])]
     private ?string $description = null;
 
     public function getId(): ?int

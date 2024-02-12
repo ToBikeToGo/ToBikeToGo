@@ -18,21 +18,11 @@ class NotificationFixtures extends Fixture implements DependentFixtureInterface
         for ($i=0; $i < 30; $i++) {
             $notification = (new Notification())
                 ->addUser($this->getReference(UserFixtures::USER_REFERENCE . $i))
-                ->setSender('tobiketogo@mail.com')
-                ->setSentDate($faker->dateTimeBetween('-1 years', 'now'))
-                ->setNotificationType($faker->randomElement(
-                    [
-                        'newRent',
-                        'newQuestion',
-                        'newAnswer',
-                        'newProposition',
-                        'newBike'
-                    ]
-                ));
+                ->setSender($this->getReference(UserFixtures::USER_REFERENCE . $i))
+                ->setNotificationType(1);
 
             $manager->persist($notification);
         }
-
         $manager->flush();
     }
 

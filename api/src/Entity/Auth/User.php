@@ -2,6 +2,7 @@
 
 namespace App\Entity\Auth;
 
+use ApiPlatform\Metadata\ApiProperty;
 use DateTime;
 use App\Entity\Media;
 use App\Entity\Booking;
@@ -63,6 +64,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             controller: RegisterAction::class,
             read: false,
         ),
+        new Post(
+            uriTemplate: '/franchise/register',
+            controller: RegisterAction::class,
+            denormalizationContext: ['groups' => [ConstantsGroups::USER_FRANCHISE_WRITE]],
+            read: false,
+        ),
         new Get(normalizationContext: ['groups' => [ConstantsGroups::USER_READ, 'user:read:full']]),
         new Patch(denormalizationContext: ['groups' => ['user:write:update']]),
         // new Put(), // I don't use PUT, only PATCH
@@ -80,7 +87,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(ConstantsGroups::ALL_READ)]
     private ?int $id = null;
 
-    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE])]
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE, ConstantsGroups::USER_FRANCHISE_WRITE])]
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
@@ -113,7 +120,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $notifications;
 
     #[ORM\ManyToMany(targetEntity: Franchise::class, mappedBy: 'users')]
-    #[Groups([ConstantsGroups::USER_READ])]
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_FRANCHISE_WRITE])]
+    #[ApiProperty(security: "is_granted('ROLE_ADMIN')")]
     private Collection $franchises;
 
     #[Groups([
@@ -122,7 +130,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         ConstantsGroups::FRANCHISE_READ,
         ConstantsGroups::SHOP_READ,
         ConstantsGroups::BIKE_READ,
-        ConstantsGroups::REQUEST_READ
+        ConstantsGroups::REQUEST_READ,
+        ConstantsGroups::USER_FRANCHISE_WRITE
     ])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
@@ -130,6 +139,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups([
         ConstantsGroups::USER_READ,
         ConstantsGroups::USER_WRITE,
+        ConstantsGroups::USER_FRANCHISE_WRITE,
         ConstantsGroups::FRANCHISE_READ,
         ConstantsGroups::SHOP_READ,
         ConstantsGroups::BIKE_READ,
@@ -141,6 +151,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups([
         ConstantsGroups::USER_READ,
         ConstantsGroups::USER_WRITE,
+        ConstantsGroups::USER_FRANCHISE_WRITE,
         ConstantsGroups::FRANCHISE_READ,
         ConstantsGroups::SHOP_READ,
         ConstantsGroups::BIKE_READ,
@@ -149,13 +160,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $email = null;
 
-    #[Groups([ConstantsGroups::USER_WRITE])]
+    #[Groups([ConstantsGroups::USER_WRITE, ConstantsGroups::USER_FRANCHISE_WRITE])]
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
     #[Groups([
         ConstantsGroups::USER_READ,
         ConstantsGroups::USER_WRITE,
+        ConstantsGroups::USER_FRANCHISE_WRITE,
         ConstantsGroups::FRANCHISE_READ,
         ConstantsGroups::SHOP_READ,
         ConstantsGroups::BIKE_READ,
@@ -164,11 +176,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
 
-    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE])]
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE, ConstantsGroups::USER_FRANCHISE_WRITE])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $locale = null;
 
-    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE])]
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE, ConstantsGroups::USER_FRANCHISE_WRITE])]
     #[ORM\Column]
     private ?bool $status = null;
 
@@ -191,6 +203,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups([ConstantsGroups::USER_READ])]
     private ?Request $request = null;
 
+    #[ORM\OneToMany(mappedBy: 'sender', targetEntity: Notification::class)]
+    private Collection $notification;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -204,6 +219,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->franchises = new ArrayCollection();
         $this->verification_key = UuidV4::uuid4()->toString();
         $this->schedules = new ArrayCollection();
+        $this->notification = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -629,5 +645,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->request = $request;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotification(): Collection
+    {
+        return $this->notification;
     }
 }

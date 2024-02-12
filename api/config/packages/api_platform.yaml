@@ -16,6 +16,9 @@ api_platform:
         json: ['application/json']
         html: ['text/html']
         multipart: ['multipart/form-data']
+
+    patch_formats:
+        json: [ 'application/json', 'application/merge-patch+json' ]
     # eager_loading:
     #     enabled: true
     #     max_joins: 1000

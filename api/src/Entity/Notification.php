@@ -2,81 +2,101 @@
 
 namespace App\Entity;
 
+use App\Controller\NotificationAction;
 use App\Entity\Auth\User;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\NotificationRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity()]
-#[ApiResource]
-class Notification
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/notifications',
+            controller: NotificationAction::class,
+            read: false,
+        ),
+    ],
+)]
+class Notification implements \Stringable
 {
-    use TimestampableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $notificationType = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $sender = null;
-
-    #[ORM\Column]
-    private ?\DateTime $sentDate = null;
+    #[ORM\Column(type: 'integer')]
+    private int $id;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'notifications')]
     private Collection $users;
 
+    #[ORM\ManyToOne(inversedBy: 'notification')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?NotificationType $notificationType = null;
+
+    #[ORM\ManyToOne(inversedBy: 'notification')]
+    private ?User $sender = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $text = null;
+
+    #[ORM\Column(type: "datetime")]
+    private \DateTimeInterface $createdAt;
+
+    #[ORM\Column(type: "datetime")]
+    private \DateTimeInterface $updatedAt;
+    #[ORM\Column(nullable: true)]
+    private ?bool $isAlreadySeen = null;
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+    public function __toString(): string
+    {
+        return (string)$this->getText();
     }
 
+    #[ORM\PrePersist]
+    public function prePersist(): void
+    {
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+    }
+
+    #[ORM\PreUpdate]
+    public function preUpdate(): void
+    {
+        $this->updated = new \DateTime();
+    }
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNotificationType(): ?string
+    public function getNotificationType(): ?NotificationType
     {
         return $this->notificationType;
     }
 
-    public function setNotificationType(string $notificationType): static
+    public function setNotificationType(?NotificationType $notificationType): void
     {
         $this->notificationType = $notificationType;
-
-        return $this;
     }
 
-    public function getSender(): ?string
+    public function getSender(): ?User
     {
         return $this->sender;
     }
 
-    public function setSender(string $sender): static
+    public function setSender(?User $sender): void
     {
         $this->sender = $sender;
-
-        return $this;
-    }
-
-    public function getSentDate(): ?\DateTime
-    {
-        return $this->sentDate;
-    }
-
-    public function setSentDate(\DateTime $sentDate): static
-    {
-        $this->sentDate = $sentDate;
-
-        return $this;
     }
 
     /**
@@ -102,4 +122,53 @@ class Notification
 
         return $this;
     }
+
+    public function getText(): ?string
+    {
+        return $this->text;
+    }
+
+    public function setText(string $text): static
+    {
+        $this->text = $text;
+
+        return $this;
+    }
+
+    public function isIsAlreadySeen(): ?bool
+    {
+        return $this->isAlreadySeen;
+    }
+
+    public function setIsAlreadySeen(?bool $isAlreadySeen): static
+    {
+        $this->isAlreadySeen = $isAlreadySeen;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
 }

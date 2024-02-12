@@ -20,6 +20,7 @@ final class Groups {
     ];
     const USER_READ = 'user:read';
     const USER_WRITE = 'user:write';
+    const USER_FRANCHISE_WRITE = 'user:franchise:write';
     const BIKE_READ = 'bike:read';
     const BIKE_WRITE = 'bike:write';
     const QUESTION_READ = 'question:read';
@@ -44,4 +45,6 @@ final class Groups {
     const BOOKING_WRITE = 'booking:write';
     const REQUEST_READ = 'request:read';
     const REQUEST_WRITE = 'request:write';
+    const VACATION_WRITE = 'request:write';
+
 }

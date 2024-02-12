@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Post;
+use App\Controller\RegisterAction;
 use App\Entity\Auth\User;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
@@ -13,7 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Constants\Groups as ConstantsGroups;
 
-#[ORM\Entity()]
+#[ORM\Entity(repositoryClass: FranchiseRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => [ConstantsGroups::FRANCHISE_READ]],
 )]
@@ -49,7 +51,7 @@ class Franchise
     #[Groups([ConstantsGroups::FRANCHISE_READ, ConstantsGroups::USER_READ])]
     private Collection $requests;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'franchises')]
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'franchises', cascade: ['persist'])]
     #[Groups([ConstantsGroups::FRANCHISE_READ])]
     private Collection $users;
 
