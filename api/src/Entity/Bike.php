@@ -14,11 +14,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityRepository;
 use ApiPlatform\OpenApi\Model;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\BikeRepository;
+use App\Filters\CustomDateFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;
-use App\Controller\BikeFilteredAction;
 use App\Entity\Traits\TimestampableTrait;
 use App\Constants\Groups as ConstantsGroups;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
@@ -44,7 +43,12 @@ use Symfony\Component\Validator\Constraints as Assert;
         'label' => SearchFilter::STRATEGY_IPARTIAL,
         'category.name' => SearchFilter::STRATEGY_EXACT,
         'category.type' => SearchFilter::STRATEGY_EXACT,
+        'shop.city' => SearchFilter::STRATEGY_IPARTIAL,
+        'shop.zipCode' => SearchFilter::STRATEGY_EXACT,
     ]
+)]
+#[ApiFilter(
+    CustomDateFilter::class, properties: ['startAt', 'endAt']
 )]
 #[ApiResource(
     normalizationContext: ['groups' => [ConstantsGroups::BIKE_READ]]

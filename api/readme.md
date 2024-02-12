@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonar.tobiketogo.shop/api/project_badges/measure?project=ToBikeToGo_Back&metric=alert_status&token=sqb_093c40c2e01d3e0bd48adc0ad045df69cf77e1ec)](https://sonar.tobiketogo.shop/dashboard?id=ToBikeToGo_Back)
+[![Lines of Code](https://sonar.tobiketogo.shop/api/project_badges/measure?project=ToBikeToGo_Back&metric=ncloc&token=sqb_093c40c2e01d3e0bd48adc0ad045df69cf77e1ec)](https://sonar.tobiketogo.shop/dashboard?id=ToBikeToGo_Back)
 # Install project : 
 
 ```shell

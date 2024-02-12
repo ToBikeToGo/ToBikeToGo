@@ -2,16 +2,14 @@
 
 namespace App\Serializer;
 
-use App\Entity\Media;
-use Vich\UploaderBundle\Storage\StorageInterface;
+use App\Entity\Shop;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-final class MediaNormalizer implements NormalizerInterface
+final class ShopNormalizer implements NormalizerInterface
 {
-    private const ALREADY_CALLED = 'MEDIA_NORMALIZER_ALREADY_CALLED';
+    private const ALREADY_CALLED = 'SHOP_NORMALIZER_ALREADY_CALLED';
 
     public function __construct(
-        private StorageInterface $storage,
         private NormalizerInterface $normalizer
     )
     {
@@ -25,7 +23,7 @@ final class MediaNormalizer implements NormalizerInterface
     {
         $context[self::ALREADY_CALLED] = true;
 
-        $object->setContentUrl($this->storage->resolveUri($object, 'file'));
+        $object->setAddress($object->getStreet() . ', ' . $object->getZipCode() . ' ' . $object->getCity());
 
         return $this->normalizer->normalize($object, $format, $context);
     }
@@ -36,13 +34,13 @@ final class MediaNormalizer implements NormalizerInterface
             return false;
         }
 
-        return $data instanceof Media;
+        return $data instanceof Shop;
     }
 
     public function getSupportedTypes(?string $format): array
     {
         return [
-            Media::class => true,
+            Shop::class => true,
         ];
     }
 }
