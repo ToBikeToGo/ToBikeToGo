@@ -14,7 +14,7 @@ const Calendar = ({
 }) => {
   return (
     <>
-      <div className={'flex justify-center mt-4 ba'} style={{}}>
+      <div className={'flex justify-center mt-4 ba w-full'} style={{}}>
         <TextField
           InputProps={{
             color: 'primary',
@@ -33,7 +33,7 @@ const Calendar = ({
           size={'small'}
           label={'End date'}
           variant="outlined"
-          value={format(dates[0]?.startDate, 'dd/MM/yyyy')}
+          value={format(dates[0]?.endDate, 'dd/MM/yyyy')}
           mb={2}
           onClick={handleOpen}
         />
@@ -42,7 +42,7 @@ const Calendar = ({
       {isOpen && (
         <DateRange
           disabledDay={(date) => {
-            disabledDateCallback?.();
+            return disabledDateCallback?.(date) || false;
             // not weekend
             return date.getDay() === 0 || date.getDay() === 6;
 

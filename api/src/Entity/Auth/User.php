@@ -2,9 +2,16 @@
 
 namespace App\Entity\Auth;
 
+use AllowDynamicProperties;
+use App\Controller\FranchiseUsersAdminAction;
+use App\Controller\RegisterMemberAction;
+use App\Entity\Shop;
 use ApiPlatform\Metadata\ApiProperty;
 use DateTime;
 use App\Entity\Media;
+use App\Controller\ActivateAction;
+use App\Controller\RegisterAction;
+use App\Controller\UserController;
 use App\Entity\Booking;
 use App\Entity\Payment;
 use App\Entity\Request;
@@ -21,27 +28,27 @@ use Ramsey\Uuid\Rfc4122\UuidV4;
 use App\Entity\Blog\Publication;
 use Doctrine\ORM\Mapping as ORM;
 use App\State\UserPasswordHasher;
-use App\Controller\ActivateAction;
-use App\Controller\RegisterAction;
-use App\Controller\UserController;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use App\Constants\Groups as ConstantsGroups;
-use App\Controller\FranchiseUsersAdminAction;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
-#[ORM\Entity()]
+#[AllowDynamicProperties] #[ORM\Entity()]
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     operations: [
+    new GetCollection(
+                uriTemplate: '/vacations/{id}/users',
+            ),
         new Get(
             uriTemplate: '/me',
             controller: UserController::class,
+            denormalizationContext: ['groups' => ['user:read', 'schedule:read']],
             read: false,
         ),
         new Get(
@@ -50,28 +57,29 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             read: false,
         ),
         new GetCollection(),
-        new GetCollection(
-            uriTemplate: '/vacations/{id}/users',
+                new GetCollection(
+                    uriTemplate: '/vacations/{id}/users',
 
-        ),
-        new GetCollection(
-            uriTemplate: '/franchises/{id}/users',
-            controller: FranchiseUsersAdminAction::class,
-            read: false,
-        ),
+                ),
+                new GetCollection(
+                    uriTemplate: '/franchises/{id}/users',
+                    controller: FranchiseUsersAdminAction::class,
+                    read: false,
+                ),
+        new Post(denormalizationContext: ['groups' => ['user:write']]),
         new Post(
             uriTemplate: '/register',
             controller: RegisterAction::class,
             read: false,
         ),
         new Post(
-            uriTemplate: '/franchise/register',
-            controller: RegisterAction::class,
-            denormalizationContext: ['groups' => [ConstantsGroups::USER_FRANCHISE_WRITE]],
+            uriTemplate: '/register/member',
+            controller: RegisterMemberAction::class,
+            denormalizationContext: ['groups' => ['shop:members:write', 'user:write']],
             read: false,
         ),
         new Get(normalizationContext: ['groups' => [ConstantsGroups::USER_READ, 'user:read:full']]),
-        new Patch(denormalizationContext: ['groups' => ['user:write:update']]),
+        new Patch(denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]]),
         // new Put(), // I don't use PUT, only PATCH
         // new Delete(), // Disable DELETE method, do soft delete instead
     ],
@@ -111,7 +119,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $payments;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Vacation::class)]
-    #[Groups([ConstantsGroups::USER_READ])]
+    #[Groups([ConstantsGroups::USER_READ, "shop:members:read"])]
     private Collection $vacations;
 
     #[ORM\ManyToMany(targetEntity: Notification::class, mappedBy: 'users')]
@@ -178,7 +186,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $locale = null;
 
-    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE, ConstantsGroups::USER_FRANCHISE_WRITE])]
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE, ConstantsGroups::SHOP_READ])]
     #[ORM\Column]
     private ?bool $status = null;
 
@@ -190,11 +198,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $token = null;
 
     #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'users')]
-    #[Groups([ConstantsGroups::USER_READ])]
+    #[Groups([ConstantsGroups::USER_READ, 'shop:members:read'])]
     private Collection $schedules;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::REQUEST_READ])]
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::REQUEST_READ, ConstantsGroups::USER_WRITE])]
     private ?Media $media = null;
 
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
@@ -203,6 +211,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'sender', targetEntity: Notification::class)]
     private Collection $notification;
+
+    #[ORM\ManyToMany(targetEntity: Shop::class, inversedBy: 'users')]
+    #[Groups([ConstantsGroups::USER_READ])]
+    private Collection $shops;
 
     public function __construct()
     {
@@ -218,8 +230,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->verification_key = UuidV4::uuid4()->toString();
         $this->schedules = new ArrayCollection();
         $this->notification = new ArrayCollection();
+        $this->shops = new ArrayCollection();
     }
 
+    public function addShop(Shop $shop): static
+    {
+        if (!$this->shops->contains($shop)) {
+            $this->shops->add($shop);
+        }
+
+        return $this;
+    }
+
+    public function getShops(): Collection
+    {
+        return $this->shops;
+    }
     public function getId(): ?int
     {
         return $this->id;

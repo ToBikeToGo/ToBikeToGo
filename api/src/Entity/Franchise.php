@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\Post;
-use App\Controller\RegisterAction;
+
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use App\Entity\Auth\User;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
@@ -19,6 +20,7 @@ use App\Constants\Groups as ConstantsGroups;
 #[ApiResource(
     normalizationContext: ['groups' => [ConstantsGroups::FRANCHISE_READ]],
 )]
+#[ApiFilter(SearchFilter::class, properties: ['createdBy' => 'exact'])]
 class Franchise
 {
     use TimestampableTrait;

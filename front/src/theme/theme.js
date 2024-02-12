@@ -7,7 +7,7 @@ const theme = createTheme({
       secondary: '#051c2c',
     },
     primary: {
-      main: '#FFFFFF',
+      main: 'rgba(75,158,46,0.25)',
     },
     secondary: {
       main: 'rgba(75,158,46,0.25)',
@@ -15,11 +15,24 @@ const theme = createTheme({
     black: {
       main: '#051c2c',
     },
+    white: {
+      main: '#fff',
+    },
     red: {
       main: '#f17878',
     },
     background: {
-      default: '#fff6f6',
+      default: '#fff',
+    },
+    success: {
+      main: '#53dc75',
+    },
+  },
+  overrides: {
+    MuiTextField: {
+      root: {
+        backgroundColor: '#fff',
+      },
     },
   },
   typography: {

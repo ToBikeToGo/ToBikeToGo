@@ -2,6 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Odm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Odm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Entity\Auth\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -9,13 +16,14 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;
 use App\Repository\RequestRepository;
 use App\Entity\Traits\TimestampableTrait;
+use Symfony\Component\Serializer\Annotation\Groups;
 use App\Constants\Groups as ConstantsGroups;
-use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity()]
-#[ApiResource(
-    normalizationContext: ['groups' => [ConstantsGroups::REQUEST_READ]],
-)]
+#[ApiResource]
+#[ApiResource(order: ['id' => 'DESC'])]
+#[GetCollection(normalizationContext: ['groups' => [ConstantsGroups::REQUEST_READ]]),
+Patch(), Post()]
 class Request
 {
     use TimestampableTrait;

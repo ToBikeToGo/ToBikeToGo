@@ -28,6 +28,13 @@ services:
     App\Serializer\MediaNormalizer:
         arguments:
             $storage: '@vich_uploader.storage.default'
+            $normalizer: '@serializer.normalizer.object'
+        tags:
+            - { name: 'serializer.normalizer' }
+
+    App\Serializer\ShopNormalizer:
+        arguments:
+            $normalizer: '@serializer.normalizer.object'
         tags:
             - { name: 'serializer.normalizer' }
 

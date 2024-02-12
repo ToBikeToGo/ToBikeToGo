@@ -14,7 +14,6 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class RegisterAction extends AbstractController
 {
@@ -27,7 +26,6 @@ class RegisterAction extends AbstractController
     )
     {
     }
-
 
     public function __invoke(Request $request, UserPasswordHasherInterface $passwordHasher) :JsonResponse
     {
@@ -61,7 +59,7 @@ class RegisterAction extends AbstractController
             }
         }
         $this->em->persist($user);
-        $this->emailing->sendEmailing([$user->getEmail()], 1, $user->getToken(), $user->getId());
+        $this->emailing->sendEmailingTemplate([$user->getEmail()], 1, $user->getToken(), $user->getId());
         $this->em->flush();
         if (isset($franchise)) {
             $slug = NotificationTypeEnum::EMPLOYEE_ADDED;

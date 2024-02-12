@@ -5,17 +5,15 @@ namespace App\Serializer;
 use App\Entity\Media;
 use Vich\UploaderBundle\Storage\StorageInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
-use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
-use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
 
-final class MediaNormalizer implements ContextAwareNormalizerInterface, NormalizerAwareInterface
+final class MediaNormalizer implements NormalizerInterface
 {
-    use NormalizerAwareTrait;
-
     private const ALREADY_CALLED = 'MEDIA_NORMALIZER_ALREADY_CALLED';
 
-    public function __construct(private StorageInterface $storage)
+    public function __construct(
+        private StorageInterface $storage,
+        private NormalizerInterface $normalizer
+    )
     {
     }
 
@@ -39,5 +37,12 @@ final class MediaNormalizer implements ContextAwareNormalizerInterface, Normaliz
         }
 
         return $data instanceof Media;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            Media::class => true,
+        ];
     }
 }

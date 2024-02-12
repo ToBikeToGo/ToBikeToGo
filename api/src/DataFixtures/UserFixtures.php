@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use Faker\Factory;
+use Faker\Generator;
 use App\Entity\Auth\User;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -17,6 +18,16 @@ class UserFixtures extends Fixture
     {
         $faker = Factory::create('fr_FR');
 
+        $this->loadAdminUser($manager);
+        $this->loadRegularUsers($manager, $faker);
+        $this->loadProviderUsers($manager, $faker);
+        $this->loadEmployeeUsers($manager, $faker);
+
+        $manager->flush();
+    }
+
+    private function loadAdminUser(ObjectManager $manager): void
+    {
         $user = (new User())
             ->setEmail('admin@admin.fr')
             ->setPassword('admin')
@@ -29,10 +40,32 @@ class UserFixtures extends Fixture
             ->setUpdatedAt(new \DateTime())
             ->setCreatedAt(new \DateTime());
 
-
         $manager->persist($user);
+    }
 
-        for ($i=0; $i < 22; $i++) {
+    private function loadRegularUsers(ObjectManager $manager, Generator $faker): void
+    {
+        for ($i = 0; $i < 75; $i++) {
+            $pwd = $faker->password(10);
+            $object = (new User())
+                ->setEmail('user' . $i . '@user.fr')
+                ->setFirstname($faker->firstName())
+                ->setLastname($faker->lastName())
+                ->setPhone($faker->phoneNumber())
+                ->setStatus($faker->boolean(80))
+                ->setRoles(["ROLE_USER"])
+                ->setPassword($pwd)
+                ->setlocale('fr');
+
+            $manager->persist($object);
+
+            $this->addReference(self::USER_REFERENCE . $i, $object);
+        }
+    }
+
+    private function loadProviderUsers(ObjectManager $manager, Generator $faker): void
+    {
+        for ($i = 0; $i < 22; $i++) {
             $object = (new User())
                 ->setEmail($faker->email())
                 ->setPassword($faker->password())
@@ -44,13 +77,16 @@ class UserFixtures extends Fixture
                 ->setlocale('fr')
                 ->setUpdatedAt(new \DateTime())
                 ->setCreatedAt(new \DateTime());
-                
+
             $manager->persist($object);
 
             $this->addReference(self::PROVIDER_REFERENCE . $i, $object);
         }
+    }
 
-        for ($i=0; $i < 41; $i++) {
+    private function loadEmployeeUsers(ObjectManager $manager, Generator $faker): void
+    {
+        for ($i = 0; $i < 41; $i++) {
             $object = (new User())
                 ->setEmail($faker->email())
                 ->setPassword($faker->password())
@@ -65,26 +101,7 @@ class UserFixtures extends Fixture
 
             $manager->persist($object);
 
-            $this->addReference(self::EMPLOYEE_REFERENCE. $i, $object);
+            $this->addReference(self::EMPLOYEE_REFERENCE . $i, $object);
         }
-
-        for ($i=0; $i < 75; $i++) {
-            $pwd = $faker->password(10);
-            $object = (new User())
-                ->setEmail('user' . $i . '@user.fr')
-                ->setFirstname($faker->firstName())
-                ->setLastname($faker->lastName())
-                ->setPhone($faker->phoneNumber())
-                ->setStatus($faker->boolean(80))
-                ->setRoles(["ROLE_USER"])
-                ->setPassword($pwd)
-                ->setlocale('fr');
-
-            $manager->persist($object);
-
-            $this->addReference(self::USER_REFERENCE. $i, $object);
-        }
-
-        $manager->flush();
     }
 }

@@ -31,6 +31,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
                     fromProperty: "vacations"
                 )
             ],
+            normalizationContext: ["groups" => [ConstantsGroups::SHOP_VACATIONS_READ]],
         ),
         new Delete(
             uriTemplate: '/vacations/{id}/remove',
@@ -55,25 +56,26 @@ class Vacation
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::VACATION_WRITE])]
+    #[Groups([ConstantsGroups::SHOP_VACATIONS_READ, ConstantsGroups::VACATION_WRITE, ConstantsGroups::SHOP_MEMBERS_READ, ConstantsGroups::USER_READ])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::VACATION_WRITE])]
+    #[Groups([ConstantsGroups::SHOP_VACATIONS_READ, ConstantsGroups::VACATION_WRITE, ConstantsGroups::SHOP_MEMBERS_READ, ConstantsGroups::USER_READ])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
-    #[Groups([ConstantsGroups::VACATION_WRITE])]
+    #[Groups([ConstantsGroups::SHOP_VACATIONS_READ, ConstantsGroups::VACATION_WRITE])]
     private ?int $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'vacations')]
     private ?Shop $shop = null;
 
     #[ORM\ManyToOne(inversedBy: 'vacations')]
+    #[Groups([ConstantsGroups::SHOP_VACATIONS_READ])]
     private ?User $user = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups([ConstantsGroups::VACATION_WRITE])]
+    #[Groups([ConstantsGroups::SHOP_VACATIONS_READ, ConstantsGroups::VACATION_WRITE, ConstantsGroups::SHOP_MEMBERS_READ, ConstantsGroups::USER_READ])]
     private ?string $description = null;
 
     public function getId(): ?int

@@ -1,20 +1,75 @@
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { getApirUrl, getMediaUrl } from '../helpers/getApirUrl.js';
+import fetchApi from '../helpers/fetchApi.js';
+import { useLocation } from 'react-router-dom';
+//import jwt from 'jsonwebtoken';
 
 const UserContext = React.createContext('');
 
 const useUser = () => {
-  // const [user, setUser] = React.useState({})
+  const [user, setUser] = useState({});
+  const [userToRegister, setUserToRegister] = useState({});
+  const [error, setError] = useState(null);
 
-  const user = {
-    name: 'John Doe',
-    email: 'johndoe@gmail.com',
-    role: 'user',
-    profilePicture: 'xsgames.co/randomusers/avatar.php?g=male',
-  };
+  useEffect(() => {
+    const apiUrl = getApirUrl();
+    const mediaUrl = getMediaUrl();
+    fetchApi(`${apiUrl}/me`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data && data['@id']) {
+          setUser({
+            id: data['id'],
+            firstname: data.firstname,
+            lastname: data.lastname,
+            email: data.email,
+            shops: data.shops,
+            phone: data.phone,
+            locale: data.locale,
+            schedules: data.schedules,
+            vacations: data.vacations,
+            avatar: data.media?.contentUrl
+              ? `${mediaUrl}${data.media.contentUrl}`
+              : `${mediaUrl}/default-avatar.png`,
+            roles: data.roles,
+          });
+        } else {
+          throw new Error('Data is not in the expected format');
+        }
+      })
+      .catch((error) => {
+        setError(error);
+      });
+  }, []);
 
-  return {
+  const isAdmin = useMemo(() => {
+    return user?.roles && user.roles.includes('ROLE_ADMIN');
+  }, [user]);
+
+  const value = React.useMemo(() => {
+    return {
+      user,
+      error,
+      //isLogged,
+      setUserToRegister,
+      userToRegister,
+      isAdmin,
+    };
+  }, [
+    isAdmin,
     user,
-  };
+    error,
+    // isLogged
+    setUserToRegister,
+    userToRegister,
+  ]);
+
+  return value;
 };
 
 const UserProvider = ({ children }) => {

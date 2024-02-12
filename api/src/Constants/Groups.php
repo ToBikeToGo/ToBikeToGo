@@ -17,6 +17,8 @@ final class Groups {
         self::COMMENT_READ,
         self::BOOKING_READ,
         self::REQUEST_READ,
+        self::VACATION_READ,
+        self::SHOP_VACATIONS_READ,
     ];
     const USER_READ = 'user:read';
     const USER_WRITE = 'user:write';
@@ -33,6 +35,7 @@ final class Groups {
     const CATEGORY_WRITE = 'category:write';
     const SHOP_READ = 'shop:read';
     const SHOP_WRITE = 'shop:write';
+    const SHOP_MEMBERS_READ = 'shop:members:read';
     const FRANCHISE_READ = 'franchise:read';
     const FRANCHISE_WRITE = 'franchise:write';
     const MEDIA_READ = 'media:read';
@@ -45,7 +48,10 @@ final class Groups {
     const BOOKING_WRITE = 'booking:write';
     const REQUEST_READ = 'request:read';
     const REQUEST_WRITE = 'request:write';
-    const VACATION_WRITE = 'request:write';
+    const BIKE_CATEGORY_READ = 'bike_category:read';
+    const BIKE_CATEGORY_WRITE = 'bike_category:write';
+    const VACATION_READ = 'vacation:read';
+    const VACATION_WRITE = 'vacation:write';
+    const SHOP_VACATIONS_READ = 'shop:vacations:read';
     const NOTIFICATION_READ = 'notification:write';
-
 }

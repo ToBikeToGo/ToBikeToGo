@@ -4,8 +4,6 @@ namespace App\DataFixtures;
 
 use Faker\Factory;
 use App\Entity\Shop;
-use App\DataFixtures\UserFixtures;
-use App\DataFixtures\FranchiseFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -18,64 +16,68 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        $adresses = [
-            '90 Bd Diderot, 75012 Paris',
-            '1 Rue de la Pompe, 75116 Paris',
-            '36 Rue du Viaduc, 89000 Auxerre',
-            '1 Rue de la République, 89000 Auxerre',
-            '20 Avenue des Champs-Élysées, 75008 Paris',
-            '45 Rue de la Roquette, 75011 Paris',
-            '15 Place Bellecour, 69002 Lyon',
-            '8 Quai des Belges, 13001 Marseille',
-            '25 Rue du Faubourg Saint-Honoré, 75008 Paris',
-            '10 Rue de la Liberté, 59000 Lille',
-            '5 Avenue Foch, 75116 Paris',
-            '18 Rue de la Bourse, 75002 Paris',
-            '3 Quai de la Tournelle, 75005 Paris',
-            '50 Rue de la Convention, 75015 Paris',
-            '12 Place des Terreaux, 69001 Lyon',
-            '6 Rue Saint-Antoine, 75004 Paris',
-            '2 Avenue Montaigne, 75008 Paris',
-            '22 Rue de Rivoli, 75001 Paris',
-            '7 Quai d\'Orléans, 75004 Paris',
-            '30 Avenue Pierre 1er de Serbie, 75016 Paris',
-            '11 Rue de la Paix, 75002 Paris',
-            '4 Place de la Comédie, 34000 Montpellier',
-            '16 Quai de la Tournelle, 75005 Paris',
-            '40 Rue du Faubourg Saint-Denis, 75010 Paris',
-            '9 Quai des Écluses, 75010 Paris',
-            '17 Place Vendôme, 75001 Paris',
-            '27 Rue Royale, 75008 Paris',
-            '14 Rue du Cherche-Midi, 75006 Paris',
-            '33 Quai des Grands Augustins, 75006 Paris',
-            '19 Rue de la Paix, 75002 Paris',
-            '26 Avenue Montaigne, 75008 Paris',
-            '13 Rue de la Bûcherie, 75005 Paris',
-            '32 Quai de la Tournelle, 75005 Paris',
-            '21 Rue Cambon, 75001 Paris',
-            '23 Quai de Conti, 75006 Paris',
-            '31 Rue du Faubourg Saint-Honoré, 75008 Paris',
-            '24 Rue de la Pompe, 75116 Paris',
-            '35 Rue Saint-Honoré, 75001 Paris',
-            '28 Rue de la Roquette, 75011 Paris',
-            '16 Rue du Faubourg Saint-Honoré, 75008 Paris',
-            '29 Quai de la Tournelle, 75005 Paris',
-            '2 Rue de la Paix, 75002 Paris',
-            '39 Avenue Montaigne, 75008 Paris',
-            '10 Quai de la Tournelle, 75005 Paris',
-            '18 Quai de la Tournelle, 75005 Paris',
-            '37 Quai de la Tournelle, 75005 Paris',
-            '12 Rue de la Paix, 75002 Paris',
+        $addresses = [
+            ['street' => '90 Bd Diderot', 'zip_code' => '75012', 'city' => 'Paris'],
+            ['street' => '1 Rue de la Pompe', 'zip_code' => '75116', 'city' => 'Paris'],
+            ['street' => '36 Rue du Viaduc', 'zip_code' => '89000', 'city' => 'Auxerre'],
+            ['street' => '1 Rue de la République', 'zip_code' => '89000', 'city' => 'Auxerre'],
+            ['street' => '20 Avenue des Champs-Élysées', 'zip_code' => '75008', 'city' => 'Paris'],
+            ['street' => '45 Rue de la Roquette', 'zip_code' => '75011', 'city' => 'Paris'],
+            ['street' => '15 Place Bellecour', 'zip_code' => '69002', 'city' => 'Lyon'],
+            ['street' => '8 Quai des Belges', 'zip_code' => '13001', 'city' => 'Marseille'],
+            ['street' => '25 Rue du Faubourg Saint-Honoré', 'zip_code' => '75008', 'city' => 'Paris'],
+            ['street' => '10 Rue de la Liberté', 'zip_code' => '59000', 'city' => 'Lille'],
+            ['street' => '5 Avenue Foch', 'zip_code' => '75116', 'city' => 'Paris'],
+            ['street' => '18 Rue de la Bourse', 'zip_code' => '75002', 'city' => 'Paris'],
+            ['street' => '3 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
+            ['street' => '50 Rue de la Convention', 'zip_code' => '75015', 'city' => 'Paris'],
+            ['street' => '12 Place des Terreaux', 'zip_code' => '69001', 'city' => 'Lyon'],
+            ['street' => '6 Rue Saint-Antoine', 'zip_code' => '75004', 'city' => 'Paris'],
+            ['street' => '2 Avenue Montaigne', 'zip_code' => '75008', 'city' => 'Paris'],
+            ['street' => '22 Rue de Rivoli', 'zip_code' => '75001', 'city' => 'Paris'],
+            ['street' => '7 Quai d\'Orléans', 'zip_code' => '75004', 'city' => 'Paris'],
+            ['street' => '30 Avenue Pierre 1er de Serbie', 'zip_code' => '75016', 'city' => 'Paris'],
+            ['street' => '11 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris'],
+            ['street' => '4 Place de la Comédie', 'zip_code' => '34000', 'city' => 'Montpellier'],
+            ['street' => '16 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
+            ['street' => '40 Rue du Faubourg Saint-Denis', 'zip_code' => '75010', 'city' => 'Paris'],
+            ['street' => '9 Quai des Écluses', 'zip_code' => '75010', 'city' => 'Paris'],
+            ['street' => '17 Place Vendôme', 'zip_code' => '75001', 'city' => 'Paris'],
+            ['street' => '27 Rue Royale', 'zip_code' => '75008', 'city' => 'Paris'],
+            ['street' => '14 Rue du Cherche-Midi', 'zip_code' => '75006', 'city' => 'Paris'],
+            ['street' => '33 Quai des Grands Augustins', 'zip_code' => '75006', 'city' => 'Paris'],
+            ['street' => '19 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris'],
+            ['street' => '26 Avenue Montaigne', 'zip_code' => '75008', 'city' => 'Paris'],
+            ['street' => '13 Rue de la Bûcherie', 'zip_code' => '75005', 'city' => 'Paris'],
+            ['street' => '32 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
+            ['street' => '21 Rue Cambon', 'zip_code' => '75001', 'city' => 'Paris'],
+            ['street' => '23 Quai de Conti', 'zip_code' => '75006', 'city' => 'Paris'],
+            ['street' => '31 Rue du Faubourg Saint-Honoré', 'zip_code' => '75008', 'city' => 'Paris'],
+            ['street' => '24 Rue de la Pompe', 'zip_code' => '75116', 'city' => 'Paris'],
+            ['street' => '35 Rue Saint-Honoré', 'zip_code' => '75001', 'city' => 'Paris'],
+            ['street' => '28 Rue de la Roquette', 'zip_code' => '75011', 'city' => 'Paris'],
+            ['street' => '16 Rue du Faubourg Saint-Honoré', 'zip_code' => '75008', 'city' => 'Paris'],
+            ['street' => '29 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
+            ['street' => '2 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris'],
+            ['street' => '39 Avenue Montaigne', 'zip_code' => '75008', 'city' => 'Paris'],
+            ['street' => '10 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
+            ['street' => '18 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
+            ['street' => '37 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
+            ['street' => '12 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris'],
         ];
 
         for ($i=0; $i < 21; $i++) {
+            $userIndex = $i % 136;
             $object = (new Shop())
-                ->setLabel($faker->streetName())
-                ->setAddress($adresses[$i])
+                ->setLabel($faker->company())
+                ->setStreet($addresses[$i]['street'])
+                ->setZipCode($addresses[$i]['zip_code'])
+                ->setCity($addresses[$i]['city'])
                 ->setIsOpened($faker->boolean(80))
                 ->setFranchise($this->getReference(FranchiseFixtures::FRANCHISE_REFERENCE . $i))
-                ->setCreatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $i))
-                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $i));
+                ->setCreatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $userIndex))
+                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $userIndex))
+                ->addUsers($this->getReference(UserFixtures::PROVIDER_REFERENCE . $userIndex));
 
             $manager->persist($object);
 
@@ -87,11 +89,14 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
 
             $object = (new Shop())
                 ->setLabel($faker->word())
-                ->setAddress($adresses[$i])
+                ->setStreet($addresses[$i]['street'])
+                ->setZipCode($addresses[$i]['zip_code'])
+                ->setCity($addresses[$i]['city'])
                 ->setIsOpened($faker->boolean(80))
                 ->setFranchise($this->getReference(FranchiseFixtures::FRANCHISE_REFERENCE . $random))
                 ->setCreatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE. $random))
-                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE. $random));
+                ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE. $random))
+                ->addUsers($this->getReference(UserFixtures::PROVIDER_REFERENCE . $random));
 
             $manager->persist($object);
 

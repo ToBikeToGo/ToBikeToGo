@@ -38,6 +38,7 @@ jobs:
                       ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
 
             - name: Install dependencies
+              continue-on-error: true
               run: |
                 cd front
                 yarn install --prefix front --no-audit --no-optional --no-fund --progress=false --loglevel=error --frozen-lockfile

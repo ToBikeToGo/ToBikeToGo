@@ -38,7 +38,7 @@ const MemberList = ({ members, onMemberClick }) => {
               src={member.profilePicture}
               alt={member.name}
             />
-            {member.name}
+            {member.firstname} {member.lastname}
           </button>
         ))}
       </ul>

@@ -2,11 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use App\Controller\GetBookingsByShopAction;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
+use Doctrine\ORM\EntityRepository;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\RequestBody;
 use App\Constants\Groups as ConstantsGroups;
@@ -26,6 +30,11 @@ use Symfony\Component\Serializer\Attribute\Groups;
 )]
 #[ApiResource(
     operations: [
+        new Get(
+            uriTemplate: '/shops/{id}/bookings',
+                controller: GetBookingsByShopAction::class,
+                name: 'booking_by_shop'
+            ),
         new GetCollection(
             uriTemplate: "/bikes/{bikeId}/bookings",
             uriVariables: [
@@ -42,37 +51,23 @@ use Symfony\Component\Serializer\Attribute\Groups;
             uriTemplate: '/bookings/{id}/remove',
             controller: RemoveBookingAction::class,
         ),
+        new GetCollection(
+            uriTemplate: "/bookings/{shopId}",
+            uriVariables: [
+                "shopId" => new Link(
+                    fromProperty: "bikes",
+                    fromClass: Shop::class
+                )
+            ],
+            normalizationContext: [
+                'groups' => [ConstantsGroups::BOOKING_READ]
+            ],
+        ),
         new Post(
-            input: SlotsDto::class,
-            processor: SlotsProcessor::class,
             uriTemplate: "/shops/{id}/slots",
             controller: GetSlotsAction::class,
-            read: false,
             openapi: new Operation(
-                summary: "Get slots for a shop by date",
                 tags: ["Slot"],
-                requestBody: new RequestBody(
-                    description: "Date to get slots for",
-                    required: true,
-                    content: new \ArrayObject(
-                        [
-                            "application/json" => [
-                                "schema" => [
-                                    "type" => "object",
-                                    "properties" => [
-                                        "date" => [
-                                            "type" => "string",
-                                            "format" => "date",
-                                        ],
-                                    ],
-                                ],
-                                "example" => [
-                                    "date" => "2021-01-01",
-                                ],
-                            ],
-                        ]
-                    )
-                ),
                 responses: [
                     '200' => [
                         'description' => 'Slots for a shop',
@@ -98,10 +93,37 @@ use Symfony\Component\Serializer\Attribute\Groups;
                         'description' => 'Invalid input',
                     ],
                 ],
+                summary: "Get slots for a shop by date",
+                requestBody: new RequestBody(
+                    description: "Date to get slots for",
+                    content: new \ArrayObject(
+                        [
+                            "application/json" => [
+                                "schema" => [
+                                    "type" => "object",
+                                    "properties" => [
+                                        "date" => [
+                                            "type" => "string",
+                                            "format" => "date",
+                                        ],
+                                    ],
+                                ],
+                                "example" => [
+                                    "date" => "2021-01-01",
+                                ],
+                            ],
+                        ]
+                    ),
+                    required: true
+                ),
             ),
+            input: SlotsDto::class,
+            read: false,
+            processor: SlotsProcessor::class,
         )
     ]
 )]
+#[ApiFilter(SearchFilter::class, properties: ['user', 'bike'])]
 class Booking
 {
     use TimestampableTrait;
