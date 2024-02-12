@@ -14,7 +14,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityRepository;
 use ApiPlatform\OpenApi\Model;
 use Doctrine\ORM\Mapping as ORM;
-use App\Filters\CustomDateFilter;
+use App\Filter\CustomDateFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;

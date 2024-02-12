@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filters;
+namespace App\Filter;
 
 use App\Entity\Booking;
 use Doctrine\ORM\QueryBuilder;
