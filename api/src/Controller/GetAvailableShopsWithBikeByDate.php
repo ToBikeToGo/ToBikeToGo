@@ -3,36 +3,26 @@
 namespace App\Controller;
 
 use App\Entity\Bike;
-use App\Entity\Request;
-use App\Entity\Shop;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class GetAvailableShopsWithBikeByDate extends AbstractController
 {
-
-
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
     }
 
-
-    // get all shops with available bikes by date
-    public function __invoke(\Symfony\Component\HttpFoundation\Request $request): Response
+    public function __invoke(Request $request): Response
     {
-
         $content = $request->getContent();
         $params = json_decode($content, true);
         $startDate = new \DateTime($params['startDate']);
         $endDate = new \DateTime($params['endDate']);
 
-       $shops = $this->entityManager->getRepository(Bike::class)->createQueryBuilder('b')
-            ->select('s.id, s.label, s.address, s.isOpened, b.id as bikeId, b.label as bikeLabel, b.price')
+        $shops = $this->entityManager->getRepository(Bike::class)->createQueryBuilder('b')
+            ->select("s.id, s.label, concat(s.street, ', ', s.zipCode, ' ', s.city) as address, s.isOpened, b.id as bikeId, b.label as bikeLabel, b.price")
             ->innerJoin('b.shop', 's')
             ->leftJoin('b.bookings', 'bookings')
             ->where('bookings.startDate NOT BETWEEN :startDate AND :endDate')

@@ -53,15 +53,30 @@ class Schedule
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::USER_READ, "shop:members:read"])]
+    #[Groups([
+        ConstantsGroups::SCHEDULE_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::USER_READ,
+        ConstantsGroups::SHOP_MEMBERS_READ
+    ])]
     private ?int $dow = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::USER_READ, "shop:members:read"])]
+    #[Groups([
+        ConstantsGroups::SCHEDULE_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::USER_READ,
+        ConstantsGroups::SHOP_MEMBERS_READ
+    ])]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups([ConstantsGroups::SCHEDULE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::USER_READ, "shop:members:read"])]
+    #[Groups([
+        ConstantsGroups::SCHEDULE_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::USER_READ,
+        ConstantsGroups::SHOP_MEMBERS_READ
+    ])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\ManyToMany(targetEntity: Shop::class, mappedBy: 'schedules')]

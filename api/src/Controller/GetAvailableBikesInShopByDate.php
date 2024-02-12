@@ -3,27 +3,19 @@
 namespace App\Controller;
 
 use App\Entity\Bike;
-use App\Entity\Request;
 use App\Entity\Shop;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class GetAvailableBikesInShopByDate extends AbstractController
 {
-
-
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
     }
 
-
-    // get all shops with available bikes by date
-    public function __invoke(\Symfony\Component\HttpFoundation\Request $request, Shop $shop): Response
+    public function __invoke(Request $request, Shop $shop): Response
     {
         $content = $request->getContent();
         $params = json_decode($content, true);

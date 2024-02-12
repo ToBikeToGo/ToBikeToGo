@@ -3,35 +3,23 @@
 namespace App\Controller;
 
 use App\Entity\Bike;
-use App\Entity\Booking;
-use App\Entity\Franchise;
-use App\Entity\Payment;
-use App\Entity\Request;
 use App\Entity\Shop;
+use App\Entity\Booking;
+use App\Entity\Payment;
+use App\Entity\Franchise;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ShopStatsAction extends AbstractController
 {
-
-
-    private $entityManager;
-
-    /**
-     * ShopStatsAction constructor.
-     * @param EntityManagerInterface $entityManager
-
-     */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
     }
 
-
     /**
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      * @return Response
      *
      * Get all the stats for a shop
@@ -41,22 +29,17 @@ class ShopStatsAction extends AbstractController
      * - Number of requests
      * can be filtered by date
      */
-    public function __invoke(\Symfony\Component\HttpFoundation\Request $request, Shop $shop): Response
+    public function __invoke(Request $request, Shop $shop): Response
     {
-
-        // get shop id from request query params
-
         $content = $request->getContent();
         $params = json_decode($content, true);
 
-
-      $startDate = isset($params['startDate']) ? (new \DateTime($params['startDate']))->format('Y-m-d') : null;
-$endDate = isset($params['endDate']) ? (new \DateTime($params['endDate']))->format('Y-m-d') : null;
+        $startDate = isset($params['startDate']) ? (new \DateTime($params['startDate']))->format('Y-m-d') : null;
+        $endDate = isset($params['endDate']) ? (new \DateTime($params['endDate']))->format('Y-m-d') : null;
 
         $shopId = $shop->getId();
         $shopName = $shop->getLabel();
 
-        // get all bikes in the shop
         $bikes = $this->entityManager->getRepository(Bike::class)->createQueryBuilder('b')
             ->select('b.id')
             ->innerJoin('b.shop', 's')
@@ -67,24 +50,21 @@ $endDate = isset($params['endDate']) ? (new \DateTime($params['endDate']))->form
 
         $nbBikes = count($bikes);
 
-$bookingsAtStartAndEndDate = $this->entityManager->getRepository(Booking::class)->createQueryBuilder('b')
-    ->select('COUNT(CASE WHEN b.startDate = :startDate THEN 1 ELSE 0 END) as nbBookingsAtStartDate')
-    ->addSelect('COUNT(CASE WHEN b.startDate = :endDate THEN 1 ELSE 0 END) as nbBookingsAtEndDate')
-    ->innerJoin('b.bike', 'bike')
-    ->innerJoin('bike.shop', 's')
-    ->andWhere('s.id = :shop')
-    ->setParameter('shop', $shop)
-    ->setParameter('startDate', $startDate)
-    ->setParameter('endDate', $endDate)
-    ->getQuery()
-    ->getSingleResult();
+        $bookingsAtStartAndEndDate = $this->entityManager->getRepository(Booking::class)->createQueryBuilder('b')
+            ->select('COUNT(CASE WHEN b.startDate = :startDate THEN 1 ELSE 0 END) as nbBookingsAtStartDate')
+            ->addSelect('COUNT(CASE WHEN b.startDate = :endDate THEN 1 ELSE 0 END) as nbBookingsAtEndDate')
+            ->innerJoin('b.bike', 'bike')
+            ->innerJoin('bike.shop', 's')
+            ->andWhere('s.id = :shop')
+            ->setParameter('shop', $shop)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getSingleResult();
 
-$nbBookingsAtStartDate = $bookingsAtStartAndEndDate['nbBookingsAtStartDate'];
-$nbBookingsAtEndDate = $bookingsAtStartAndEndDate['nbBookingsAtEndDate'];
+        $nbBookingsAtStartDate = $bookingsAtStartAndEndDate['nbBookingsAtStartDate'];
+        $nbBookingsAtEndDate = $bookingsAtStartAndEndDate['nbBookingsAtEndDate'];
 
-
-
-        // get all users in the shop
         $users = $this->entityManager->getRepository(Franchise::class)->createQueryBuilder('f')
             ->select('f.id')
             ->innerJoin('f.shops', 's')
@@ -95,8 +75,6 @@ $nbBookingsAtEndDate = $bookingsAtStartAndEndDate['nbBookingsAtEndDate'];
 
         $nbUsers = count($users);
 
-
-        // get all payments in the shop
         $payments = $this->entityManager->getRepository(Payment::class)->createQueryBuilder('p')
             ->select('p.price')
             ->innerJoin('p.shop', 's')
@@ -116,9 +94,11 @@ $nbBookingsAtEndDate = $bookingsAtStartAndEndDate['nbBookingsAtEndDate'];
             $nbEarned += $payment['price'];
         }
 
-
         $query = $this->entityManager->createQueryBuilder()
-            ->select('COUNT(b.id) as nbBookings', 'SUM(CASE WHEN b.rating > 3 THEN 1 ELSE 0 END) as nbSatisfiedBookings')
+            ->select(
+                'COUNT(b.id) as nbBookings',
+                'SUM(CASE WHEN b.rating > 3 THEN 1 ELSE 0 END) as nbSatisfiedBookings'
+            )
             ->from(Booking::class, 'b')
             ->innerJoin('b.bike', 'bi')
             ->innerJoin('bi.shop', 's')
@@ -185,8 +165,7 @@ $nbBookingsAtEndDate = $bookingsAtStartAndEndDate['nbBookingsAtEndDate'];
 
 
         $conn = $this->entityManager->getConnection();
-       $sql = '
-   SELECT
+        $sql = 'SELECT
 EXTRACT(YEAR FROM b.start_date) AS year,
 EXTRACT(MONTH FROM b.start_date) AS month,
 COUNT(*) AS nbBookings
@@ -203,10 +182,9 @@ ORDER BY
 year DESC, month ASC;
 ';
 
-$stmt = $conn->prepare($sql);
-$result = $stmt->executeQuery(['shopId' => $shop->getId(), 'startDate' => $startDate, 'endDate' => $endDate]);
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery(['shopId' => $shop->getId(), 'startDate' => $startDate, 'endDate' => $endDate]);
         $monthlyBookingsByYear = $result->fetchAllAssociative();
-
 
         $formattedMonthlyBookings = [];
         foreach ($monthlyBookingsByYear as $row) {
@@ -216,7 +194,6 @@ $result = $stmt->executeQuery(['shopId' => $shop->getId(), 'startDate' => $start
                 'nbBookings' => $row['nbbookings'] ?? 0,
             ];
         }
-
 
         $sql = '
                SELECT
@@ -244,8 +221,6 @@ $result = $stmt->executeQuery(['shopId' => $shop->getId(), 'startDate' => $start
         $mostBookedCategoryName = $mostBookedCategory['category'];
         $mostBookedCategoryBookings = $mostBookedCategory['nbbookings'];
 
-
-
         return $this->json([
             'nbBikes' => $nbBikes,
             'reservationCount' => $nbBookings,
@@ -262,8 +237,5 @@ $result = $stmt->executeQuery(['shopId' => $shop->getId(), 'startDate' => $start
             'avgRatingInRange' => $avgRatingInRange,
             'shopName' => $shopName,
         ]);
-
-
     }
-
 }

@@ -12,17 +12,14 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class VacationController extends AbstractController
 {
-
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
     }
+
     #[Route('/vacations/user/{id}', name: 'vacation_user', methods: ['GET'])]
     public function __invoke(int $id): Response
     {
-     $vacations = $this->entityManager->getRepository(Vacation::class)->findBy(['user' => $id]);
+        $vacations = $this->entityManager->getRepository(Vacation::class)->findBy(['user' => $id]);
 
         return $this->json($vacations);
     }
