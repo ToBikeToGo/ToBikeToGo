@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Auth\User;
 use App\Entity\Schedule;
 use App\Entity\Shop;
-use App\Repository\UserRepository;
 use App\Service\Emailing;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,13 +16,11 @@ class RegisterMemberAction extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly UserRepository         $userRepository,
         private readonly Emailing $emailing
-    )
-    {
+    ) {
     }
 
-    public function __invoke(Request $request, UserPasswordHasherInterface $passwordHasher) :JsonResponse
+    public function __invoke(Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         $userData = json_decode($request->getContent(), true);
 
@@ -41,32 +38,33 @@ class RegisterMemberAction extends AbstractController
         $user->setStatus(false);
         $user->setPassword($hashedPassword);
         $user->addShop($shop);
+    
         foreach ($userData['schedules'] as $sc) {
-
-            // create a new schedule
             $schedule = new Schedule();
             $schedule->setDow($sc['dow']);
             $schedule->setStartTime(new \DateTime($sc['startTime']))
-                        ->setEndTime(new \DateTime($sc['endTime']))
-                        ->addUser($user);
+                ->setEndTime(new \DateTime($sc['endTime']))
+                ->addUser($user);
             $this->em->persist($schedule);
         }
         $this->em->persist($user);
         $this->em->flush();
+    
         $bytes = bin2hex(random_bytes(16));
         $user->setToken($bytes);
-         $sendEmail = $this->emailing->sendEmailingTemplate([$user->getEmail()],
-
-                1
-            , $user->getToken(), $user->getId());
-
-
+        $this->emailing->sendEmailingTemplate(
+            [$user->getEmail()],
+            1,
+            $user->getToken(),
+            $user->getId()
+        );
 
         $json = [
             'status' => 'success',
             'code' => '200',
             'message' => 'User account is registered'
         ];
+
         return $this->json($json);
     }
 }

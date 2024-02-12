@@ -9,7 +9,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class RegisterAction extends AbstractController
 {
@@ -19,7 +18,6 @@ class RegisterAction extends AbstractController
     )
     {
     }
-
 
     public function __invoke(Request $request, UserPasswordHasherInterface $passwordHasher) :JsonResponse
     {

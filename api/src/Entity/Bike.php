@@ -169,7 +169,12 @@ class Bike extends EntityRepository
     private Collection $propositions;
 
     #[ORM\ManyToOne(inversedBy: 'bikes')]
-    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::MEDIA_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::BOOKING_READ])]
+    #[Groups([
+        ConstantsGroups::BIKE_READ,
+        ConstantsGroups::MEDIA_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::BOOKING_READ
+    ])]
     private ?Media $media = null;
 
     public function __construct()

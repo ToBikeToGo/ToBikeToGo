@@ -7,7 +7,6 @@ use App\Entity\Shop;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-;
 
 class ShopFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -70,7 +69,7 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
         for ($i=0; $i < 21; $i++) {
             $userIndex = $i % 136;
             $object = (new Shop())
-                ->setLabel($faker->streetName())
+                ->setLabel($faker->company())
                 ->setStreet($addresses[$i]['street'])
                 ->setZipCode($addresses[$i]['zip_code'])
                 ->setCity($addresses[$i]['city'])

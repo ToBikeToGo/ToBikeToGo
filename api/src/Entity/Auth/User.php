@@ -71,7 +71,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             controller: RegisterAction::class,
             read: false,
         ),
-        New Post(
+        new Post(
             uriTemplate: '/register/member',
             controller: RegisterMemberAction::class,
             denormalizationContext: ['groups' => ['shop:members:write', 'user:write']],
