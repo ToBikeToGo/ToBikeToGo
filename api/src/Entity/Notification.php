@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\GetCollection;
+use App\Constants\Groups as ConstantsGroups;
 use App\Controller\NotificationAction;
 use App\Entity\Auth\User;
 use Doctrine\DBAL\Types\Types;
@@ -12,6 +14,7 @@ use App\Entity\Traits\TimestampableTrait;
 use App\Repository\NotificationRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity()]
 #[ApiResource(
@@ -21,6 +24,8 @@ use Doctrine\Common\Collections\ArrayCollection;
             controller: NotificationAction::class,
             read: false,
         ),
+        new GetCollection(normalizationContext: ['groups' => [ConstantsGroups::NOTIFICATION_READ]]),
+
     ],
 )]
 class Notification implements \Stringable
@@ -36,6 +41,7 @@ class Notification implements \Stringable
 
     #[ORM\ManyToOne(inversedBy: 'notification')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups([ConstantsGroups::NOTIFICATION_READ])]
     private ?NotificationType $notificationType = null;
 
     #[ORM\ManyToOne(inversedBy: 'notification')]
@@ -45,6 +51,7 @@ class Notification implements \Stringable
     private ?string $text = null;
 
     #[ORM\Column(type: "datetime")]
+    #[Groups([ConstantsGroups::NOTIFICATION_READ])]
     private \DateTimeInterface $createdAt;
 
     #[ORM\Column(type: "datetime")]

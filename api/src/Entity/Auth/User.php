@@ -76,8 +76,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         // new Delete(), // Disable DELETE method, do soft delete instead
     ],
     normalizationContext: ['groups' => [ConstantsGroups::USER_READ]],
-
-    denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]]
+    denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]],
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -121,7 +120,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToMany(targetEntity: Franchise::class, mappedBy: 'users')]
     #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_FRANCHISE_WRITE])]
-    #[ApiProperty(security: "is_granted('ROLE_ADMIN')")]
     private Collection $franchises;
 
     #[Groups([

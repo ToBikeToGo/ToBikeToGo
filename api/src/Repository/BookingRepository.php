@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Booking;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -45,4 +46,17 @@ class BookingRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    public function getUserBookingStartIn2Days()
+    {
+        $twoDaysLater = new DateTime();
+        $twoDaysLater->modify('+2 days');
+
+        return $this->createQueryBuilder('b')
+            ->where('b.startDate >= :twoDaysLaterStart')
+            ->andWhere('b.startDate < :twoDaysLaterEnd')
+            ->setParameter('twoDaysLaterStart', $twoDaysLater->format('Y-m-d 00:00:00'))
+            ->setParameter('twoDaysLaterEnd', $twoDaysLater->format('Y-m-d 23:59:59'))
+            ->getQuery()
+            ->getResult();
+    }
 }

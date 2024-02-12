@@ -27,11 +27,11 @@ class NotificationService
 
     public function sendNotification(
         Emailing $emailing,
-        User $sender,
-        string $slug,
-        array $affiliates,
-        ?User $action = null,
-        ?array $otherInfo = null,
+        User     $sender,
+        string   $slug,
+        ?array   $affiliates = null,
+        ?User    $action = null,
+        ?array   $otherInfo = null,
     ): void
     {
         switch ($slug) {
@@ -71,6 +71,9 @@ class NotificationService
                 $text = '<p><b>' . $sender->getFirstname() . ' ' . $sender->getLastname() . '</b> a modifié ça reservation du ' . $otherInfo['startDate'] . ' au ' . $otherInfo['endDate'] . '</p>';
                 $textForHimself = '<p>La modification de votre reservation du ' . $otherInfo['startDate'] . ' au ' . $otherInfo['endDate'] . ' à bien été prise en compte</p>';
             break;
+            case NotificationTypeEnum::RESERVATION_REMINDER:
+                $textForHimself = '<p>Votre réservation du ' . $otherInfo['startDate'] . ' au ' . $otherInfo['endDate'] . ' commence dans 2 jours ! On vous attend la team ! </p>';
+            break;
         }
         $notificationType = $this->notificationTypeRepository->findOneBy(['slug' => $slug]);
         if (!empty($textForHimself) and $notificationType){
@@ -92,11 +95,17 @@ class NotificationService
                 );
             }
         }
-        if (!empty($text)){
+        if (!empty($text) && $slug != NotificationTypeEnum::RESERVATION_REMINDER){
             $emailing->sendNotificationEmailing(
                 emailUsers: $affiliates,
                 idTemplate: 2,
                 text: strip_tags($text)
+            );
+        } elseif (!empty($textForHimself)) {
+            $emailing->sendNotificationEmailing(
+                emailUsers: [$sender],
+                idTemplate: 2,
+                text: strip_tags($textForHimself)
             );
         }
     }

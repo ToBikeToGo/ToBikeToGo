@@ -10,6 +10,7 @@ use App\Service\Emailing;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -21,6 +22,7 @@ class RegisterAction extends AbstractController
         private readonly EntityManagerInterface $em,
         private readonly NotificationService    $notificationService,
         private readonly FranchiseRepository    $franchiseRepository,
+        private readonly Security               $security,
         private readonly Emailing               $emailing
     )
     {

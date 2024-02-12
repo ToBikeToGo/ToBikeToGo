@@ -58,6 +58,4 @@ class Emailing
 
         return true;
     }
-
-
 }

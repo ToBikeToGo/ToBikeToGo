@@ -46,5 +46,6 @@ final class Groups {
     const REQUEST_READ = 'request:read';
     const REQUEST_WRITE = 'request:write';
     const VACATION_WRITE = 'request:write';
+    const NOTIFICATION_READ = 'notification:write';
 
 }
