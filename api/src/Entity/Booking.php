@@ -119,7 +119,7 @@ use App\Constants\Groups as ConstantsGroups;
     ]
 )]
 #[ApiFilter(SearchFilter::class, properties: ['user', 'bike'])]
-class Booking extends EntityRepository
+class Booking
 {
     use TimestampableTrait;
 
