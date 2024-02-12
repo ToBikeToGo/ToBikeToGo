@@ -81,7 +81,6 @@ class Shop
     ])]
     private ?string $label = null;
 
-    #[ORM\Column(length: 255)]
     #[Groups([
         ConstantsGroups::REQUEST_READ,
         ConstantsGroups::SHOP_MEMBERS_READ,
