@@ -102,23 +102,23 @@ function ResponsiveAppBar() {
 
   const pages = [
     {
-      label: getTranslation('Navbar.rent.bike'),
+      label: getTranslation('navbar.rent.bike'),
       path: '/rent/bike/31',
     },
     {
-      label: getTranslation('Navbar.planning'),
+      label: getTranslation('navbar.planning'),
       path: '/my-planning',
     },
     {
-      label: 'Vacations request',
+      label: getTranslation('navbar.vacation.request'),
       path: '/vacations-request/52',
     },
     {
-      label: 'Last booking',
+      label: getTranslation('navbar.booking'),
       path: '/last-booking/682',
     },
     {
-      label: 'Shops',
+      label: getTranslation('navbar.shops'),
       path: '/shops',
     },
   ];
@@ -246,7 +246,7 @@ function ResponsiveAppBar() {
           </Box>
           <Search ref={searchRef}>
             <StyledInputBase
-              placeholder="Find a bike…"
+              placeholder={getTranslation('navbar.search.placeholder')}
               inputProps={{ 'aria-label': 'search' }}
               onClick={handleSearchClick}
               onChange={onChangeInput}
@@ -283,7 +283,7 @@ function ResponsiveAppBar() {
                   className="search-options"
                 >
                   <TextField
-                    label="Max Price"
+                    label={getTranslation('navbar.search.max_price')}
                     type="number"
                     InputLabelProps={{
                       shrink: true,
@@ -294,7 +294,7 @@ function ResponsiveAppBar() {
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   />
                   <TextField
-                    label="Brand"
+                    label={getTranslation('navbar.search.brand')}
                     type="text"
                     InputLabelProps={{
                       shrink: true,
@@ -355,14 +355,14 @@ function ResponsiveAppBar() {
                   width: '250px',
                 }}
               >
-                Edit Profile
+                {getTranslation('navbar.profile.edit')}
               </MenuItem>
               <MenuItem onClick={handleClose} component={Link} to="/settings">
-                Settings
+                {getTranslation('navbar.profile.settings')}
               </MenuItem>
               {isFranchiseProvider && (
                 <MenuItem onClick={handleClose} component={Link} to="/my-shops">
-                  My Shops
+                  {getTranslation('navbar.profile.shops')}
                 </MenuItem>
               )}
 
@@ -372,12 +372,12 @@ function ResponsiveAppBar() {
                   component={Link}
                   to="/franchise/request"
                 >
-                  Rejoindre l'aventure
+                  {getTranslation('navbar.profile.request')}
                 </MenuItem>
               )}
 
               <MenuItem onClick={handleClose} component={Link} to="/logout">
-                Logout
+                {getTranslation('navbar.profile.logout')}
               </MenuItem>
 
               <MenuItem

@@ -1,11 +1,38 @@
 {
-  "Navbar": {
-    "planning": "Mon Planning",
+  "navbar": {
     "rent": {
-      "bike": "Louer un vélo"
+      "bike": "Rent a bike"
+    },
+    "planning": "My planning",
+    "vacation": {
+      "request": "Vacations request"
+    },
+    "booking": "Last booking",
+    "shops": "Shops",
+    "search": {
+      "placeholder": "Find a bike...",
+      "max_price": "Max price",
+      "min_price": "Min price",
+      "brand": "Brand"
+    },
+    "profile": {
+      "edit": "Edit my profile",
+      "settings": "Settings",
+      "request": "Join the adventure",
+      "shops": "My shops",
+      "logout": "Logout"
     },
     "my": {
-      "bikes": "Mes vélos"
+      "bikes": "My bikes"
     }
+  },
+  "home": {
+    "title": "Let's ride!",
+    "rent": "Rent a bike",
+    "rent-subtitle": "Everything becomes easier with BikeToGo"
+  },
+  "calendar": {
+    "start_date": "Start date",
+    "end_date": "End date"
   }
 }

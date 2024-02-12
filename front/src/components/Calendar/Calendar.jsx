@@ -5,6 +5,8 @@ import { DateRange } from 'react-date-range';
 import theme from '../../theme/theme.js';
 import { InfoRounded } from '@mui/icons-material';
 import withToast from '../HOC/WithToastHOC.jsx';
+import { useTranslation } from '../../locales/hooks/getTranslation.js';
+
 const Calendar = ({
   calendarRef,
   onChangeDate,
@@ -17,6 +19,7 @@ const Calendar = ({
   disableBefore = true,
   setToast,
 }) => {
+  const { getTranslation } = useTranslation();
   const [error, setError] = useState(null);
   const handleDateChange = (item) => {
     const { startDate, endDate } = item.selection;
@@ -47,7 +50,7 @@ const Calendar = ({
           InputProps={{
             color: 'primary',
           }}
-          label={'Start date'}
+          label={getTranslation('calendar.start_date')}
           size={'small'}
           color={'primary'}
           value={format(dates?.[0]?.startDate || new Date(), 'dd/MM/yyyy')}
@@ -59,7 +62,7 @@ const Calendar = ({
         />
         <TextField
           size={'small'}
-          label={'End date'}
+          label={getTranslation('calendar.end_date')}
           variant="outlined"
           value={format(dates?.[0]?.endDate || new Date(), 'dd/MM/yyyy')}
           mb={2}

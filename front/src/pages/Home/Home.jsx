@@ -3,8 +3,10 @@ import { Parallax } from 'react-parallax';
 import BikeImg from './../../assets/images/bike-home.jpg';
 import PhoneMockup1 from './../../assets/images/phoneMockup.png';
 import Button from '@mui/material/Button';
+import { useTranslation } from '../../locales/hooks/getTranslation';
 
 const Home = () => {
+  const { getTranslation } = useTranslation();
   return (
     <>
       <div className={'flex justify-center items-center w-full flex-col'}>
@@ -19,7 +21,7 @@ const Home = () => {
                 marginTop: '10em',
               }}
             >
-              Let's ride !
+              {getTranslation('home.title')}
             </Typography>
           </div>
         </Parallax>
@@ -39,14 +41,14 @@ const Home = () => {
               gutterBottom
               color={'black'}
             >
-              Rent a bike
+              {getTranslation('home.rent')}
             </Typography>
             <Typography
               variant="h5"
               noWrap
               href="#app-bar-with-responsive-menu"
             >
-              Everything becomes easier with BikeToGo
+              {getTranslation('home.rent-subtitle')}
             </Typography>
             <Button
               variant="contained"
@@ -62,7 +64,7 @@ const Home = () => {
               }}
               href={'/rent/bike'}
             >
-              Rent a bike
+              {getTranslation('home.rent')}
             </Button>
           </div>
         </div>

@@ -1,11 +1,38 @@
 {
-  "Navbar": {
-    "planning": "Mon Planning",
+  "navbar": {
     "rent": {
       "bike": "Louer un vélo"
+    },
+    "planning": "Mon Planning",
+    "vacation": {
+      "request": "Demander des congés"
+    },
+    "booking": "Dernières réservations",
+    "shops": "Magasins",
+    "search": {
+      "placeholder": "Rechercher un vélo...",
+      "max_price": "Prix max",
+      "min_price": "Prix min",
+      "brand": "Marque"
+    },
+    "profile": {
+      "edit": "Editer mon profil",
+      "settings": "Paramètres",
+      "request": "Rejoindre l'aventure",
+      "shops": "Mes magasins",
+      "logout": "Se déconnecter"
     },
     "my": {
       "bikes": "Mes vélos"
     }
+  },
+  "home": {
+    "title": "Prêt à rouler !",
+    "rent": "Louer un vélo",
+    "rent-subtitle": "Trouvez le vélo de vos rêves"
+  },
+  "calendar": {
+    "start_date": "Date de début",
+    "end_date": "Date de fin"
   }
 }
