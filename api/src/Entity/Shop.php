@@ -71,14 +71,40 @@ class Shop
     private Collection $users;
 
     #[ORM\Column(length: 255)]
-    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::REQUEST_READ, "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
+    #[Groups([
+        ConstantsGroups::BOOKING_READ,
+        ConstantsGroups::REQUEST_READ,
+        ConstantsGroups::SHOP_MEMBERS_READ,
+        ConstantsGroups::BIKE_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::FRANCHISE_READ
+    ])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["request:read", "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
+    #[Groups([
+        ConstantsGroups::REQUEST_READ,
+        ConstantsGroups::SHOP_MEMBERS_READ,
+        ConstantsGroups::BIKE_READ,
+        ConstantsGroups::SHOP_READ,
+        ConstantsGroups::FRANCHISE_READ
+    ])]
     private ?string $address = null;
 
+    #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ, ConstantsGroups::BIKE_READ])]
+    private ?string $street = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ, ConstantsGroups::BIKE_READ])]
+    private ?string $zipCode = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ, ConstantsGroups::BIKE_READ])]
+    private ?string $city = null;
+
     #[ORM\Column]
+    #[Groups([ConstantsGroups::SHOP_READ])]
     private ?bool $isOpened = null;
 
     #[ORM\OneToMany(mappedBy: 'shop', targetEntity: Bike::class, orphanRemoval: true)]
@@ -91,11 +117,11 @@ class Shop
     private ?Franchise $franchise = null;
 
     #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'shops')]
-    #[Groups([ConstantsGroups::SHOP_READ, 'shop:members:read'])]
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::SHOP_MEMBERS_READ])]
     private Collection $schedules;
 
     #[ORM\ManyToMany(targetEntity: Payment::class, mappedBy: 'shop')]
-    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::BOOKING_READ, "shop:members:read"])]
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::BOOKING_READ, ConstantsGroups::SHOP_MEMBERS_READ])]
     private Collection $payments;
 
     #[ORM\OneToMany(mappedBy: 'shop', targetEntity: Vacation::class)]
@@ -128,18 +154,6 @@ class Shop
     public function setLabel(string $label): static
     {
         $this->label = $label;
-
-        return $this;
-    }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(string $address): static
-    {
-        $this->address = $address;
 
         return $this;
     }
@@ -293,16 +307,64 @@ class Shop
          return $this;
      }
 
-        public function getMedia(): ?Media
-        {
-            return $this->media;
-        }
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
 
-        public function setMedia(?Media $media): static
-        {
-            $this->media = $media;
+    public function setMedia(?Media $media): static
+    {
+        $this->media = $media;
 
-            return $this;
-        }
+        return $this;
+    }
 
+
+    public function getStreet(): ?string
+    {
+        return $this->street;
+    }
+
+    public function setStreet(string $street): static
+    {
+        $this->street = $street;
+
+        return $this;
+    }
+
+    public function getZipCode(): ?string
+    {
+        return $this->zipCode;
+    }
+
+    public function setZipCode(string $zipCode): static
+    {
+        $this->zipCode = $zipCode;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(string $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
 }

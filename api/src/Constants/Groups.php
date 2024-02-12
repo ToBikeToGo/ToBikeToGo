@@ -34,6 +34,7 @@ final class Groups {
     const CATEGORY_WRITE = 'category:write';
     const SHOP_READ = 'shop:read';
     const SHOP_WRITE = 'shop:write';
+    const SHOP_MEMBERS_READ = 'shop:members:read';
     const FRANCHISE_READ = 'franchise:read';
     const FRANCHISE_WRITE = 'franchise:write';
     const MEDIA_READ = 'media:read';
