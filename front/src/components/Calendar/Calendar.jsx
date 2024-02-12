@@ -1,9 +1,10 @@
+import React, { useState } from 'react';
 import { TextField } from '@mui/material';
-import { addDays, format } from 'date-fns';
+import { format, isEqual, isBefore } from 'date-fns';
 import { DateRange } from 'react-date-range';
 import theme from '../../theme/theme.js';
-import { useCalendar } from './hooks/useCalendar.jsx';
-
+import { InfoRounded } from '@mui/icons-material';
+import withToast from '../HOC/WithToastHOC.jsx';
 const Calendar = ({
   calendarRef,
   onChangeDate,
@@ -11,10 +12,37 @@ const Calendar = ({
   dates,
   isOpen,
   disabledDateCallback,
+  minDays,
+  maxDays,
+  disableBefore = true,
+  setToast,
 }) => {
+  const [error, setError] = useState(null);
+  const handleDateChange = (item) => {
+    const { startDate, endDate } = item.selection;
+
+    if (startDate && endDate) {
+      const daysDiff = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1; // Calcul de la durée
+
+      if (
+        (daysDiff < minDays || daysDiff > maxDays) &&
+        !isEqual(startDate, endDate)
+      ) {
+        setToast({
+          message: `You must select under ${maxDays} days because your booking is for ${maxDays} days`,
+          severity: 'error',
+          open: true,
+        });
+        return;
+      }
+
+      onChangeDate(item);
+    }
+  };
+
   return (
     <>
-      <div className={'flex justify-center mt-4 ba w-full'} style={{}}>
+      <div className={'flex justify-center mt-4 ba w-full'}>
         <TextField
           InputProps={{
             color: 'primary',
@@ -22,7 +50,7 @@ const Calendar = ({
           label={'Start date'}
           size={'small'}
           color={'primary'}
-          value={format(dates[0]?.startDate, 'dd/MM/yyyy')}
+          value={format(dates?.[0]?.startDate || new Date(), 'dd/MM/yyyy')}
           mb={2}
           onClick={handleOpen}
           sx={{
@@ -33,7 +61,7 @@ const Calendar = ({
           size={'small'}
           label={'End date'}
           variant="outlined"
-          value={format(dates[0]?.endDate, 'dd/MM/yyyy')}
+          value={format(dates?.[0]?.endDate || new Date(), 'dd/MM/yyyy')}
           mb={2}
           onClick={handleOpen}
         />
@@ -42,13 +70,14 @@ const Calendar = ({
       {isOpen && (
         <DateRange
           disabledDay={(date) => {
-            return disabledDateCallback?.(date) || false;
-            // not weekend
-            return date.getDay() === 0 || date.getDay() === 6;
+            if (disableBefore && isBefore(date, new Date())) {
+              return true;
+            }
 
-            //TODO disable non working days
+            return disabledDateCallback?.(date) || false;
+            return date.getDay() === 0 || date.getDay() === 6;
           }}
-          onChange={onChangeDate}
+          onChange={handleDateChange}
           showSelectionPreview={true}
           moveRangeOnFirstSelection={false}
           months={2}
@@ -60,5 +89,6 @@ const Calendar = ({
     </>
   );
 };
+const CalendarWithToast = withToast(Calendar);
 
-export { Calendar };
+export { CalendarWithToast as Calendar };

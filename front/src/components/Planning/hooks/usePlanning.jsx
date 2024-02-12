@@ -13,7 +13,11 @@ const usePlanning = ({ fromConnectedUser = false }) => {
       title: vacation.description,
       start: new Date(vacation.startDate),
       end: new Date(vacation.endDate),
-      status: vacation.status ? 'APPROVED' : 'PENDING',
+      bg: vacation.status === 1 ?
+      '#66d678' :
+          vacation.status === 2 ?
+              '#fa5656' : '#f9f9f9',
+      status: vacation.status
     }));
   };
 
@@ -79,7 +83,7 @@ const usePlanning = ({ fromConnectedUser = false }) => {
               start: workStart,
               end: workEnd,
               title: 'Jour de travail',
-              bg: 'red',
+              bg: '#fa5656',
             });
           }
         }

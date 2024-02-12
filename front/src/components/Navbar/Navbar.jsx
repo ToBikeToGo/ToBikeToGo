@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link, useNavigate } from 'react-router-dom';
-import { InputBase, TextField } from '@mui/material';
+import { Fade, InputBase, TextField } from '@mui/material';
 import styled from 'styled-components';
 import theme from '../../theme/theme.js';
 import { Calendar } from '../Calendar/Calendar.jsx';
@@ -21,6 +21,7 @@ import { useBookingContext } from '../../hooks/useBooking.jsx';
 import { useUserContext } from '../../hooks/UserContext.jsx';
 import { useTranslation } from '../../locales/hooks/getTranslation.js';
 import { useEffect } from 'react';
+import { ArrowBack, ExpandMore } from '@mui/icons-material';
 
 const Search = styled('div')(() => ({
   display: 'flex',
@@ -31,7 +32,7 @@ const Search = styled('div')(() => ({
     backgroundColor: 'white',
   },
   margin: '0 2% 0 10%',
-  width: '60%',
+  width: '70%',
   padding: '0.5em 1em',
   border: `1px solid ${theme.palette.secondary.main}`,
 }));
@@ -54,7 +55,7 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
-
+  const [open, setOpen] = React.useState(false);
   const {
     changeBookingDates,
     setSearchParams,
@@ -123,6 +124,8 @@ function ResponsiveAppBar() {
   ];
 
   const handleMenu = (event) => {
+    setOpen(!open);
+
     setAnchorEl(event.currentTarget);
   };
 
@@ -137,7 +140,7 @@ function ResponsiveAppBar() {
     setAnchorElNav(null);
   };
 
-  const { user } = useUserContext();
+  const { user, isFranchiseProvider } = useUserContext();
 
   return (
     <AppBar
@@ -307,21 +310,40 @@ function ResponsiveAppBar() {
             <SearchIconWrapper></SearchIconWrapper>
           </Search>
           <Box sx={{ flexGrow: 0 }}>
-            <IconButton onClick={handleMenu} sx={{ p: 0 }}>
-              <Avatar alt={user.firstname} src={user.avatar} />
-            </IconButton>
+            {' '}
+            <Button
+              onClick={handleMenu}
+              variant="outlined"
+              id="fade-button"
+              aria-controls={open ? 'fade-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              style={{
+                display: 'flex',
+                alignItems: 'end',
+                justifyContent: 'end',
+                width: '250px',
+                backgroundColor: 'white',
+              }}
+            >
+              <p class="text-center ml-2 ">
+                {user.firstname} {user.lastname}
+              </p>
+              <Avatar alt={user.firstname} src={user.avatar} />{' '}
+              {!open ? (
+                <ExpandMore />
+              ) : (
+                <ExpandMore
+                  sx={{
+                    transform: 'rotate(180deg)',
+                  }}
+                />
+              )}
+            </Button>
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
@@ -329,15 +351,40 @@ function ResponsiveAppBar() {
                 onClick={handleClose}
                 component={Link}
                 to={`/user/edit-profile/${user.id}`}
+                sx={{
+                  width: '250px',
+                }}
               >
                 Edit Profile
               </MenuItem>
               <MenuItem onClick={handleClose} component={Link} to="/settings">
                 Settings
               </MenuItem>
-              <MenuItem onClick={handleClose} component={Link} to="/my-shops">
-                My shops
+              {isFranchiseProvider && (
+                <MenuItem onClick={handleClose} component={Link} to="/my-shops">
+                  My Shops
+                </MenuItem>
+              )}
+
+              {!isFranchiseProvider && (
+                <MenuItem
+                  onClick={handleClose}
+                  component={Link}
+                  to="/franchise/request"
+                >
+                  Rejoindre l'aventure
+                </MenuItem>
+              )}
+
+              <MenuItem onClick={handleClose} component={Link} to="/logout">
+                Logout
               </MenuItem>
+
+              <MenuItem
+                onClick={handleClose}
+                component={Link}
+                to="/my-shops"
+              ></MenuItem>
             </Menu>
           </Box>
         </Toolbar>

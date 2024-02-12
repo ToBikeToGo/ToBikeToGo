@@ -35,6 +35,15 @@ const theme = createTheme({
       },
     },
   },
+  components: {
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          boxShadow: 'none',
+        },
+      },
+    },
+  },
   typography: {
     h1: {
       fontFamily: 'Young Serif, serif',

@@ -37,16 +37,17 @@ class Franchise
         ConstantsGroups::FRANCHISE_READ,
         ConstantsGroups::SHOP_READ,
         ConstantsGroups::USER_READ,
-        ConstantsGroups::REQUEST_READ
+        ConstantsGroups::REQUEST_READ,
+        'request:validate'
     ])]
     private ?string $label = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::FRANCHISE_READ, ConstantsGroups::REQUEST_READ])]
+    #[Groups([ConstantsGroups::FRANCHISE_READ, ConstantsGroups::REQUEST_READ, 'request:validate'])]
     private ?bool $isActive = null;
 
     #[ORM\OneToMany(mappedBy: 'franchise', targetEntity: Shop::class, orphanRemoval: true)]
-    #[Groups([ConstantsGroups::FRANCHISE_READ, ConstantsGroups::USER_READ])]
+    #[Groups([ConstantsGroups::FRANCHISE_READ, ConstantsGroups::USER_READ, 'request:validate'])]
     private Collection $shops;
 
     #[ORM\OneToMany(mappedBy: 'franchise', targetEntity: Request::class)]
@@ -62,7 +63,6 @@ class Franchise
         ConstantsGroups::FRANCHISE_READ,
         ConstantsGroups::SHOP_READ,
         ConstantsGroups::USER_READ,
-        ConstantsGroups::REQUEST_READ
     ])]
     private ?Media $media = null;
 

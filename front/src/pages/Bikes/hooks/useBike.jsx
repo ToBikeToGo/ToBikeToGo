@@ -12,6 +12,8 @@ const useBikes = () => {
   const [bike, setBike] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [bikesCategories, setBikesCategories] = useState([]);
+  const { page, setPage, onChangePage, setTotalPage, totalPage } =
+    usePagination(0);
 
   const fetchBikesCategories = useCallback(async () => {
     setIsLoading(true);
@@ -24,13 +26,14 @@ const useBikes = () => {
 
   const getBikesByShop = useCallback(() => {
     setIsLoading(true);
-    fetchApi(`${apiUrl}/shops/${shopId}/bikes`)
+    fetchApi(`${apiUrl}/shops/${shopId}/bikes?page=${page}`)
       .then(async (response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
         setBikes(data['hydra:member']);
+        setTotalPage(Math.ceil(data['hydra:totalItems'] / 10));
         setIsLoading(false);
       })
       .then((data) => {
@@ -40,7 +43,7 @@ const useBikes = () => {
           throw new Error('Data is not in the expected format');
         }
       });
-  }, [apiUrl, shopId]);
+  }, [apiUrl, shopId, page]);
 
   const getBikeById = useCallback(
     async (bikeId) => {
@@ -62,6 +65,10 @@ const useBikes = () => {
     pagination,
     fetchBikesCategories,
     bikesCategories,
+    page,
+    setPage,
+    onChangePage,
+    totalPage,
   };
 };
 

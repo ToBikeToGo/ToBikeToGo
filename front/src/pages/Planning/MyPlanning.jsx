@@ -4,8 +4,12 @@ import { Planning } from '../../components/Planning/Planning.jsx';
 import { useUserContext } from '../../hooks/UserContext.jsx';
 import Avatar from '@mui/material/Avatar';
 import { addDays } from 'date-fns';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePlanning } from '../../components/Planning/hooks/usePlanning.jsx';
+import { Link } from 'react-router-dom';
+import Button from '@mui/material/Button';
+import { WbSunny } from '@mui/icons-material';
+import { useTheme } from '@mui/material';
 
 // TODO api call get events for a month by user
 const mockedEvents = [
@@ -19,29 +23,36 @@ const mockedEvents = [
 
 function MyPlanning({ isUser = true }) {
   const { user } = useUserContext();
-  const { getWorkingDays, vacations , setUser} = usePlanning({
+  const theme = useTheme();
+  const { getWorkingDays, vacations, setUser } = usePlanning({
     fromConnectedUser: true,
   });
 
   const [events, setEvents] = useState(mockedEvents);
 
-  useEffect(() =>{
-    setUser(user)
-  }, [user])
+  useEffect(() => {
+    setUser(user);
+  }, [user]);
 
   useEffect(() => {
     if (user?.schedules) {
       const workingDays = getWorkingDays(new Date(), addDays(new Date(), 3000));
-      console.log(events, 'events')
       setEvents([...workingDays, ...vacations]);
     }
   }, [getWorkingDays, user?.schedules, vacations]);
 
-
   return user ? (
     <div className={'flex flex-col w-full p-12 '}>
       <Typography variant={'h1'} className={'text-center p-12'}>
-        Work at {user?.shop?.[0].label}
+        Work at &nbsp;
+        <span
+          className={'p-3'}
+          style={{
+            backgroundColor: theme.palette.secondary.main,
+          }}
+        >
+          {user?.shops?.[0].label}
+        </span>
       </Typography>
       <div>
         <div className="flex mx-auto p-2">
@@ -53,9 +64,21 @@ function MyPlanning({ isUser = true }) {
               height: '100px',
             }}
           />
-          <Typography variant={'h2'}>
-            {isUser ? 'My Planning' : user.firstname + ' Planning'}
-          </Typography>
+          <div class="flex flex-col justify-center items-center">
+            <Typography variant={'h2'}>
+              {isUser ? 'My Planning' : user.firstname + ' Planning'}
+            </Typography>
+            <Link to="/ask-vacation">
+              <Button variant={'outlined'} color={'black'} type="button">
+                Ask for Vacation
+                <WbSunny
+                  sx={{
+                    marginLeft: '10px',
+                  }}
+                />
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <Planning events={events} />

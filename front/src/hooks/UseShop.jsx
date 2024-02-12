@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { getApirUrl } from '../helpers/getApirUrl.js';
 import { useParams } from 'react-router-dom';
 import fetchApi from '../helpers/fetchApi.js';
+import { usePagination } from './usePagination.jsx';
 
 const ShopContext = React.createContext('');
 
@@ -14,7 +15,8 @@ export const useShop = () => {
   const [search, setSearch] = useState('');
   const [shops, setShops] = useState([]);
   const [members, setMembers] = useState([]);
-
+  const { page, setPage, onChangePage, setTotalPage, totalPage } =
+    usePagination(0);
   const apiUrl = getApirUrl();
 
   const getShopWithMembers = useCallback(
@@ -94,19 +96,19 @@ export const useShop = () => {
       if (label) {
         urlSearchParams.append('label', label);
       }
+      urlSearchParams.append('page', page);
 
       return fetchApi(`${apiUrl}/shops?${urlSearchParams.toString()}`)
         .then((response) => response.json())
         .then((data) => {
+          setTotalPage(Math.ceil(data['hydra:totalItems'] / 10));
           setShops(data['hydra:member']);
           setIsLoading(false);
+          return data['hydra:member'];
         });
     },
-    [apiUrl]
+    [apiUrl, page]
   );
-
-
-
 
   return {
     shops,
@@ -124,6 +126,10 @@ export const useShop = () => {
     isLoading,
     search,
     setSearch,
+    page,
+    setPage,
+    onChangePage,
+    totalPage,
   };
 };
 

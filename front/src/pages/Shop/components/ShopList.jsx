@@ -5,7 +5,13 @@ import { Shop } from './Shop.jsx';
 import { Pagination } from '@mui/material';
 import React from 'react';
 
-export const ShopListComponent = ({ shops, mapModeEnabled = false }) => {
+export const ShopListComponent = ({
+  shops,
+  mapModeEnabled = false,
+  page,
+  onChangePage,
+  totalPage,
+}) => {
   return (
     <Container>
       {mapModeEnabled && (
@@ -26,7 +32,12 @@ export const ShopListComponent = ({ shops, mapModeEnabled = false }) => {
           'p-5 px-8 rounded-xl bg-white shadow-xl  m-5 flex items-center justify-center '
         }
       >
-        <Pagination count={1} variant="outlined" />
+        <Pagination
+          count={totalPage}
+          page={page}
+          onChange={onChangePage}
+          variant="outlined"
+        />
       </div>
     </Container>
   );

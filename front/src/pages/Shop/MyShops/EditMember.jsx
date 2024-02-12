@@ -21,7 +21,7 @@ const EditMember = ({ setToast }) => {
   };
 
   const form = {
-    title: 'Add a member',
+    title: 'Edit member',
     canEditAll: true,
     fields: [
       {
@@ -30,6 +30,7 @@ const EditMember = ({ setToast }) => {
         label: 'Last name',
         name: 'lastname',
         value: lastname,
+        isEditable: true,
       },
       {
         type: 'text',
