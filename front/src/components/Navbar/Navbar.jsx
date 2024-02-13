@@ -140,7 +140,8 @@ function ResponsiveAppBar() {
     setAnchorElNav(null);
   };
 
-  const { user, isFranchiseProvider } = useUserContext();
+  const { user, isFranchiseProvider, handleLogout, isLogged } =
+    useUserContext();
 
   return (
     <AppBar
@@ -311,35 +312,49 @@ function ResponsiveAppBar() {
           </Search>
           <Box sx={{ flexGrow: 0 }}>
             {' '}
-            <Button
-              onClick={handleMenu}
-              variant="outlined"
-              id="fade-button"
-              aria-controls={open ? 'fade-menu' : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? 'true' : undefined}
-              style={{
-                display: 'flex',
-                alignItems: 'end',
-                justifyContent: 'end',
-                width: '250px',
-                backgroundColor: 'white',
-              }}
-            >
-              <p class="text-center ml-2 ">
-                {user.firstname} {user.lastname}
-              </p>
-              <Avatar alt={user.firstname} src={user.avatar} />{' '}
-              {!open ? (
-                <ExpandMore />
-              ) : (
-                <ExpandMore
-                  sx={{
-                    transform: 'rotate(180deg)',
-                  }}
-                />
-              )}
-            </Button>
+            {isLogged ? (
+              <Button
+                onClick={handleMenu}
+                variant="outlined"
+                id="fade-button"
+                aria-controls={open ? 'fade-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'end',
+                  width: '250px',
+                  backgroundColor: 'white',
+                }}
+              >
+                <p class="text-center ml-2 mr-2 ">
+                  {user.firstname} {user.lastname}
+                </p>
+                <Avatar alt={user.firstname} src={user.avatar} />{' '}
+                {!open ? (
+                  <ExpandMore />
+                ) : (
+                  <ExpandMore
+                    sx={{
+                      transform: 'rotate(180deg)',
+                    }}
+                  />
+                )}
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                component={Link}
+                to="/login"
+                sx={{
+                  width: '250px',
+                  backgroundColor: 'white',
+                }}
+              >
+                Me connecter
+              </Button>
+            )}
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
@@ -376,7 +391,7 @@ function ResponsiveAppBar() {
                 </MenuItem>
               )}
 
-              <MenuItem onClick={handleClose} component={Link} to="/logout">
+              <MenuItem onClick={handleLogout} component={Link} to="">
                 Logout
               </MenuItem>
 

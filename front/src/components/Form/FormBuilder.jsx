@@ -294,7 +294,7 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
           );
         }
       })}
-      {selectedImage && (
+      {selectedImage != null && (
         <div
           style={{
             display: 'flex',

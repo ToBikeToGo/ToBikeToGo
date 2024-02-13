@@ -17,6 +17,7 @@ export const AdminCrudMolette = ({ entityName, handleEdit, handleRemove }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [openDialog, setOpenDialog] = useState(false);
+  const { isAdmin } = useUserContext();
 
   const handleOpenDialog = () => {
     setOpenDialog(true);

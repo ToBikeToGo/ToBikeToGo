@@ -22,7 +22,7 @@ const mockedEvents = [
 ];
 
 function MyPlanning({ isUser = true }) {
-  const { user } = useUserContext();
+  const { user, userHasShop } = useUserContext();
   const theme = useTheme();
   const { getWorkingDays, vacations, setUser } = usePlanning({
     fromConnectedUser: true,
@@ -43,17 +43,19 @@ function MyPlanning({ isUser = true }) {
 
   return user ? (
     <div className={'flex flex-col w-full p-12 '}>
-      <Typography variant={'h1'} className={'text-center p-12'}>
-        Work at &nbsp;
-        <span
-          className={'p-3'}
-          style={{
-            backgroundColor: theme.palette.secondary.main,
-          }}
-        >
-          {user?.shops?.[0].label}
-        </span>
-      </Typography>
+      {userHasShop && (
+        <Typography variant={'h1'} className={'text-center p-12'}>
+          Work at &nbsp;
+          <span
+            className={'p-3'}
+            style={{
+              backgroundColor: theme.palette.secondary.main,
+            }}
+          >
+            {user?.shops?.[0]?.label}
+          </span>
+        </Typography>
+      )}
       <div>
         <div className="flex mx-auto p-2">
           <Avatar
