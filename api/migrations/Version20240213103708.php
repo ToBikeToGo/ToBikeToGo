@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240204211251 extends AbstractMigration
+final class Version20240213103708 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,12 +21,14 @@ final class Version20240204211251 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SEQUENCE bike_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('CREATE SEQUENCE bike_category_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE booking_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE category_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE comment_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE franchise_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE media_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE notification_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('CREATE SEQUENCE notification_type_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE payment_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE product_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE proposition_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
@@ -39,7 +41,8 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE type_question_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE "user_id_seq" INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE vacation_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE bike (id INT NOT NULL, shop_id INT NOT NULL, media_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, brand VARCHAR(255) NOT NULL, label VARCHAR(255) NOT NULL, price DOUBLE PRECISION NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE bike (id INT NOT NULL, category_id INT DEFAULT NULL, shop_id INT NOT NULL, media_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, brand VARCHAR(255) NOT NULL, label VARCHAR(255) NOT NULL, price DOUBLE PRECISION NOT NULL, is_electric BOOLEAN DEFAULT false NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE INDEX IDX_4CBC378012469DE2 ON bike (category_id)');
         $this->addSql('CREATE INDEX IDX_4CBC37804D16C4DD ON bike (shop_id)');
         $this->addSql('CREATE INDEX IDX_4CBC3780EA9FDD75 ON bike (media_id)');
         $this->addSql('CREATE INDEX IDX_4CBC3780B03A8386 ON bike (created_by_id)');
@@ -47,6 +50,7 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('CREATE TABLE bike_proposition (bike_id INT NOT NULL, proposition_id INT NOT NULL, PRIMARY KEY(bike_id, proposition_id))');
         $this->addSql('CREATE INDEX IDX_548ADB76D5A4816F ON bike_proposition (bike_id)');
         $this->addSql('CREATE INDEX IDX_548ADB76DB96F9E ON bike_proposition (proposition_id)');
+        $this->addSql('CREATE TABLE bike_category (id INT NOT NULL, name VARCHAR(255) NOT NULL, type VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE booking (id INT NOT NULL, user_id INT NOT NULL, bike_id INT DEFAULT NULL, start_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, end_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, rating DOUBLE PRECISION NOT NULL, status BOOLEAN NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_E00CEDDEA76ED395 ON booking (user_id)');
         $this->addSql('CREATE INDEX IDX_E00CEDDED5A4816F ON booking (bike_id)');
@@ -70,10 +74,14 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('CREATE TABLE media (id INT NOT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, extension VARCHAR(20) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_6A2CA10CB03A8386 ON media (created_by_id)');
         $this->addSql('CREATE INDEX IDX_6A2CA10C896DBBDE ON media (updated_by_id)');
-        $this->addSql('CREATE TABLE notification (id INT NOT NULL, notification_type VARCHAR(255) NOT NULL, sender VARCHAR(255) NOT NULL, sent_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE notification (id INT NOT NULL, notification_type_id INT NOT NULL, sender_id INT DEFAULT NULL, text VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, is_already_seen BOOLEAN DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE INDEX IDX_BF5476CAD0520624 ON notification (notification_type_id)');
+        $this->addSql('CREATE INDEX IDX_BF5476CAF624B39D ON notification (sender_id)');
         $this->addSql('CREATE TABLE notification_user (notification_id INT NOT NULL, user_id INT NOT NULL, PRIMARY KEY(notification_id, user_id))');
         $this->addSql('CREATE INDEX IDX_35AF9D73EF1A9D84 ON notification_user (notification_id)');
         $this->addSql('CREATE INDEX IDX_35AF9D73A76ED395 ON notification_user (user_id)');
+        $this->addSql('CREATE TABLE notification_type (id INT NOT NULL, designation VARCHAR(255) NOT NULL, slug VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_34E21C13989D9B62 ON notification_type (slug)');
         $this->addSql('CREATE TABLE payment (id INT NOT NULL, booking_id INT DEFAULT NULL, price DOUBLE PRECISION NOT NULL, commission INT NOT NULL, stripe_id VARCHAR(255) NOT NULL, status BOOLEAN DEFAULT NULL, payment_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_6D28840D3301C60 ON payment (booking_id)');
         $this->addSql('CREATE TABLE payment_shop (payment_id INT NOT NULL, shop_id INT NOT NULL, PRIMARY KEY(payment_id, shop_id))');
@@ -102,7 +110,7 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_3B978F9FB03A8386 ON request (created_by_id)');
         $this->addSql('CREATE INDEX IDX_3B978F9F896DBBDE ON request (updated_by_id)');
         $this->addSql('CREATE TABLE schedule (id INT NOT NULL, dow INT NOT NULL, start_time TIME(0) WITHOUT TIME ZONE NOT NULL, end_time TIME(0) WITHOUT TIME ZONE NOT NULL, start_validity DATE DEFAULT NULL, end_validity DATE DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE TABLE shop (id INT NOT NULL, franchise_id INT NOT NULL, media_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, label VARCHAR(255) NOT NULL, address VARCHAR(255) NOT NULL, is_opened BOOLEAN NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE shop (id INT NOT NULL, franchise_id INT NOT NULL, media_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, label VARCHAR(255) NOT NULL, street VARCHAR(255) NOT NULL, zip_code VARCHAR(255) NOT NULL, city VARCHAR(255) NOT NULL, is_opened BOOLEAN NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_AC6A4CA2523CAB89 ON shop (franchise_id)');
         $this->addSql('CREATE INDEX IDX_AC6A4CA2EA9FDD75 ON shop (media_id)');
         $this->addSql('CREATE INDEX IDX_AC6A4CA2B03A8386 ON shop (created_by_id)');
@@ -122,9 +130,13 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('CREATE TABLE user_schedule (user_id INT NOT NULL, schedule_id INT NOT NULL, PRIMARY KEY(user_id, schedule_id))');
         $this->addSql('CREATE INDEX IDX_BAB5F5FBA76ED395 ON user_schedule (user_id)');
         $this->addSql('CREATE INDEX IDX_BAB5F5FBA40BC2D5 ON user_schedule (schedule_id)');
+        $this->addSql('CREATE TABLE user_shop (user_id INT NOT NULL, shop_id INT NOT NULL, PRIMARY KEY(user_id, shop_id))');
+        $this->addSql('CREATE INDEX IDX_D6EB006BA76ED395 ON user_shop (user_id)');
+        $this->addSql('CREATE INDEX IDX_D6EB006B4D16C4DD ON user_shop (shop_id)');
         $this->addSql('CREATE TABLE vacation (id INT NOT NULL, shop_id INT DEFAULT NULL, user_id INT DEFAULT NULL, start_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, end_date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, status SMALLINT NOT NULL, description TEXT DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_E3DADF754D16C4DD ON vacation (shop_id)');
         $this->addSql('CREATE INDEX IDX_E3DADF75A76ED395 ON vacation (user_id)');
+        $this->addSql('ALTER TABLE bike ADD CONSTRAINT FK_4CBC378012469DE2 FOREIGN KEY (category_id) REFERENCES bike_category (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE bike ADD CONSTRAINT FK_4CBC37804D16C4DD FOREIGN KEY (shop_id) REFERENCES shop (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE bike ADD CONSTRAINT FK_4CBC3780EA9FDD75 FOREIGN KEY (media_id) REFERENCES media (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE bike ADD CONSTRAINT FK_4CBC3780B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -147,6 +159,8 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('ALTER TABLE franchise_user ADD CONSTRAINT FK_4FBBCB81A76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE media ADD CONSTRAINT FK_6A2CA10CB03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE media ADD CONSTRAINT FK_6A2CA10C896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE notification ADD CONSTRAINT FK_BF5476CAD0520624 FOREIGN KEY (notification_type_id) REFERENCES notification_type (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE notification ADD CONSTRAINT FK_BF5476CAF624B39D FOREIGN KEY (sender_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE notification_user ADD CONSTRAINT FK_35AF9D73EF1A9D84 FOREIGN KEY (notification_id) REFERENCES notification (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE notification_user ADD CONSTRAINT FK_35AF9D73A76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE payment ADD CONSTRAINT FK_6D28840D3301C60 FOREIGN KEY (booking_id) REFERENCES booking (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -180,6 +194,8 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('ALTER TABLE "user" ADD CONSTRAINT FK_8D93D649EA9FDD75 FOREIGN KEY (media_id) REFERENCES media (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE user_schedule ADD CONSTRAINT FK_BAB5F5FBA76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE user_schedule ADD CONSTRAINT FK_BAB5F5FBA40BC2D5 FOREIGN KEY (schedule_id) REFERENCES schedule (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE user_shop ADD CONSTRAINT FK_D6EB006BA76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE user_shop ADD CONSTRAINT FK_D6EB006B4D16C4DD FOREIGN KEY (shop_id) REFERENCES shop (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE vacation ADD CONSTRAINT FK_E3DADF754D16C4DD FOREIGN KEY (shop_id) REFERENCES shop (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE vacation ADD CONSTRAINT FK_E3DADF75A76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
@@ -189,12 +205,14 @@ final class Version20240204211251 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
         $this->addSql('DROP SEQUENCE bike_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE bike_category_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE booking_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE category_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE comment_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE franchise_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE media_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE notification_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE notification_type_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE payment_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE product_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE proposition_id_seq CASCADE');
@@ -207,6 +225,7 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('DROP SEQUENCE type_question_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE "user_id_seq" CASCADE');
         $this->addSql('DROP SEQUENCE vacation_id_seq CASCADE');
+        $this->addSql('ALTER TABLE bike DROP CONSTRAINT FK_4CBC378012469DE2');
         $this->addSql('ALTER TABLE bike DROP CONSTRAINT FK_4CBC37804D16C4DD');
         $this->addSql('ALTER TABLE bike DROP CONSTRAINT FK_4CBC3780EA9FDD75');
         $this->addSql('ALTER TABLE bike DROP CONSTRAINT FK_4CBC3780B03A8386');
@@ -229,6 +248,8 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('ALTER TABLE franchise_user DROP CONSTRAINT FK_4FBBCB81A76ED395');
         $this->addSql('ALTER TABLE media DROP CONSTRAINT FK_6A2CA10CB03A8386');
         $this->addSql('ALTER TABLE media DROP CONSTRAINT FK_6A2CA10C896DBBDE');
+        $this->addSql('ALTER TABLE notification DROP CONSTRAINT FK_BF5476CAD0520624');
+        $this->addSql('ALTER TABLE notification DROP CONSTRAINT FK_BF5476CAF624B39D');
         $this->addSql('ALTER TABLE notification_user DROP CONSTRAINT FK_35AF9D73EF1A9D84');
         $this->addSql('ALTER TABLE notification_user DROP CONSTRAINT FK_35AF9D73A76ED395');
         $this->addSql('ALTER TABLE payment DROP CONSTRAINT FK_6D28840D3301C60');
@@ -262,10 +283,13 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('ALTER TABLE "user" DROP CONSTRAINT FK_8D93D649EA9FDD75');
         $this->addSql('ALTER TABLE user_schedule DROP CONSTRAINT FK_BAB5F5FBA76ED395');
         $this->addSql('ALTER TABLE user_schedule DROP CONSTRAINT FK_BAB5F5FBA40BC2D5');
+        $this->addSql('ALTER TABLE user_shop DROP CONSTRAINT FK_D6EB006BA76ED395');
+        $this->addSql('ALTER TABLE user_shop DROP CONSTRAINT FK_D6EB006B4D16C4DD');
         $this->addSql('ALTER TABLE vacation DROP CONSTRAINT FK_E3DADF754D16C4DD');
         $this->addSql('ALTER TABLE vacation DROP CONSTRAINT FK_E3DADF75A76ED395');
         $this->addSql('DROP TABLE bike');
         $this->addSql('DROP TABLE bike_proposition');
+        $this->addSql('DROP TABLE bike_category');
         $this->addSql('DROP TABLE booking');
         $this->addSql('DROP TABLE category');
         $this->addSql('DROP TABLE category_question');
@@ -275,6 +299,7 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('DROP TABLE media');
         $this->addSql('DROP TABLE notification');
         $this->addSql('DROP TABLE notification_user');
+        $this->addSql('DROP TABLE notification_type');
         $this->addSql('DROP TABLE payment');
         $this->addSql('DROP TABLE payment_shop');
         $this->addSql('DROP TABLE payment_user');
@@ -291,6 +316,7 @@ final class Version20240204211251 extends AbstractMigration
         $this->addSql('DROP TABLE type_question');
         $this->addSql('DROP TABLE "user"');
         $this->addSql('DROP TABLE user_schedule');
+        $this->addSql('DROP TABLE user_shop');
         $this->addSql('DROP TABLE vacation');
     }
 }
