@@ -13,7 +13,7 @@ const useUser = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const getUser = useCallback(() => {
     const apiUrl = getApirUrl();
     const mediaUrl = getMediaUrl();
     fetchApi(`${apiUrl}/me`)
@@ -47,7 +47,11 @@ const useUser = () => {
       .catch((error) => {
         setError(error);
       });
-  }, []);
+  }, [getApirUrl, getMediaUrl, fetchApi, setUser, setError, useNavigate]);
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem('token');
@@ -71,6 +75,10 @@ const useUser = () => {
     return user?.shops && user.shops.length > 0;
   }, [user]);
 
+  const refreshUser = useCallback(() => {
+    getUser();
+  }, [getUser]);
+
   const value = React.useMemo(() => {
     return {
       userHasShop,
@@ -82,6 +90,7 @@ const useUser = () => {
       isAdmin,
       isFranchiseProvider,
       handleLogout,
+      refreshUser,
     };
   }, [
     isAdmin,
@@ -93,6 +102,7 @@ const useUser = () => {
     isFranchiseProvider,
     handleLogout,
     userHasShop,
+    refreshUser,
   ]);
 
   return value;
