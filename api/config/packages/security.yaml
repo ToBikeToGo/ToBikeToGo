@@ -38,14 +38,19 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
     role_hierarchy:
-        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_ADMIN: ROLE_PROVIDER
+        ROLE_PROVIDER: ROLE_EMPLOYEE
+        ROLE_EMPLOYEE: ROLE_USER
+        ROLE_USER: ROLE_USER_VALIDATED
 
     access_control:
         - { path: ^/api/register, methods: POST, roles: PUBLIC_ACCESS }
         - { path: ^/api/activate, methods: GET, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing API documentations and Swagger UI docs
+        - { path: ^/auth, roles: ROLE_USER_VALIDATED }
         - { path: ^/auth, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: ROLE_USER_VALIDATED }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

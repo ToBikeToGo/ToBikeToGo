@@ -3,6 +3,7 @@
 namespace App\Entity\Auth;
 
 use AllowDynamicProperties;
+use ApiPlatform\Metadata\Delete;
 use App\Controller\FranchiseUsersAdminAction;
 use App\Controller\RegisterMemberAction;
 use App\Entity\Shop;
@@ -42,9 +43,9 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     operations: [
-    new GetCollection(
+        new GetCollection(
                 uriTemplate: '/vacations/{id}/users',
-            ),
+        ),
         new Get(
             uriTemplate: '/me',
             controller: UserController::class,
@@ -57,15 +58,14 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             read: false,
         ),
         new GetCollection(),
-                new GetCollection(
-                    uriTemplate: '/vacations/{id}/users',
-
-                ),
-                new GetCollection(
-                    uriTemplate: '/franchises/{id}/users',
-                    controller: FranchiseUsersAdminAction::class,
-                    read: false,
-                ),
+        new GetCollection(
+            uriTemplate: '/vacations/{id}/users',
+        ),
+        new GetCollection(
+            uriTemplate: '/franchises/{id}/users',
+            controller: FranchiseUsersAdminAction::class,
+            read: false,
+        ),
         new Post(denormalizationContext: ['groups' => ['user:write']]),
         new Post(
             uriTemplate: '/register',
@@ -76,12 +76,15 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             uriTemplate: '/register/member',
             controller: RegisterMemberAction::class,
             denormalizationContext: ['groups' => ['shop:members:write', 'user:write']],
-            read: false,
+            security: "is_granted('ROLE_ADMIN')",
+            read: false
         ),
         new Get(normalizationContext: ['groups' => [ConstantsGroups::USER_READ, 'user:read:full']]),
         new Patch(denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]]),
         // new Put(), // I don't use PUT, only PATCH
-        // new Delete(), // Disable DELETE method, do soft delete instead
+        new Delete(
+            security: "is_granted('ROLE_ADMIN')",
+        ),
     ],
     normalizationContext: ['groups' => [ConstantsGroups::USER_READ]],
     denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]],
