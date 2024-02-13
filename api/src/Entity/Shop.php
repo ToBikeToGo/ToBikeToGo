@@ -366,4 +366,9 @@ class Shop
 
         return $this;
     }
+
+    public function isIsOpened(): ?bool
+    {
+        return $this->isOpened;
+    }
 }

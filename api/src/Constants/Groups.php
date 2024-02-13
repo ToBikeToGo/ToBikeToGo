@@ -22,6 +22,7 @@ final class Groups {
     ];
     const USER_READ = 'user:read';
     const USER_WRITE = 'user:write';
+    const USER_FRANCHISE_WRITE = 'user:franchise:write';
     const BIKE_READ = 'bike:read';
     const BIKE_WRITE = 'bike:write';
     const QUESTION_READ = 'question:read';
@@ -52,5 +53,5 @@ final class Groups {
     const VACATION_READ = 'vacation:read';
     const VACATION_WRITE = 'vacation:write';
     const SHOP_VACATIONS_READ = 'shop:vacations:read';
-
+    const NOTIFICATION_READ = 'notification:write';
 }

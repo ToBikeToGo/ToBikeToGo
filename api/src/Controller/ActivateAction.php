@@ -12,7 +12,9 @@ use Symfony\Component\HttpFoundation\Request;
 class ActivateAction extends AbstractController
 {
     public function __construct(
-        private readonly UserRepository $userRepository
+        private readonly UserRepository         $userRepository,
+        private readonly EntityManagerInterface $entityManager
+
     )
     {
     }
@@ -25,9 +27,7 @@ class ActivateAction extends AbstractController
         $user = $this->userRepository->findOneBy(["id" => $userId, "token" => $token]);
         if ($user) {
             $user->setStatus(true);
-            $this->em->persist($user);
-            $this->em->flush();
-
+            $this->entityManager->flush();
             $json = [
                 'status' => 'success',
                 'code' => '200',

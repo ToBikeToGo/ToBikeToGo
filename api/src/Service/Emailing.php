@@ -27,6 +27,37 @@ class Emailing
         }
         return true;
     }
+    public function sendNotificationEmailing(array $emailUsers, int $idTemplate, string $text): bool
+    {
+        $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', $_ENV['MAILER_API_KEY']);
+        $apiInstance = new TransactionalEmailsApi(
+            new Client(),
+            $config
+        );
+
+        $sendSmtpEmail = new \SendinBlue\Client\Model\SendSmtpEmail();
+        $to = [];
+
+        // Boucle sur chaque utilisateur et crée une instance de SendSmtpEmailTo pour chaque utilisateur
+        foreach ($emailUsers as $user) {
+            $to[] = new \SendinBlue\Client\Model\SendSmtpEmailTo(['email' => $user->getEmail(), 'name' => $user->getLastname() . ' ' . $user->getFirstname()]);
+        }
+
+        $sendSmtpEmail->setTo($to);
+        $sendSmtpEmail->setTemplateId($idTemplate);
+        $sendSmtpEmail->setParams([
+            'text' => $text
+        ]);
+
+        try {
+            $apiInstance->sendTransacEmail($sendSmtpEmail);
+        } catch (\Exception $e) {
+            echo 'Exception when calling TransactionalEmailsApi->sendTransacEmail: ', $e->getMessage(), PHP_EOL;
+            return false;
+        }
+
+        return true;
+    }
 
 
 

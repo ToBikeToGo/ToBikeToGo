@@ -3,9 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Auth\User;
+use App\Entity\Franchise;
+use App\Enum\NotificationTypeEnum;
+use App\Repository\FranchiseRepository;
 use App\Service\Emailing;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -14,7 +19,10 @@ class RegisterAction extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly Emailing $emailing
+        private readonly NotificationService    $notificationService,
+        private readonly FranchiseRepository    $franchiseRepository,
+        private readonly Security               $security,
+        private readonly Emailing               $emailing
     )
     {
     }
@@ -23,6 +31,7 @@ class RegisterAction extends AbstractController
     {
         $newUser = json_decode($request->getContent(), true);
         $bytes = bin2hex(random_bytes(16));
+
         $user = new User();
         $user->setRoles($newUser['roles']);
         $user->setLastname($newUser['lastname']);
@@ -40,11 +49,30 @@ class RegisterAction extends AbstractController
         $user->setLocale($newUser['locale']);
         $user->setStatus(false);
         $user->setToken($bytes);
-
+        if (isset($newUser['franchises'])) {
+            foreach ($newUser['franchises'] as $franchiseUri) {
+                $franchiseId = basename($franchiseUri);
+                $franchise = $this->franchiseRepository->find($franchiseId);
+                if ($franchise instanceof Franchise) {
+                    $user->addFranchise($franchise);
+                }
+            }
+        }
         $this->em->persist($user);
         $this->emailing->sendEmailingTemplate([$user->getEmail()], 1, $user->getToken(), $user->getId());
-
         $this->em->flush();
+        if (isset($franchise)) {
+            $slug = NotificationTypeEnum::EMPLOYEE_ADDED;
+            /** @var User $admin */
+            $admin = $this->getUser();
+            $this->notificationService->sendNotification(
+                emailing: $this->emailing,
+                sender: $admin,
+                slug: $slug,
+                affiliates: $franchise->getUsers()->getValues(),
+                action: $user
+            );
+        }
         $json = [
             'status' => 'success',
             'code' => '200',
