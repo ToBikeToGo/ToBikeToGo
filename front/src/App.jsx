@@ -93,7 +93,6 @@ function App() {
                         path="/last-booking/:shopId"
                         element={<LastBooking />}
                       />
-
                       <Route
                         exact
                         path="/shop-booking-planning/:shopId"
@@ -150,7 +149,7 @@ function App() {
                         element={<EditProfile />}
                       />
                       <Route
-                        path="/my-shops/:shopId"
+                        path="/my-shops/:shopId/members"
                         element={<ShopForOwner />}
                       />
                       <Route path="*" element={<h1>404</h1>} />

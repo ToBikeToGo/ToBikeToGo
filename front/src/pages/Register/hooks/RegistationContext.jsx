@@ -14,6 +14,10 @@ const useRegistrationContext = () => {
   return context;
 };
 
+export const isStepOptional = (step) => {
+  return false;
+};
+
 const RegistationProvider = ({ children }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
@@ -23,6 +27,7 @@ const RegistationProvider = ({ children }) => {
   };
   const handleNext = () => {
     let newSkipped = skipped;
+
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
@@ -30,15 +35,6 @@ const RegistationProvider = ({ children }) => {
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped(newSkipped);
-  };
-
-  const checkPhone = (phone) => {
-    // check with regex
-    return /^[0-9]{10}$/.test(phone) && phone.length === 10;
-  };
-
-  const checkInputText = (text) => {
-    return /^[a-zA-Z]+$/.test(text) && text.length > 0 && text.length < 55;
   };
 
   const register = useCallback(
@@ -83,20 +79,9 @@ const RegistationProvider = ({ children }) => {
       skipped,
       setSkipped,
       handleNext,
-      checkPhone,
-      checkInputText,
       register,
     };
-  }, [
-    activeStep,
-    setActiveStep,
-    skipped,
-    setSkipped,
-    handleNext,
-    checkPhone,
-    checkInputText,
-    register,
-  ]);
+  }, [activeStep, setActiveStep, skipped, setSkipped, handleNext, register]);
 
   return (
     <RegistationContext.Provider value={registrationValues}>

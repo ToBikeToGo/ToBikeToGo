@@ -7,7 +7,7 @@ export const useCalendar = ({ onChangeDateCallback, disabledDates = [] }) => {
   const [dates, setDates] = useState([
     {
       startDate: new Date(),
-      endDate: addDays(new Date(), 7),
+      endDate: addDays(new Date(), 1),
       key: 'selection',
     },
   ]);

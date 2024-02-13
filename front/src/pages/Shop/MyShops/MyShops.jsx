@@ -12,7 +12,13 @@ export const MyShops = () => {
   const { myFranchises, isLoading: isFranchiseLoading } = useMyFranchises();
   const theme = useTheme();
 
-  const { myShops, isLoading: isShopLoading } = useMyShops({
+  const {
+    myShops,
+    isLoading: isShopLoading,
+    totalPage,
+    page,
+    onChangePage,
+  } = useMyShops({
     franchiseId: myFranchises[0]?.id,
   });
 
@@ -37,7 +43,14 @@ export const MyShops = () => {
 
       {isLoading && <CircularProgress color={'secondary'} className={'m-5'} />}
 
-      {myShops.length > 0 && <ShopListComponent shops={myShops} />}
+      {myShops.length > 0 && (
+        <ShopListComponent
+          shops={myShops}
+          onChangePage={onChangePage}
+          totalPage={totalPage}
+          page={page}
+        />
+      )}
 
       {myShops.length === 0 && !isLoading && (
         <div>

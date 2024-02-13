@@ -1,45 +1,67 @@
-import { addDays, isAfter } from 'date-fns';
+import { isAfter } from 'date-fns';
 import BikeImg from './../../assets/images/bike-home.jpg';
-import Bike2Img from './../../assets/images/bike1.avif';
-import {
-  CircularProgress,
-  Input,
-  Modal,
-  Pagination,
-  TextField,
-} from '@mui/material';
+import { CircularProgress, Modal, Pagination, TextField } from '@mui/material';
 import Rating from '@mui/material/Rating';
 import Typography from '@mui/material/Typography';
-import { Card, CardContent, CardMedia, Grid, Container } from '@mui/material';
+import { Container } from '@mui/material';
 import Button from '@mui/material/Button';
-import EngineeringIcon from '@mui/icons-material/Engineering';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import { today } from 'react-big-calendar/lib/utils/dates.js';
-import { useShopContext } from '../../hooks/UseShop.jsx';
 import { useBooking } from './hooks/useBooking.jsx';
 import { useEffect, useState } from 'react';
 import { useUserContext } from '../../hooks/UserContext.jsx';
 import { getMediaUrl } from '../../helpers/getApirUrl.js';
 import Box from '@mui/material/Box';
 import { calculateTotalPrice } from '../../helpers/calculateTotalPrice.js';
-import { BookmarkBorder, ElectricBike, RateReview } from '@mui/icons-material';
+import { ElectricBike, RateReview } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import { TimeSlots } from '../../components/TimeSlots/Timeslot.jsx';
+import { DateRangePicker } from 'react-date-range';
+import { Calendar } from '../../components/Calendar/Calendar.jsx';
+import { useCalendar } from '../../components/Calendar/hooks/useCalendar.jsx';
+import { useSlots } from '../../hooks/useSlots.jsx';
+import * as React from 'react';
 
 const LastBooking = () => {
   const { user } = useUserContext();
   const mediaUrl = getMediaUrl();
-  const [open, setOpen] = useState(false);
+  const [openRatingModal, setOpenRatingModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [value, setValue] = useState(2);
+  const [openNewBookingModal, setOpenNewBookingModal] = useState(false);
+  const {
+    slots,
+    getAvailableSlotsForDateAndShop,
+    getUnavailableDatesForTheBike,
+    isLoading: isLoadingSlots,
+    unavailableDates,
+  } = useSlots();
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [timeSlot, setTimeSlot] = useState(null);
+  const [initialBookingDaysCount, setInitialBookingDaysCount] = useState(1);
+  const {
+    calendarRef,
+    dates,
+    isOpen,
+    onChangeDate,
+    handleOpen: handleOpenCalendar,
+  } = useCalendar({
+    onChangeDateCallback: (d) => {
+      getAvailableSlotsForDateAndShop({
+        shopId: 22,
+        dates: d,
+      });
+    },
+  });
 
   const handleOpen = (bookingId, rating) => {
     setSelectedBooking(bookingId);
     setRating(rating);
-    setOpen(true);
+    setOpenRatingModal(true);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setOpenRatingModal(false);
   };
 
   const {
@@ -49,6 +71,9 @@ const LastBooking = () => {
     rateBooking,
     rating,
     setRating,
+    totalPage,
+    page,
+    onChangePage,
   } = useBooking();
 
   useEffect(() => {
@@ -63,6 +88,35 @@ const LastBooking = () => {
     rateBooking(selectedBooking, rating);
     handleClose();
     fetchBookingByUserId(user?.id);
+  };
+
+  const handleOpenNewBookingModal = (booking) => {
+    setSelectedBooking(booking);
+    setInitialBookingDaysCount(
+      (new Date(booking.endDate) - new Date(booking.startDate)) /
+        (1000 * 60 * 60 * 24)
+    );
+    getUnavailableDatesForTheBike({
+      bikeId: booking.bike.id,
+    });
+    setOpenNewBookingModal(true);
+  };
+
+  const handleCloseNewBookingModal = () => {
+    setOpenNewBookingModal(false);
+  };
+
+  const handleNewBooking = () => {
+    handleCloseNewBookingModal();
+    fetchBookingByUserId(user?.id);
+  };
+
+  const isDateUnavailable = (date) => {
+    return unavailableDates.some(
+      (unavailableDate) =>
+        date >= new Date(unavailableDate.startDate) &&
+        date <= new Date(unavailableDate.endDate)
+    );
   };
 
   if (isLoading) return <CircularProgress sx={{ m: 5 }} />;
@@ -156,11 +210,12 @@ const LastBooking = () => {
                 Donner mon avis
                 <RateReview sx={{ marginLeft: '0.5em' }} />
               </Button>
+
               <Button
                 variant="outlined"
                 color="black"
                 component={Link}
-                to={`/rent/bike/${reservation.bike.id}`}
+                onClick={() => handleOpenNewBookingModal(reservation)}
                 sx={{
                   marginTop: '1em',
                   color: 'white',
@@ -174,11 +229,82 @@ const LastBooking = () => {
                   }}
                 />
               </Button>
+
+              <Modal
+                open={openNewBookingModal}
+                onClose={handleCloseNewBookingModal}
+                aria-labelledby="new-booking-modal-title"
+                aria-describedby="new-booking-modal-description"
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '50vw',
+                    bgcolor: 'background.paper',
+                    border: '2px solid #000',
+                    boxShadow: 24,
+                    p: 4,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography
+                    id="new-booking-modal-title"
+                    variant="h3"
+                    component="h2"
+                  >
+                    Want to report your booking ?
+                  </Typography>
+                  <div
+                    ref={calendarRef}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      position: 'relative',
+                    }}
+                  >
+                    <Calendar
+                      calendarRef={calendarRef}
+                      onChangeDate={onChangeDate}
+                      disabledDateCallback={(date) => isDateUnavailable(date)}
+                      dates={dates}
+                      handleOpen={handleOpenCalendar}
+                      isOpen={isOpen}
+                      maxDays={initialBookingDaysCount}
+                    />
+                  </div>
+                  <TimeSlots onChange={setTimeSlot} unavailableSlots={slots} />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{
+                      margin: '1em',
+                      color: 'white',
+                    }}
+                    onClick={handleNewBooking}
+                  >
+                    Submit
+                  </Button>
+                  <Button
+                    sx={{
+                      margin: '1em',
+                      color: 'white',
+                    }}
+                    onClick={handleCloseNewBookingModal}
+                  >
+                    Close
+                  </Button>
+                </Box>
+              </Modal>
             </div>
           </div>
         ))}
         <Modal
-          open={open}
+          open={openRatingModal}
           onClose={handleClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
@@ -250,7 +376,12 @@ const LastBooking = () => {
           'p-5 px-8 rounded-xl bg-white shadow-xl  m-5 flex items-center justify-center '
         }
       >
-        <Pagination count={10} variant="outlined" />
+        <Pagination
+          count={totalPage}
+          page={page}
+          variant="outlined"
+          onChange={onChangePage}
+        />
       </div>
     </div>
   );

@@ -10,7 +10,16 @@ import {
 import { ShopListComponent } from './components/ShopList.jsx';
 
 const ShopList = () => {
-  const { getAllShops, setSearch, search, shops, isLoading } = useShopContext();
+  const {
+    getAllShops,
+    setSearch,
+    search,
+    shops,
+    isLoading,
+    totalPage,
+    page,
+    onChangePage,
+  } = useShopContext();
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value);
@@ -54,7 +63,13 @@ const ShopList = () => {
       {isLoading ? (
         <CircularProgress color={'secondary'} className={'m-5'} />
       ) : (
-        <ShopListComponent shops={shops} mapModeEnabled={true} />
+        <ShopListComponent
+          shops={shops}
+          mapModeEnabled={true}
+          totalPage={totalPage}
+          page={page}
+          onChangePage={onChangePage}
+        />
       )}
     </Container>
   );

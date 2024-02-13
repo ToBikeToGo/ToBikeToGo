@@ -10,7 +10,14 @@ import { BikeList } from '../../components/Bike/BikeList.jsx';
 import { useUserContext } from '../../hooks/UserContext.jsx';
 
 const BikesByShop = () => {
-  const { bikes, getBikesByShop, isLoading: bikesAreLoading } = useBikes();
+  const {
+    bikes,
+    getBikesByShop,
+    isLoading: bikesAreLoading,
+    totalPage,
+    page,
+    onChangePage,
+  } = useBikes();
   const { shop, getShopById, isLoading: shopIsLoading } = useShop();
   const theme = useTheme();
   const { shopId } = useParams();
@@ -40,7 +47,12 @@ const BikesByShop = () => {
           {shop?.label}
         </span>
       </Typography>
-      <BikeList bikes={bikes} />
+      <BikeList
+        bikes={bikes}
+        totalPage={totalPage}
+        page={page}
+        onChangePage={onChangePage}
+      />
     </Container>
   );
 };

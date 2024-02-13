@@ -29,7 +29,7 @@ import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 import { TablePaginationActions } from '@mui/base';
 import { VACATIONS_REQUEST_STATUS } from './constants/vacations.ts';
-import { CheckCircle, HourglassBottomOutlined } from '@mui/icons-material';
+import {CheckCircle, HourglassBottomOutlined} from '@mui/icons-material';
 import { useUserContext } from '../../hooks/UserContext.jsx';
 import { getApirUrl } from '../../helpers/getApirUrl.js';
 import withToast from '../../components/HOC/WithToastHOC.jsx';
@@ -58,14 +58,7 @@ const StyledVacationBox = styled.div`
   justify-content: center;
   align-items: center;
 `;
-const mockedEvents = [
-  {
-    id: 1,
-    title: 'Vacation',
-    start: new Date(2023, 9, 7, 10, 0, 0),
-    end: new Date(2023, 9, 10, 10, 0, 0),
-  },
-];
+
 
 const rows = [
   {
@@ -171,8 +164,13 @@ function AskVacation({ setToast, toast }) {
 
   return (
     <div className={'flex flex-col w-full '}>
+      <Typography variant={'h1'} className={'p-12'}>
+        Ask Vacation
+      </Typography>
       <StyledPage>
+
         <StyledVacationBox>
+
           <Calendar
             calendarRef={calendarRef}
             handleOpen={handleOpen}
@@ -180,6 +178,7 @@ function AskVacation({ setToast, toast }) {
             dates={dates}
             isOpen={isOpen}
           />
+
           <form
             onSubmit={handleSubmit(handleAskVacation)}
             style={{
@@ -219,7 +218,7 @@ function AskVacation({ setToast, toast }) {
         <Planning events={vacations} />
       </StyledPage>
       <div>
-        <Typography variant="h4" component="div" gutterBottom>
+        <Typography variant="h3"  gutterBottom>
           Vacation requests
         </Typography>
         <TableContainer
@@ -252,9 +251,11 @@ function AskVacation({ setToast, toast }) {
                   >
                     {row.status === VACATIONS_REQUEST_STATUS.APPROVED ? (
                       <CheckCircle color={'success'} />
+                    ) : row.status === VACATIONS_REQUEST_STATUS.PENDING ? (
+                        <HourglassBottomOutlined color={'warning'} />
                     ) : (
-                      <HourglassBottomOutlined color={'warning'} />
-                    )}
+                        <HourglassBottomOutlined color={'error'} />
+                        )}
                   </TableCell>
                 </TableRow>
               ))}

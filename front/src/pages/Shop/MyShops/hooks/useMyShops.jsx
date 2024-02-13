@@ -1,11 +1,14 @@
 import { getApirUrl } from '../../../../helpers/getApirUrl.js';
 import fetchApi from '../../../../helpers/fetchApi.js';
 import { useCallback, useEffect, useState } from 'react';
+import { usePagination } from '../../../../hooks/usePagination.jsx';
 
 export const useMyShops = ({ franchiseId }) => {
   const apiURL = getApirUrl();
   const [myShops, setMyShops] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { page, setPage, onChangePage, setTotalPage, totalPage } =
+    usePagination(0);
 
   const getMyShops = useCallback(async () => {
     if (!franchiseId) return;
@@ -20,9 +23,10 @@ export const useMyShops = ({ franchiseId }) => {
       .then((data) => {
         setIsLoading(false);
         setMyShops(data['hydra:member']);
+        setTotalPage(Math.ceil(data['hydra:totalItems'] / 10));
       });
     setIsLoading(false);
-  }, [apiURL, franchiseId]);
+  }, [apiURL, franchiseId, page]);
 
   useEffect(() => {
     getMyShops();
@@ -32,5 +36,9 @@ export const useMyShops = ({ franchiseId }) => {
     myShops,
     getMyShops,
     isLoading,
+    page,
+    setPage,
+    onChangePage,
+    setTotalPage,
   };
 };
