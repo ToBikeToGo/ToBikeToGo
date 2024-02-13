@@ -79,9 +79,10 @@ class Shop
     ])]
     private ?string $label = null;
 
-    #[ORM\Column(length: 255)]
     #[Groups(['request:validate',"request:read", "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $address = null;
+
+    #[ORM\Column(length: 255)]
     #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ, ConstantsGroups::BIKE_READ])]
     private ?string $street = null;
 
