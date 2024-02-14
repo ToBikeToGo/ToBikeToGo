@@ -82,9 +82,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         new Get(normalizationContext: ['groups' => [ConstantsGroups::USER_READ, 'user:read:full']]),
         new Patch(denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]]),
         // new Put(), // I don't use PUT, only PATCH
-        new Delete(
-            security: "is_granted('ROLE_ADMIN')",
-        ),
+        new Delete(),
     ],
     normalizationContext: ['groups' => [ConstantsGroups::USER_READ]],
     denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]],
