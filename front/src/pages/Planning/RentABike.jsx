@@ -59,7 +59,6 @@ function RentABike() {
     getAvailableSlotsForDateAndShop,
     getUnavailableDatesForTheBike,
     isLoading: isLoadingSlots,
-    setDates,
     unavailableDates,
   } = useSlots();
   const mediaUrl = getMediaUrl();

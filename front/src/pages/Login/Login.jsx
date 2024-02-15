@@ -55,6 +55,7 @@ const Login = ({ setToast, Toast }) => {
   };
 
   const handleSubmit = (event) => {
+    startLoading()
     fetchApi(
       `${getMediaUrl()}auth
 `,
@@ -78,7 +79,7 @@ const Login = ({ setToast, Toast }) => {
           });
           return Promise.reject(); // Add this line to stop the promise chain
         }
-
+        stopLoading()
         return response;
       })
       .then(async (response) => {
@@ -87,7 +88,7 @@ const Login = ({ setToast, Toast }) => {
         if (data.token) {
           saveTokeInLocalStorage(data.token);
         }
-
+        stopLoading()
         if (response.status === 200) {
           setToast({
             open: true,

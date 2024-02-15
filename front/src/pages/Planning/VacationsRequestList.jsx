@@ -12,6 +12,7 @@ import { Cancel, CheckCircle } from '@mui/icons-material';
 import { useLoading } from '../../hooks/useLoading.jsx';
 import { isVacationApproved } from '../../components/Planning/helpser/vacations.ts';
 import { useParams } from 'react-router-dom';
+import { usePagination } from '../../hooks/usePagination.jsx';
 
 const VacationsRequestList = ({ setToast }) => {
   const { shop } = useShopContext();
@@ -19,15 +20,17 @@ const VacationsRequestList = ({ setToast }) => {
   const { getShopVacations, acceptVacationRequest, rejectVacationRequest } =
     useVacationContext();
   const { isLoading, startLoading, stopLoading } = useLoading();
-
+  const { page, setPage, onChangePage, setTotalPage, totalPage } =
+    usePagination(0);
   const [vacations, setVacations] = useState([]);
   const theme = useTheme();
 
   const refreshVacations = useCallback(() => {
     startLoading();
-    getShopVacations(shopId)
+    getShopVacations(shopId, page)
       .then((data) => {
         setVacations(data['hydra:member']);
+        setTotalPage(Math.ceil(data['hydra:totalItems'] / 10));
         stopLoading();
       })
       .catch((error) => {
@@ -49,7 +52,6 @@ const VacationsRequestList = ({ setToast }) => {
   }
 
   const handleAcceptVacationRequest = (vacationId) => {
-    startLoading();
     acceptVacationRequest(vacationId)
       .then((data) => {
         setToast({
@@ -57,20 +59,25 @@ const VacationsRequestList = ({ setToast }) => {
           message: 'Demande acceptée',
           severity: 'success',
         });
-        refreshVacations();
+        const vacationIndex = vacations.findIndex(
+          (vacation) => vacation.id === vacationId
+        );
+        if (vacationIndex !== -1) {
+          const updatedVacations = [...vacations];
+          updatedVacations[vacationIndex].status = 1;
+          setVacations(updatedVacations);
+        }
       })
       .catch((error) => {
-        alert('errror');
         setToast({
           open: true,
-          message: 'Request failed',
+          message: `Request failed: ${error.message}`,
           severity: 'error',
         });
       });
   };
 
   const handleRejectVacationRequest = (vacationId) => {
-    startLoading();
     rejectVacationRequest(vacationId)
       .then((data) => {
         refreshVacations();
@@ -79,7 +86,14 @@ const VacationsRequestList = ({ setToast }) => {
           message: 'Request successful',
           severity: 'success',
         });
-        getShopVacations();
+        const vacationIndex = vacations.findIndex(
+          (vacation) => vacation.id === vacationId
+        );
+        if (vacationIndex !== -1) {
+          const updatedVacations = [...vacations];
+          updatedVacations[vacationIndex].status = 2;
+          setVacations(updatedVacations);
+        }
       })
       .catch((error) => {
         setToast({
@@ -133,12 +147,13 @@ const VacationsRequestList = ({ setToast }) => {
                 ></div>{' '}
                 <p className={' mr-5 sm:mb-5'}>{vacation.description}</p>
                 <div class="flex ml-auto  w-1/3 items-center">
-                  {!vacation.status && (
+                  {vacation.status === 0 && (
                     <>
                       <Button
                         style={{
                           backgroundColor: theme.palette.success.main,
                           marginLeft: '1em',
+                          color: 'white',
                         }}
                         onClick={() => handleAcceptVacationRequest(vacation.id)}
                       >
@@ -147,7 +162,7 @@ const VacationsRequestList = ({ setToast }) => {
                       <Button
                         variant="contained"
                         color="red"
-                        sx={{
+                        style={{
                           marginLeft: '1em',
                           color: 'white',
                         }}
@@ -165,7 +180,12 @@ const VacationsRequestList = ({ setToast }) => {
         )}{' '}
       </Container>
       <div className={'p-5 px-8 rounded-xl bg-white shadow-xl '}>
-        <Pagination count={10} variant="outlined" />
+        <Pagination
+          count={totalPage}
+          page={page}
+          onChange={onChangePage}
+          variant="outlined"
+        />
       </div>
     </div>
   );

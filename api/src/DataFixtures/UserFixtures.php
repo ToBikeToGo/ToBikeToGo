@@ -30,7 +30,7 @@ class UserFixtures extends Fixture
     {
         $user = (new User())
             ->setEmail('admin@admin.fr')
-            ->setPassword('admin')
+            ->setPassword('$2y$13$Pk4MfxwtvP7zZlHvH57WxeE5rZRdqAtp0kbWx/fXPiEd1lUiaN24u')
             ->setRoles(['ROLE_ADMIN'])
             ->setFirstName('Admin')
             ->setLastName('Admin')
@@ -46,7 +46,6 @@ class UserFixtures extends Fixture
     private function loadRegularUsers(ObjectManager $manager, Generator $faker): void
     {
         for ($i = 0; $i < 75; $i++) {
-            $pwd = $faker->password(10);
             $object = (new User())
                 ->setEmail('user' . $i . '@user.fr')
                 ->setFirstname($faker->firstName())
@@ -54,7 +53,7 @@ class UserFixtures extends Fixture
                 ->setPhone($faker->phoneNumber())
                 ->setStatus($faker->boolean(80))
                 ->setRoles(["ROLE_USER"])
-                ->setPassword($pwd)
+                ->setPassword('$2y$13$Pk4MfxwtvP7zZlHvH57WxeE5rZRdqAtp0kbWx/fXPiEd1lUiaN24u')
                 ->setlocale('fr');
 
             $manager->persist($object);
@@ -68,7 +67,7 @@ class UserFixtures extends Fixture
         for ($i = 0; $i < 22; $i++) {
             $object = (new User())
                 ->setEmail($faker->email())
-                ->setPassword($faker->password())
+                ->setPassword('$2y$13$Pk4MfxwtvP7zZlHvH57WxeE5rZRdqAtp0kbWx/fXPiEd1lUiaN24u')
                 ->setRoles(['ROLE_PROVIDER'])
                 ->setFirstName($faker->firstName())
                 ->setLastName($faker->lastName())
@@ -89,7 +88,7 @@ class UserFixtures extends Fixture
         for ($i = 0; $i < 41; $i++) {
             $object = (new User())
                 ->setEmail($faker->email())
-                ->setPassword($faker->password())
+                ->setPassword('$2y$13$Pk4MfxwtvP7zZlHvH57WxeE5rZRdqAtp0kbWx/fXPiEd1lUiaN24u')
                 ->setRoles(['ROLE_EMPLOYEE'])
                 ->setFirstName($faker->firstName())
                 ->setLastName($faker->lastName())

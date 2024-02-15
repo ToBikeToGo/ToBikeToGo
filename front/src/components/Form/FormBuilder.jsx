@@ -70,7 +70,7 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
 
     setIsLoading(true);
 
-    if (selectedImage) {
+    if (selectedImage !== form.initialSelectedImage && datas.file) {
       const formData = new FormData();
       formData.append('file', datas.file);
       fetchApi(`${apiUrl}/medias`, {
@@ -114,7 +114,6 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
           return response.json();
         })
         .then((data) => {
-          console.log('data from API', data);
           setToast({
             open: true,
             message: form?.successMessage,
@@ -295,7 +294,7 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
           );
         }
       })}
-      {selectedImage && (
+      {selectedImage != null && (
         <div
           style={{
             display: 'flex',
