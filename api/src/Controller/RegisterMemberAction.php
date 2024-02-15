@@ -6,6 +6,7 @@ use App\Entity\Auth\User;
 use App\Entity\Schedule;
 use App\Entity\Shop;
 use App\Enum\NotificationTypeEnum;
+use App\Enum\RolesEnum;
 use App\Service\Emailing;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,6 +41,7 @@ class RegisterMemberAction extends AbstractController
         $user->setLastname($userData['lastname']);
         $user->setStatus(false);
         $user->setPassword($hashedPassword);
+        $user->setRoles([RolesEnum::EMPLOYEE]);
         $user->addShop($shop);
         $user->addFranchise($shop->getFranchise());
 
