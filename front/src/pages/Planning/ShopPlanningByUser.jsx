@@ -10,14 +10,6 @@ import { usePlanning } from '../../components/Planning/hooks/usePlanning.jsx';
 import { useParams } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 
-const mockedEvents = [
-  {
-    id: 1,
-    title: 'Vacation',
-    start: new Date(2023, 9, 7, 10, 0, 0),
-    end: new Date(2023, 9, 10, 10, 0, 0),
-  },
-];
 
 function ShopPlanningByUser() {
   const {

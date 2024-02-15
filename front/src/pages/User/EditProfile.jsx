@@ -8,7 +8,7 @@ import { useUserContext } from '../../hooks/UserContext.jsx';
 
 const EditProfile = () => {
   const [error, setError] = useState(null);
-  const { user } = useUserContext();
+  const { user, refreshUser } = useUserContext();
 
   const form = {
     title: 'Edit my profile',
@@ -88,7 +88,11 @@ const EditProfile = () => {
     return <CircularProgress color={'secondary'} className={'m-5'} />;
   }
 
-  return <FormBuilder form={form} />;
+  const onSubmit = () => {
+    refreshUser();
+  };
+
+  return <FormBuilder form={form} onSubmit={onSubmit} />;
 };
 
 const EditProfileWithToast = withToast(EditProfile);

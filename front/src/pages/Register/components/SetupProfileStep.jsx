@@ -3,14 +3,16 @@ import { useState } from 'react';
 import Box from '@mui/material/Box';
 import { InputAdornment, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
-import { ArrowRight, Person, Phone } from '@mui/icons-material';
+import { ArrowRight, Person, Person2, Phone } from '@mui/icons-material';
 import withToast from '../../../components/HOC/WithToastHOC.jsx';
 import { useUserContext } from '../../../hooks/UserContext.jsx';
+import { checkInputText, checkPhone } from '../../../helpers/checkerForm.js';
 const SetupProfileStep = ({ setToast }) => {
-  const { handleNext, checkPhone, checkInputText } = useRegistrationContext();
+  const { handleNext } = useRegistrationContext();
   const { setUserToRegister } = useUserContext();
 
   const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
   const [phone, setPhone] = useState('');
 
   const confirmHandleNext = () => {
@@ -28,6 +30,15 @@ const SetupProfileStep = ({ setToast }) => {
         open: true,
         severity: 'error',
         message: 'Firstname is not valid',
+      });
+      return;
+    }
+
+    if (!checkInputText(lastname)) {
+      setToast({
+        open: true,
+        severity: 'error',
+        message: 'Lastname is not valid',
       });
       return;
     }
@@ -52,7 +63,7 @@ const SetupProfileStep = ({ setToast }) => {
     >
       <TextField
         id="outlined-basic"
-        label="lastname"
+        label="fistname"
         variant="outlined"
         value={firstname}
         onChange={(event) => setFirstname(event.target.value)}
@@ -64,6 +75,24 @@ const SetupProfileStep = ({ setToast }) => {
           startAdornment: (
             <InputAdornment position="start">
               <Person />
+            </InputAdornment>
+          ),
+        }}
+      />{' '}
+      <TextField
+        id="outlined-basic"
+        label="lastname"
+        variant="outlined"
+        value={lastname}
+        onChange={(event) => setLastname(event.target.value)}
+        sx={{
+          marginBottom: '20px',
+        }}
+        fullWidth={true}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Person2 />
             </InputAdornment>
           ),
         }}
@@ -86,7 +115,6 @@ const SetupProfileStep = ({ setToast }) => {
           ),
         }}
       />
-
       <Button
         variant="outlined"
         color="black"

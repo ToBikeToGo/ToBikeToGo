@@ -15,9 +15,9 @@ import Button from '@mui/material/Button';
 
 export const AdminCrudMolette = ({ entityName, handleEdit, handleRemove }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const { isAdmin } = useUserContext();
   const open = Boolean(anchorEl);
   const [openDialog, setOpenDialog] = useState(false);
+  const { isAdmin } = useUserContext();
 
   const handleOpenDialog = () => {
     setOpenDialog(true);

@@ -72,22 +72,14 @@ class Shop
 
     #[ORM\Column(length: 255)]
     #[Groups([
-        ConstantsGroups::BOOKING_READ,
-        ConstantsGroups::REQUEST_READ,
-        ConstantsGroups::SHOP_MEMBERS_READ,
+        'request:validate',ConstantsGroups::USER_READ, ConstantsGroups::BOOKING_READ, ConstantsGroups::REQUEST_READ, ConstantsGroups::SHOP_MEMBERS_READ,
         ConstantsGroups::BIKE_READ,
         ConstantsGroups::SHOP_READ,
         ConstantsGroups::FRANCHISE_READ
     ])]
     private ?string $label = null;
 
-    #[Groups([
-        ConstantsGroups::REQUEST_READ,
-        ConstantsGroups::SHOP_MEMBERS_READ,
-        ConstantsGroups::BIKE_READ,
-        ConstantsGroups::SHOP_READ,
-        ConstantsGroups::FRANCHISE_READ
-    ])]
+    #[Groups(['request:validate',"request:read", "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]

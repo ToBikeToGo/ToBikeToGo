@@ -9,8 +9,7 @@ import { useUserContext } from '../../../hooks/UserContext.jsx';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 const SetupPreferenceStep = ({ setToast }) => {
-  const { handleNext, checkPhone, checkInputText, register } =
-    useRegistrationContext();
+  const { register } = useRegistrationContext();
   const { userToRegister, setUserToRegister } = useUserContext();
 
   const [preferences, setPreferences] = useState({
@@ -102,9 +101,8 @@ const SetupPreferenceStep = ({ setToast }) => {
         sx={{ marginBottom: '20px' }}
         fullWidth={true}
       >
-        <MenuItem value={'franchisee'}>Franchisee</MenuItem>
-        <MenuItem value={'corporate'}>Corporate</MenuItem>
-        {/* Add more options as needed */}
+        <MenuItem value={'franchisee'}>to join bikeToGo business</MenuItem>
+        <MenuItem value={'user'}>to rent bikes</MenuItem>
       </Select>
       <Button
         variant="outlined"

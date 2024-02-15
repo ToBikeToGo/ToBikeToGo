@@ -3,6 +3,7 @@ import { getApirUrl, getMediaUrl } from '../helpers/getApirUrl.js';
 import fetchApi from '../helpers/fetchApi.js';
 import { useLocation } from 'react-router-dom';
 //import jwt from 'jsonwebtoken';
+import { useNavigate } from 'react-router-dom';
 
 const UserContext = React.createContext('');
 
@@ -10,8 +11,9 @@ const useUser = () => {
   const [user, setUser] = useState({});
   const [userToRegister, setUserToRegister] = useState({});
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  useEffect(() => {
+  const getUser = useCallback(() => {
     const apiUrl = getApirUrl();
     const mediaUrl = getMediaUrl();
     fetchApi(`${apiUrl}/me`)
@@ -35,7 +37,7 @@ const useUser = () => {
             vacations: data.vacations,
             avatar: data.media?.contentUrl
               ? `${mediaUrl}${data.media.contentUrl}`
-              : `${mediaUrl}/default-avatar.png`,
+              : null,
             roles: data.roles,
           });
         } else {
@@ -45,28 +47,62 @@ const useUser = () => {
       .catch((error) => {
         setError(error);
       });
+  }, [getApirUrl, getMediaUrl, fetchApi, setUser, setError, useNavigate]);
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
+
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem('token');
+    setUser({});
+    navigate('/login');
   }, []);
 
   const isAdmin = useMemo(() => {
     return user?.roles && user.roles.includes('ROLE_ADMIN');
   }, [user]);
 
+  const isFranchiseProvider = useMemo(() => {
+    return user?.roles && user.roles.includes('ROLE_PROVIDER');
+  }, [user]);
+
+  const isLogged = useMemo(() => {
+    return user && user.id && localStorage.getItem('token');
+  }, [user]);
+
+  const userHasShop = useMemo(() => {
+    return user?.shops && user.shops.length > 0;
+  }, [user]);
+
+  const refreshUser = useCallback(() => {
+    getUser();
+  }, [getUser]);
+
   const value = React.useMemo(() => {
     return {
+      userHasShop,
       user,
       error,
-      //isLogged,
+      isLogged,
       setUserToRegister,
       userToRegister,
       isAdmin,
+      isFranchiseProvider,
+      handleLogout,
+      refreshUser,
     };
   }, [
     isAdmin,
     user,
     error,
-    // isLogged
+    isLogged,
     setUserToRegister,
     userToRegister,
+    isFranchiseProvider,
+    handleLogout,
+    userHasShop,
+    refreshUser,
   ]);
 
   return value;

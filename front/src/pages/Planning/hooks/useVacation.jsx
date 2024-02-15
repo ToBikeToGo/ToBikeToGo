@@ -10,8 +10,8 @@ const useVacation = () => {
   const apiUrl = getApirUrl();
 
   const getShopVacations = useCallback(
-    async (shopId) => {
-      return fetchApi(`${apiUrl}/shops/${shopId}/vacations`)
+    async (shopId, page) => {
+      return fetchApi(`${apiUrl}/shops/${shopId}/vacations?page=${page}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -44,7 +44,11 @@ const useVacation = () => {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          return response.json().then((errorData) => {
+            const error = new Error('Network response was not ok');
+            error.data = errorData;
+            throw error;
+          });
         }
         return response.json();
       })
@@ -56,16 +60,18 @@ const useVacation = () => {
         }
       })
       .catch((error) => {
+        console.log(error, 'error');
         setError(error);
+        throw error;
       });
   };
 
   const acceptVacationRequest = (vacationId) => {
-    return changeVacationRequestStatus(vacationId, true);
+    return changeVacationRequestStatus(vacationId, 1);
   };
 
   const rejectVacationRequest = (vacationId) => {
-    return changeVacationRequestStatus(vacationId, false);
+    return changeVacationRequestStatus(vacationId, 2);
   };
 
   return {

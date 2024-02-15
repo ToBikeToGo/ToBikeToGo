@@ -1,26 +1,27 @@
 import fetchApi from '../../../helpers/fetchApi.js';
 import { getApirUrl } from '../../../helpers/getApirUrl.js';
 import { useCallback, useState } from 'react';
+import { usePagination } from '../../../hooks/usePagination.jsx';
 
 export const useBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [rating, setRating] = useState(2);
-
+  const [dateRange, setDateRange] = useState([null, null]);
+  const { page, setPage, onChangePage, setTotalPage, totalPage } =
+    usePagination(0);
   const formatBookingsPlanning = (bookings) => {
-    return bookings?.map((b) =>
-      {
-        const startDateDate = new Date(b.startDate);
+    return bookings?.map((b) => {
+      const startDateDate = new Date(b.startDate);
 
-        return {
+      return {
         id: b.id,
         title: b.bike.label || 'Bike reservation',
         start: startDateDate,
-        end:new Date(startDateDate.getTime() + 30 * 60000),
-       bgColor: 'red'
-      }
-      }
-      );
+        end: new Date(startDateDate.getTime() + 30 * 60000),
+        bg: 'rgba(79,255,20,0.25)',
+      };
+    });
   };
 
   const fetchBookingByUserId = useCallback(async (userId) => {
@@ -61,6 +62,7 @@ export const useBooking = () => {
       const response = await fetchApi(`${apiUrl}/bookings?bike=${bikeId}`);
       const data = await response.json();
       setIsLoading(false);
+      setTotalPage(Math.ceil(data['hydra:totalItems'] / 10));
       return data['hydra:member'];
     } catch (error) {
       console.error('Error fetching bookings', error);
@@ -73,7 +75,9 @@ export const useBooking = () => {
       setIsLoading(true);
       const response = await fetchApi(`${apiUrl}/shops/${shopId}/bookings`);
       const data = await response.json();
-      setBookings(data);1
+      setBookings(data);
+      setTotalPage(Math.ceil(data['hydra:totalItems'] / 10));
+
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching bookings', error);
@@ -87,7 +91,7 @@ export const useBooking = () => {
       const response = await fetchApi(`${apiUrl}/bookings?customer=${userId}`);
       const data = await response.json();
       setIsLoading(false);
-     setBookings(bookings);
+      setBookings(bookings);
     } catch (error) {
       console.error('Error fetching bookings', error);
     }
@@ -104,5 +108,11 @@ export const useBooking = () => {
     rateBooking,
     rating,
     setRating,
+    dateRange,
+    totalPage,
+    setDateRange,
+    page,
+    setPage,
+    onChangePage,
   };
 };

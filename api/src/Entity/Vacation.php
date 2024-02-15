@@ -53,6 +53,7 @@ class Vacation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['shop:vacations:read', 'shop:members:read', ConstantsGroups::USER_READ])]
     private ?int $id = null;
 
     #[ORM\Column]

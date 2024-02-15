@@ -38,7 +38,9 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
     role_hierarchy:
-        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_ADMIN: ROLE_PROVIDER
+        ROLE_PROVIDER: ROLE_EMPLOYEE
+        ROLE_EMPLOYEE: ROLE_USER
 
     access_control:
         - { path: ^/api/register, methods: POST, roles: PUBLIC_ACCESS }
@@ -46,6 +48,31 @@ security:
         - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing API documentations and Swagger UI docs
         - { path: ^/auth, roles: PUBLIC_ACCESS }
+        - { path: ^/api/slots, roles: ROLE_USER, methods: [POST] }
+        - { path: ^/api/bikes, roles: ROLE_PROVIDER, methods: [DELETE, PUT, PATCH, POST] }
+        - { path: ^/api/bike_categories, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST] }
+        - { path: ^/api/shops, roles: ROLE_PROVIDER, methods: [DELETE, PUT, PATCH] }
+        - { path: ^/api/users, roles: ROLE_ADMIN, methods: [DELETE, PUT, POST] }
+        - { path: ^/api/users, roles: ROLE_PROVIDER, methods: [GET]}
+        - { path: ^/api/bookings?, roles: ROLE_USER, methods: [GET] }
+        - { path: ^/api/bookings/.*, roles: ROLE_USER, methods: [GET] }
+        - { path: ^/api/shops/.*/bookings, roles: ROLE_EMPLOYEE, methods: [GET] }
+        - { path: ^/api/bookings, roles: ROLE_PROVIDER, methods: [GET] }
+        - { path: ^/categories, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST, GET] }
+        - { path: ^/api/comments, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST, GET] }
+        - { path: ^/api/franchises, roles: ROLE_PROVIDER, methods: [DELETE, PUT, PATCH] }
+        - { path: ^/api/notification_types, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST] }
+        - { path: ^/api/notifications, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST] }
+        - { path: ^/api/payments, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH] }
+        - { path: ^/api/products, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST, GET] }
+        - { path: ^/api/propositions, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST, GET] }
+        - { path: ^/api/roles, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST] }
+        - { path: ^/api/publications, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST, GET] }
+        - { path: ^/api/questions, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST, GET] }
+        - { path: ^/api/requests, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH] }
+        - { path: ^/api/schedules, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH] }
+        - { path: ^/api/vacations, roles: ROLE_PROVIDER, methods: [PUT, PATCH] }
+        - { path: ^/api/type_questions, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST, GET] }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

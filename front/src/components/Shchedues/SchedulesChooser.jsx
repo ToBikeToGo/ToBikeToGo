@@ -14,13 +14,17 @@ const daysOfWeek = [
 
 const mapOpeningHoursToDays = (openingHours) => {
   let mappedOpeningHours = [];
-  Object.keys(openingHours).forEach((key, t) => {
+  let dayOfWeek = 0;
+  for (let i = 0; i < Object.keys(openingHours).length; i += 2) {
+    const startKey = Object.keys(openingHours)[i];
+    const endKey = Object.keys(openingHours)[i + 1];
     mappedOpeningHours.push({
-      dow: t,
-      startTime: openingHours[key],
-      endTime: openingHours[key],
+      dow: dayOfWeek,
+      startTime: openingHours[startKey],
+      endTime: openingHours[endKey],
     });
-  });
+    dayOfWeek++;
+  }
 
   return mappedOpeningHours;
 };

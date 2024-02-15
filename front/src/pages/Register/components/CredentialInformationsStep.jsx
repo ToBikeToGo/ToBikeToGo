@@ -9,6 +9,10 @@ import { ArrowRight } from '@mui/icons-material';
 import withToast from '../../../components/HOC/WithToastHOC.jsx';
 import { checkEmail } from '../../../helpers/checkEmail.js';
 import { useUserContext } from '../../../hooks/UserContext';
+import {
+  checkFieldNotEmpty,
+  checkFieldsNotEmpty,
+} from '../../../helpers/checkerForm.js';
 
 const CustomTextField = styled(TextField)({
   '& .MuiOutlinedInput-root': {
@@ -22,6 +26,7 @@ const CustomTextField = styled(TextField)({
 const checkPassword = (password, confirmPassword) => {
   return password === confirmPassword;
 };
+
 const CredentialInformationsStep = ({ setToast }) => {
   const { handleNext } = useRegistrationContext();
   const { setUserToRegister } = useUserContext();
@@ -31,6 +36,16 @@ const CredentialInformationsStep = ({ setToast }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const confirmHandleNext = () => {
+    if (!checkFieldsNotEmpty([email, password, confirmPassword])) {
+      console.log('all fields are required');
+      setToast({
+        open: true,
+        severity: 'error',
+        message: 'All fields are required',
+      });
+      return;
+    }
+
     if (!checkPassword(password, confirmPassword)) {
       setToast({
         open: true,

@@ -50,7 +50,6 @@ const ShopStats = () => {
   const theme = useTheme();
   const { calendarRef, dates, isOpen, onChangeDate, handleOpen } = useCalendar({
     onChangeDateCallback: (d) => {
-      console.log(d);
       const { startDate, endDate } = d;
       if (isAfter(startDate, endDate) || isEqual(startDate, endDate)) {
         return;
@@ -158,6 +157,7 @@ const ShopStats = () => {
           onChangeDate={onChangeDate}
           dates={dates}
           isOpen={isOpen}
+          disableBefore={false}
         />
       </Box>
       <Box
