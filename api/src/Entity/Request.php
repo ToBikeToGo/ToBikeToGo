@@ -45,7 +45,7 @@ class Request
     #[Groups([ConstantsGroups::REQUEST_READ])]
     private ?\DateTime $requestDate = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups([ConstantsGroups::REQUEST_READ, 'request:validate'])]
     private ?bool $status = null;
 
@@ -54,6 +54,7 @@ class Request
     private ?Franchise $franchise = null;
 
     #[ORM\OneToOne(inversedBy: 'request', cascade: ['persist', 'remove'])]
+    #[Groups([ConstantsGroups::REQUEST_READ, 'request:validate'])]
     private ?User $user = null;
 
     public function getId(): ?int
@@ -78,7 +79,7 @@ class Request
         return $this->status;
     }
 
-    public function setStatus(bool $status): static
+    public function setStatus(?bool $status): static
     {
         $this->status = $status;
 

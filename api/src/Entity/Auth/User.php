@@ -4,6 +4,9 @@ namespace App\Entity\Auth;
 
 use AllowDynamicProperties;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Doctrine\Common\Filter\SearchFilterInterface;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use App\Controller\FranchiseUsersAdminAction;
 use App\Controller\RegisterMemberAction;
 use App\Entity\Shop;
@@ -87,7 +90,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     normalizationContext: ['groups' => [ConstantsGroups::USER_READ]],
     denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]],
 )]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+#[ApiFilter(
+    SearchFilter::class, properties: [
+    'firstname' => SearchFilterInterface::STRATEGY_IPARTIAL,
+    'lastname' => SearchFilterInterface::STRATEGY_IPARTIAL,
+]
+)]class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableTrait;
 
@@ -95,7 +103,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(ConstantsGroups::ALL_READ)]
     private ?int $id = null;
 
-    #[Groups([ConstantsGroups::USER_READ])]
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE, ConstantsGroups::USER_FRANCHISE_WRITE])]
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
@@ -128,7 +136,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $notifications;
 
     #[ORM\ManyToMany(targetEntity: Franchise::class, mappedBy: 'users')]
-    #[Groups([ConstantsGroups::USER_READ])]
+    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_FRANCHISE_WRITE])]
     private Collection $franchises;
 
     #[Groups([
@@ -138,7 +146,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         ConstantsGroups::SHOP_READ,
         ConstantsGroups::BIKE_READ,
         ConstantsGroups::REQUEST_READ,
-        ConstantsGroups::USER_FRANCHISE_WRITE
+        ConstantsGroups::USER_FRANCHISE_WRITE,
+'request:validate',
+'user:read:request'
     ])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
@@ -211,6 +221,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Request $request = null;
 
     #[ORM\OneToMany(mappedBy: 'sender', targetEntity: Notification::class)]
+    #[Groups([ConstantsGroups::USER_READ])]
     private Collection $notification;
 
     #[ORM\ManyToMany(targetEntity: Shop::class, inversedBy: 'users')]

@@ -8,7 +8,7 @@ import { CircularProgress, useTheme } from '@mui/material';
 import { MemberTable } from '../../components/Member/MemberTable.jsx';
 
 export const ShopForOwner = () => {
-  const { getShopWithMembers, shop } = useShopContext();
+  const { getShopWithMembers, shop, members } = useShopContext();
   const theme = useTheme();
   const { shopId } = useParams();
 
@@ -43,7 +43,7 @@ export const ShopForOwner = () => {
       </Button>
       <Box sx={{ width: '80%', marginTop: '2em' }}>
         <MemberTable
-          members={shop?.users}
+          members={members}
           onMemberDelete={() => {}}
           onMemberEdit={() => {}}
         />

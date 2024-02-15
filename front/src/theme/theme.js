@@ -27,6 +27,15 @@ const theme = createTheme({
     success: {
       main: '#53dc75',
     },
+    edit: {
+      main: '#f5a623',
+    },
+    delete: {
+      main: '#f17878',
+    },
+    warning: {
+      main: '#f5a623',
+    },
   },
   overrides: {
     MuiTextField: {

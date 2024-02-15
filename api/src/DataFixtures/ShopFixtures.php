@@ -28,43 +28,36 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
             ['street' => '25 Rue du Faubourg Saint-Honoré', 'zip_code' => '75008', 'city' => 'Paris'],
             ['street' => '10 Rue de la Liberté', 'zip_code' => '59000', 'city' => 'Lille'],
             ['street' => '5 Avenue Foch', 'zip_code' => '75116', 'city' => 'Paris'],
-            ['street' => '18 Rue de la Bourse', 'zip_code' => '75002', 'city' => 'Paris'],
-            ['street' => '3 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
-            ['street' => '50 Rue de la Convention', 'zip_code' => '75015', 'city' => 'Paris'],
-            ['street' => '12 Place des Terreaux', 'zip_code' => '69001', 'city' => 'Lyon'],
-            ['street' => '6 Rue Saint-Antoine', 'zip_code' => '75004', 'city' => 'Paris'],
-            ['street' => '2 Avenue Montaigne', 'zip_code' => '75008', 'city' => 'Paris'],
-            ['street' => '22 Rue de Rivoli', 'zip_code' => '75001', 'city' => 'Paris'],
-            ['street' => '7 Quai d\'Orléans', 'zip_code' => '75004', 'city' => 'Paris'],
-            ['street' => '30 Avenue Pierre 1er de Serbie', 'zip_code' => '75016', 'city' => 'Paris'],
-            ['street' => '11 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris'],
-            ['street' => '4 Place de la Comédie', 'zip_code' => '34000', 'city' => 'Montpellier'],
-            ['street' => '16 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
-            ['street' => '40 Rue du Faubourg Saint-Denis', 'zip_code' => '75010', 'city' => 'Paris'],
-            ['street' => '9 Quai des Écluses', 'zip_code' => '75010', 'city' => 'Paris'],
-            ['street' => '17 Place Vendôme', 'zip_code' => '75001', 'city' => 'Paris'],
-            ['street' => '27 Rue Royale', 'zip_code' => '75008', 'city' => 'Paris'],
-            ['street' => '14 Rue du Cherche-Midi', 'zip_code' => '75006', 'city' => 'Paris'],
-            ['street' => '33 Quai des Grands Augustins', 'zip_code' => '75006', 'city' => 'Paris'],
-            ['street' => '19 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris'],
-            ['street' => '26 Avenue Montaigne', 'zip_code' => '75008', 'city' => 'Paris'],
-            ['street' => '13 Rue de la Bûcherie', 'zip_code' => '75005', 'city' => 'Paris'],
-            ['street' => '32 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
-            ['street' => '21 Rue Cambon', 'zip_code' => '75001', 'city' => 'Paris'],
-            ['street' => '23 Quai de Conti', 'zip_code' => '75006', 'city' => 'Paris'],
-            ['street' => '31 Rue du Faubourg Saint-Honoré', 'zip_code' => '75008', 'city' => 'Paris'],
-            ['street' => '24 Rue de la Pompe', 'zip_code' => '75116', 'city' => 'Paris'],
-            ['street' => '35 Rue Saint-Honoré', 'zip_code' => '75001', 'city' => 'Paris'],
-            ['street' => '28 Rue de la Roquette', 'zip_code' => '75011', 'city' => 'Paris'],
-            ['street' => '16 Rue du Faubourg Saint-Honoré', 'zip_code' => '75008', 'city' => 'Paris'],
-            ['street' => '29 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
-            ['street' => '2 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris'],
-            ['street' => '39 Avenue Montaigne', 'zip_code' => '75008', 'city' => 'Paris'],
-            ['street' => '10 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
-            ['street' => '18 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
-            ['street' => '37 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris'],
-            ['street' => '12 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris'],
-        ];
+            ['street' => '12 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris', 'latitude' => 48.8696, 'longitude' => 2.3301],
+            ['street' => '38 Avenue Montaigne', 'zip_code' => '75008', 'city' => 'Paris', 'latitude' => 48.8675, 'longitude' => 2.3086],
+            ['street' => '11 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '17 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '36 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '25 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '3 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris', 'latitude' => 48.8696, 'longitude' => 2.3301],
+            ['street' => '40 Avenue Montaigne', 'zip_code' => '75008', 'city' => 'Paris', 'latitude' => 48.8675, 'longitude' => 2.3086],
+            ['street' => '13 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '19 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '26 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '14 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '4 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris', 'latitude' => 48.8696, 'longitude' => 2.3301],
+            ['street' => '41 Avenue Montaigne', 'zip_code' => '75008', 'city' => 'Paris', 'latitude' => 48.8675, 'longitude' => 2.3086],
+            ['street' => '15 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '20 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '27 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '16 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '5 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris', 'latitude' => 48.8696, 'longitude' => 2.3301],
+            ['street' => '42 Avenue Montaigne', 'zip_code' => '75008', 'city' => 'Paris', 'latitude' => 48.8675, 'longitude' => 2.3086
+            ],
+            ['street' => '21 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '28 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '17 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '6 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris', 'latitude' => 48.8696, 'longitude' => 2.3301],
+            ['street' => '43 Avenue Montaigne', 'zip_code' => '75008', 'city' => 'Paris', 'latitude' => 48.8675, 'longitude' => 2.3086],
+            ['street' => '22 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '29 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '18 Quai de la Tournelle', 'zip_code' => '75005', 'city' => 'Paris', 'latitude' => 48.8503, 'longitude' => 2.3543],
+            ['street' => '7 Rue de la Paix', 'zip_code' => '75002', 'city' => 'Paris', 'latitude' => 48.8696, 'longitude' => 2.3301]];
 
         for ($i=0; $i < 21; $i++) {
             $userIndex = $i % 136;
@@ -73,6 +66,8 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
                 ->setStreet($addresses[$i]['street'])
                 ->setZipCode($addresses[$i]['zip_code'])
                 ->setCity($addresses[$i]['city'])
+                ->setLatitude($addresses[$i]['latitude'] ?? null)
+                ->setLongitude($addresses[$i]['longitude'] ?? null)
                 ->setIsOpened($faker->boolean(80))
                 ->setFranchise($this->getReference(FranchiseFixtures::FRANCHISE_REFERENCE . $i))
                 ->setCreatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE . $userIndex))
@@ -96,6 +91,8 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
                 ->setFranchise($this->getReference(FranchiseFixtures::FRANCHISE_REFERENCE . $random))
                 ->setCreatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE. $random))
                 ->setUpdatedBy($this->getReference(UserFixtures::PROVIDER_REFERENCE. $random))
+                ->setLatitude($addresses[$i]['latitude'] ?? null)
+                ->setLongitude($addresses[$i]['longitude'] ?? null)
                 ->addUsers($this->getReference(UserFixtures::PROVIDER_REFERENCE . $random));
 
             $manager->persist($object);
@@ -103,8 +100,32 @@ class ShopFixtures extends Fixture implements DependentFixtureInterface
             $this->addReference(self::SHOP_REFERENCE. $i, $object);
         }
 
+
+
+
+            $object = (new Shop())
+                ->setLabel($faker->word())
+                ->setStreet('15 rue sainte croix des pelletiers')
+                ->setZipCode('76000')
+                ->setCity('Rouen')
+                ->setIsOpened(true)
+                ->setLatitude(49.4437)
+                ->setLongitude(1.0993)
+                ->setFranchise($this->getReference('user.franchiseFranchise'))
+                ->setCreatedBy($this->getReference('user.franchise'))
+                ->setUpdatedBy($this->getReference('user.franchise'))
+                ->addUsers($this->getReference('user.employee'));
+
+                $this->addReference('user.franchiseFranchiseShop', $object);
+
+
+
+            $manager->persist($object);
+
+
         $manager->flush();
     }
+
 
     public function getDependencies(): array
     {

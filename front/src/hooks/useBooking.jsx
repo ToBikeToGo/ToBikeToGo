@@ -16,15 +16,16 @@ const useBooking = () => {
 
   const getAvailableBikes = async () => {
     const { startDate, endDate } = bookingDates;
-    const { brand, category, maxPrice } = searchParams;
+    const { brand, category, maxPrice, city } = searchParams;
     const apiUrl = getApirUrl();
     // Create a URLSearchParams instance
     const params = new URLSearchParams({
-      startDate,
-      endDate,
+      startAt: startDate.toLocaleDateString('fr-FR'),
+      endAt: endDate.toLocaleDateString('fr-FR'),
       brand,
       category,
       'price[lte]': maxPrice,
+      'shop.city': city,
     });
     try {
       setIsLoading(true);

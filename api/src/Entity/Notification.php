@@ -41,13 +41,14 @@ class Notification implements \Stringable
 
     #[ORM\ManyToOne(inversedBy: 'notification')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([ConstantsGroups::NOTIFICATION_READ])]
+    #[Groups([ConstantsGroups::NOTIFICATION_READ, ConstantsGroups::USER_READ])]
     private ?NotificationType $notificationType = null;
 
     #[ORM\ManyToOne(inversedBy: 'notification')]
     private ?User $sender = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([ConstantsGroups::NOTIFICATION_READ, ConstantsGroups::USER_READ])]
     private ?string $text = null;
 
     #[ORM\Column(type: "datetime")]

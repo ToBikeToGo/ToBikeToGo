@@ -35,6 +35,7 @@ const useBikes = () => {
         setBikes(data['hydra:member']);
         setTotalPage(Math.ceil(data['hydra:totalItems'] / 10));
         setIsLoading(false);
+        return data;
       })
       .then((data) => {
         if (data) {

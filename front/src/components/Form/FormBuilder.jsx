@@ -89,7 +89,7 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
           return response.json();
         })
         .then((data) => {
-          const updatedDatas = { ...datas, media: data['@id'] };
+          const updatedDatas = { ...datas, media: `api/medias/${data['id']}` };
 
           return fetchApi(`${apiUrl}${form.call.link}`, {
             method: form.call.method,

@@ -5,10 +5,23 @@ import { getApirUrl, getMediaUrl } from '../../helpers/getApirUrl.js';
 import fetchApi from '../../helpers/fetchApi.js';
 import { CircularProgress } from '@mui/material';
 import { useUserContext } from '../../hooks/UserContext.jsx';
+import { useParams } from 'react-router-dom';
+import { useUsers } from '../Admin/hooks/useUsers.js';
 
 const EditProfile = () => {
   const [error, setError] = useState(null);
-  const { user, refreshUser } = useUserContext();
+  const { user: userFromContext, refreshUser } = useUserContext();
+
+  const { userId } = useParams();
+  const { getUser, user: externalUser } = useUsers();
+
+  useEffect(() => {
+    if (userId) {
+      getUser(userId);
+    }
+  }, [getUser, userId]);
+
+  const user = userId ? externalUser : userFromContext;
 
   const form = {
     title: 'Edit my profile',
@@ -39,15 +52,6 @@ const EditProfile = () => {
         isEditable: false,
       },
       {
-        type: 'checkbox',
-        id: 'status',
-        label: 'Status',
-        name: 'status',
-        value: user.status,
-        isEditable: true,
-      },
-
-      {
         type: 'select',
         id: 'locale',
         label: 'Language preferences',
@@ -67,12 +71,12 @@ const EditProfile = () => {
         isEditable: true,
       },
     ],
-    submitLabel: 'Save my profile',
+    submitLabel: userId ? 'Edit user' : 'Edit my profile',
     call: {
       link: `/users/${user.id}`,
       method: 'PATCH',
     },
-    successMessage: 'Votre profil a été mis à jour !',
+    successMessage: 'Le profil a été mis à jour !',
     initialValues: {
       roles: ['ROLE_EMPLOYEE'],
       shop: 90,

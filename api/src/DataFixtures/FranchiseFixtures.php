@@ -45,6 +45,22 @@ class FranchiseFixtures extends Fixture implements DependentFixtureInterface
         $this->addReference(self::FRANCHISE_REFERENCE . 20, $object);
 
         $manager->flush();
+
+        $userFranchise = (new Franchise())
+            ->setLabel($faker->company())
+            ->setIsActive(true)
+            ->addUser($this->getReference('user.franchise'))
+            ->setCreatedBy($this->getReference('user.franchise'))
+            ->setUpdatedBy($this->getReference('user.franchise'));
+
+
+        $this->addReference('user.franchiseFranchise', $userFranchise);
+
+        $manager->persist($userFranchise);
+        $manager->flush();
+
+
+
     }
 
     public function getDependencies(): array

@@ -25,7 +25,7 @@ const MemberTable = ({ members, onMemberDelete, onMemberEdit }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {members.map((member) => (
+          {members?.map((member) => (
             <TableRow
               key={member.id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -51,7 +51,7 @@ const MemberTable = ({ members, onMemberDelete, onMemberEdit }) => {
                 <IconButton
                   aria-label="planning"
                   component={Link}
-                  to={`/my-planning/${member.id}`}
+                  to={`/planning/${member.id}`}
                 >
                   <CalendarIcon />
                 </IconButton>

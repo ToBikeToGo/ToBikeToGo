@@ -26,7 +26,7 @@ const ConfirmRegistration = ({ setToast }) => {
       setToast({
         open: true,
         severity: 'success',
-        message: 'Your franchise request has been sent',
+        message: 'Your request has been successfully sent to our team !',
       });
     }
   };
@@ -80,7 +80,7 @@ const ConfirmRegistration = ({ setToast }) => {
           >
             Shop address 📬
           </Typography>
-          <p>{franchiseRequest.shopAddress}</p>
+          <p>{franchiseRequest.shopAddress.address}</p>
 
           {Object.keys(franchiseRequest.openingDays)
             .filter((day) => franchiseRequest.openingDays[day])

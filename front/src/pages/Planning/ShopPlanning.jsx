@@ -62,11 +62,6 @@ function ShopPlanning({}) {
   useEffect(() => {
     if (activeMember?.schedules) {
       const workingDays = getWorkingDays(new Date(), addDays(new Date(), 3000));
-      console.log(
-        'setEvents',
-        [...workingDays, ...vacations],
-        activeMember?.schedules
-      );
       setEvents([...workingDays, ...vacations]);
     }
   }, [getWorkingDays, activeMember?.schedules, vacations]);

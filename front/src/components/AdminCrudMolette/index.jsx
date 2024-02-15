@@ -13,7 +13,12 @@ import {
 } from '@mui/material';
 import Button from '@mui/material/Button';
 
-export const AdminCrudMolette = ({ entityName, handleEdit, handleRemove }) => {
+export const AdminCrudMolette = ({
+  entityName,
+  handleEdit,
+  handleRemove,
+  extendsItems,
+}) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [openDialog, setOpenDialog] = useState(false);
@@ -60,6 +65,11 @@ export const AdminCrudMolette = ({ entityName, handleEdit, handleRemove }) => {
               'aria-labelledby': 'basic-button',
             }}
           >
+            {extendsItems?.map((item) => (
+              <MenuItem key={item.label} onClick={item.action}>
+                {item.label}
+              </MenuItem>
+            ))}
             <MenuItem onClick={handleEdit}>Edit</MenuItem>
             <MenuItem onClick={handleOpenDialog}>Remove</MenuItem>
             <Dialog

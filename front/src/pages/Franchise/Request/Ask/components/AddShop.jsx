@@ -48,6 +48,9 @@ const CreateShops = ({ handleNext, setToast }) => {
   const [address, setAddress] = useState('');
   const [openingHours, setOpeningHours] = useState('');
   const [openingDays, setOpeningDays] = useState('');
+  const [isAddressSelected, setIsAddressSelected] = useState(false);
+  const [formattedAddress, setFormattedAddress] = useState('');
+
   const { franchiseRequest, checkLabel, onSave, checkAddress } =
     useFranchiseRequest();
   const handleDayChange = (event) => {
@@ -63,19 +66,56 @@ const CreateShops = ({ handleNext, setToast }) => {
 
   const handleAddressChange = (address) => {
     setAddress(address);
+    setIsAddressSelected(false);
   };
 
-  const handleSelect = (address) => {
+  const handleSelect = async (address) => {
     setAddress(address);
+    setIsAddressSelected(true);
     geocodeByAddress(address)
-      .then((results) => getLatLng(results[0]))
+      .then(async (results) => {
+        const addressComponents = results[0].address_components;
+        // Trouver la rue
+        const street = addressComponents.find((component) =>
+          component.types.includes('route')
+        );
+        // Trouver le code postal
+        const postalCode = addressComponents.find((component) =>
+          component.types.includes('postal_code')
+        );
+        // Trouver la ville
+        const city = addressComponents.find(
+          (component) =>
+            component.types.includes('locality') ||
+            component.types.includes('administrative_area_level_2')
+        );
+
+        const positions = await getLatLng(results[0]);
+        setFormattedAddress({
+          street: street.long_name,
+          postalCode: postalCode.long_name,
+          city: city.long_name,
+          lat: positions.lat,
+          lng: positions.lng,
+        });
+
+        return positions;
+      })
       .then((latLng) => console.log('Success', latLng))
       .catch((error) => console.error('Error', error));
   };
+
   const handleSubmit = () => {
     let error = checkLabel(label);
     error = checkAddress(address);
-
+    if (!isAddressSelected) {
+      setToast({
+        open: true,
+        severity: 'error',
+        message: 'Please select an address from the autocomplete suggestions.',
+      });
+      return;
+    }
     if (error) {
       setToast({
         open: true,
@@ -84,10 +124,10 @@ const CreateShops = ({ handleNext, setToast }) => {
       });
       return;
     }
-
+    console.log(formattedAddress, 'formattedAddress');
     onSave({
       shopLabel: label,
-      shopAddress: address,
+      shopAddress: formattedAddress,
       openingHours: mapOpeningHoursToDays(openingHours),
       openingDays,
     });
@@ -143,7 +183,15 @@ const CreateShops = ({ handleNext, setToast }) => {
                   margin="normal"
                   fullWidth
                 />
-                <div className="autocomplete-dropdown-container">
+                <div
+                  className="autocomplete-dropdown-container"
+                  style={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                  }}
+                >
                   {loading && <div>Loading...</div>}
                   {suggestions.map((suggestion) => {
                     const className = suggestion.active

@@ -146,11 +146,11 @@ class Bike extends EntityRepository
     private ?string $label = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::BIKE_CATEGORY_READ])]
+    #[Groups([ConstantsGroups::BIKE_READ,ConstantsGroups::BOOKING_READ,  ConstantsGroups::SHOP_READ, ConstantsGroups::BIKE_CATEGORY_READ])]
     private ?float $price = null;
 
     #[ORM\Column(options: ["default" => false])]
-    #[Groups([ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::BIKE_CATEGORY_READ])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::BIKE_CATEGORY_READ])]
     private ?bool $isElectric = false;
 
     #[ORM\ManyToOne(inversedBy: 'bikes')]
