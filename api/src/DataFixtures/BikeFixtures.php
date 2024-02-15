@@ -24,7 +24,7 @@ class BikeFixtures extends Fixture implements DependentFixtureInterface
                     ->setLabel($faker->word())
                     ->setBrand($faker->company())
                     ->setPrice($faker->numberBetween(10, 100))
-                    ->setShop($this->getReference(ShopFixtures::SHOP_REFERENCE. $i))
+                    ->setShop($i > 10 ? $this->getReference('user.franchiseFranchiseShop') : $this->getReference(ShopFixtures::SHOP_REFERENCE. $i))
                     ->setCategory($this->getReference(BikeCategoryFixtures::BIKE_CATEGORY_REFERENCE . rand(0, 23)))
                     ->setIsElectric($faker->boolean());
 

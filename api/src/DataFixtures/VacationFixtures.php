@@ -20,7 +20,7 @@ class VacationFixtures extends Fixture implements DependentFixtureInterface
             $endDate->add(new \DateInterval('P' . random_int(1, 30). 'D'));
 
             $vacation = new Vacation();
-            $vacation->setShop($this->getReference(ShopFixtures::SHOP_REFERENCE . $i));
+            $vacation->setShop($i > 3 ? $this->getReference('user.franchiseFranchiseShop') : $this->getReference(ShopFixtures::SHOP_REFERENCE. $i));
             $vacation->setStartDate($startDate);
             $vacation->setEndDate($endDate);
             $vacation->setStatus(random_int(0, 2));
@@ -37,7 +37,7 @@ class VacationFixtures extends Fixture implements DependentFixtureInterface
             $vacation = (new Vacation())
                 ->setUser($this->getReference(UserFixtures::EMPLOYEE_REFERENCE . $i))
                 ->setDescription($faker->text(200))
-                ->setShop($this->getReference(ShopFixtures::SHOP_REFERENCE . $i))
+                ->setShop($i > 3 ? $this->getReference('user.franchiseFranchiseShop') : $this->getReference(ShopFixtures::SHOP_REFERENCE. $i))
                 ->setStartDate($startDate)
                 ->setEndDate($endDate)
                 ->setStatus(random_int(0, 2));

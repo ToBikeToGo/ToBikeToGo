@@ -102,5 +102,38 @@ class UserFixtures extends Fixture
 
             $this->addReference(self::EMPLOYEE_REFERENCE . $i, $object);
         }
+
+        $userEmploye =
+            (new User())
+                ->setEmail('user.employee@gmail.fr')
+                ->setPassword('$2y$13$Pk4MfxwtvP7zZlHvH57WxeE5rZRdqAtp0kbWx/fXPiEd1lUiaN24u')
+                ->setRoles(['ROLE_EMPLOYEE'])
+                ->setFirstName($faker->firstName())
+                ->setLastName($faker->lastName())
+                ->setPhone($faker->phoneNumber())
+                ->setStatus(true)
+                ->setlocale('fr')
+                ->setUpdatedAt(new \DateTime())
+                ->setCreatedAt(new \DateTime());
+        $manager->persist($userEmploye);
+
+        $this->addReference('user.employee', $userEmploye);
+
+        $userFranchise =
+            (new User())
+                ->setEmail('user.franchise@gmail.fr')
+                ->setPassword('$2y$13$Pk4MfxwtvP7zZlHvH57WxeE5rZRdqAtp0kbWx/fXPiEd1lUiaN24u')
+                ->setRoles(['ROLE_FRANCHISE'])
+                ->setFirstName($faker->firstName())
+                ->setLastName($faker->lastName())
+                ->setPhone($faker->phoneNumber())
+                ->setStatus(true)
+                ->setlocale('fr')
+                ->setUpdatedAt(new \DateTime())
+                ->setCreatedAt(new \DateTime());
+
+        $manager->persist($userFranchise);
+        $this->addReference('user.franchise', $userFranchise);
+
     }
 }
