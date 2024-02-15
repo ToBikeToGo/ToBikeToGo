@@ -54,4 +54,6 @@ final class Groups {
     const VACATION_WRITE = 'vacation:write';
     const SHOP_VACATIONS_READ = 'shop:vacations:read';
     const NOTIFICATION_READ = 'notification:write';
+    const PAYMENT_WRITE = 'payment:write';
+    const PAYMENT_UPDATE = 'payment:update';
 }

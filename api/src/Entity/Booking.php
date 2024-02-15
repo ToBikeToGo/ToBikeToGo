@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
+use App\Controller\PaymentAction;
 use Doctrine\ORM\EntityRepository;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\RequestBody;
@@ -136,11 +137,11 @@ class Booking
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ, ConstantsGroups::PAYMENT_WRITE])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ, ConstantsGroups::PAYMENT_WRITE])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column]
@@ -157,7 +158,7 @@ class Booking
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
-    #[Groups([ConstantsGroups::BOOKING_READ])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::PAYMENT_WRITE])]
     private ?Bike $bike = null;
 
     #[ORM\OneToOne(mappedBy: 'booking', cascade: ['persist', 'remove'])]
