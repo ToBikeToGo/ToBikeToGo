@@ -73,9 +73,9 @@ class Schedule
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Groups([
         ConstantsGroups::SCHEDULE_READ,
-        ConstantsGroups::SHOP_READ,
         ConstantsGroups::USER_READ,
-        ConstantsGroups::SHOP_MEMBERS_READ
+        ConstantsGroups::SHOP_MEMBERS_READ,
+        ConstantsGroups::SHOP_READ
     ])]
     private ?\DateTimeInterface $endTime = null;
 

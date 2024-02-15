@@ -20,21 +20,17 @@ export const useCalendar = ({ onChangeDateCallback, disabledDates = [] }) => {
   }, []);
 
   const onChangeDate = (item) => {
+    const canChangeDate = onChangeDateCallback?.(item?.selection) ?? true;
+
     if (
       getDay(item.selection?.startDate) != getDay(item.selection?.endDate) &&
-      getDay(dates[0]?.endDate) !== getDay(item.selection?.endDate)
+      getDay(dates[0]?.endDate) !== getDay(item.selection?.endDate) &&
+      canChangeDate
     ) {
       setIsOpen(false);
     }
 
-    setDates(item?.selection ? [item.selection] : []);
-    if (
-      isAfter(item.selection?.startDate, item.selection?.endDate) ||
-      isEqual(item.selection?.startDate, item.selection?.endDate)
-    ) {
-      return;
-    }
-    onChangeDateCallback?.(item?.selection);
+    if (canChangeDate) setDates(item?.selection ? [item.selection] : []);
   };
   const handleOpen = () => {
     if (!isOpen) setIsOpen(true);

@@ -27,14 +27,12 @@ const mockedAddress = [
   '15 rue du faubourg 75000 Paris',
 ];
 
-const getMockedPosition = async () => {
-  let mockedPositionArray = [];
-  for (let i = 0; i < mockedAddress.length; i++) {
-    const mockedPosition = await getMapCoordonate(mockedAddress[i]);
-    if (mockedPosition?.lat && mockedPosition?.lon)
-      mockedPositionArray.push([mockedPosition?.lat, mockedPosition?.lon]);
-  }
-  return mockedPositionArray;
+const getPosition = async (address) => {
+  console.log('address', address);
+  const shopPosition = await getMapCoordonate(address);
+  console.log('shopPosition', shopPosition);
+  if (shopPosition?.lat && shopPosition?.lon)
+    return [shopPosition?.lat, shopPosition?.lon];
 };
 
 const LocateControl = ({ shops }) => {
@@ -64,8 +62,6 @@ const LocateControl = ({ shops }) => {
   return null;
 };
 
-const rouenLocation = [49.443231, 1.099971];
-
 const ShopsMapView = () => {
   const { getAllShops, getAvailableBikesByShop, bikes } = useShopContext();
   const { isLoading, startLoading, stopLoading } = useLoading();
@@ -84,17 +80,10 @@ const ShopsMapView = () => {
   const [shops, setShops] = useState([]);
   useEffect(() => {
     startLoading();
-    getAllShops()
+    getAllShops({ withoutPagination: true })
       .then(async (data) => {
-        const mockedPosition = await getMockedPosition();
-
-        const shopsWithMockedPosition = data.map((shop, index) => {
-          return {
-            ...shop,
-            position: mockedPosition[index] ?? rouenLocation,
-          };
-        });
-        setShops(shopsWithMockedPosition);
+        console.log('data', data);
+        setShops(data);
         stopLoading();
       })
       .catch((error) => {
@@ -156,7 +145,10 @@ const ShopsMapView = () => {
           {shops.map((shop) => (
             <Marker
               key={shop.id}
-              position={shop.position}
+              position={[
+                shop.latitude ? shop.latitude : 0,
+                shop.longitude ? shop.longitude : 0,
+              ]}
               icon={legalIcon}
               eventHandlers={{
                 click: () => {
@@ -176,9 +168,6 @@ const ShopsMapView = () => {
               </Popup>
             </Marker>
           ))}
-          <Marker position={rouenLocation} icon={legalIcon}>
-            <Popup>Rouen, Normandie</Popup>
-          </Marker>
         </MapContainer>
         {selectedShop && displaySlider && (
           <div

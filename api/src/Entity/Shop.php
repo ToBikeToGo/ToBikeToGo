@@ -52,6 +52,14 @@ use App\Constants\Groups as ConstantsGroups;
     ],
 )]
 #[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: "/shops",
+            normalizationContext: ['groups' => [ConstantsGroups::SHOP_WRITE]],
+        )
+    ],
+)]
+#[ApiResource(
     normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ]],
 )]
 #[ApiFilter(SearchFilter::class, properties: ['label' => 'partial'])]
@@ -63,7 +71,8 @@ class Shop
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::BIKE_READ])]
+    #[Groups([ ConstantsGroups::BIKE_READ,ConstantsGroups::SHOP_WRITE,
+        ConstantsGroups::FRANCHISE_READ, ConstantsGroups::SHOP_MEMBERS_READ, ConstantsGroups::SHOP_READ,'read:shop:test'])]
     private ?int $id = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'shops')]
@@ -79,7 +88,7 @@ class Shop
     ])]
     private ?string $label = null;
 
-    #[Groups(['request:validate',"request:read", "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
+    #[Groups(['read:shop:test',"request:read", "shop:members:read", ConstantsGroups::BIKE_READ, ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
@@ -104,24 +113,28 @@ class Shop
 
     #[ORM\ManyToOne(inversedBy: 'shops')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([ConstantsGroups::SHOP_READ])]
     private ?Franchise $franchise = null;
 
     #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'shops')]
-    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::SHOP_MEMBERS_READ])]
+    #[Groups([ConstantsGroups::SHOP_READ])]
     private Collection $schedules;
 
     #[ORM\ManyToMany(targetEntity: Payment::class, mappedBy: 'shop')]
-    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::BOOKING_READ, ConstantsGroups::SHOP_MEMBERS_READ])]
     private Collection $payments;
 
     #[ORM\OneToMany(mappedBy: 'shop', targetEntity: Vacation::class)]
-    #[Groups([ConstantsGroups::SHOP_READ])]
     private Collection $vacations;
 
     #[ORM\ManyToOne(inversedBy: 'shops')]
-    #[Groups([ConstantsGroups::SHOP_READ])]
     private ?Media $media = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::SHOP_WRITE])]
+    private ?float $longitude = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::SHOP_WRITE])]
+    private ?float $latitude = null;
 
     public function __construct()
     {
@@ -362,5 +375,31 @@ class Shop
     public function isIsOpened(): ?bool
     {
         return $this->isOpened;
+    }
+
+
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): static
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): static
+    {
+        $this->latitude = $latitude;
+
+        return $this;
     }
 }

@@ -96,6 +96,8 @@ const Login = ({ setToast, Toast }) => {
             severity: 'success',
           });
 
+          console.log('here')
+
           const redirectAfterLogin = localStorage.getItem('redirectAfterLogin');
           if (redirectAfterLogin) {
             localStorage.removeItem('redirectAfterLogin');
@@ -103,6 +105,9 @@ const Login = ({ setToast, Toast }) => {
             setTimeout(() => {
               navigate(redirectAfterLogin);
             }, 2000);
+          }
+          else {
+              navigate('/shops')
           }
         } else {
           // If the status code is not 200, display an error message

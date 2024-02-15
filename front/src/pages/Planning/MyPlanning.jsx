@@ -4,12 +4,13 @@ import { Planning } from '../../components/Planning/Planning.jsx';
 import { useUserContext } from '../../hooks/UserContext.jsx';
 import Avatar from '@mui/material/Avatar';
 import { addDays } from 'date-fns';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { usePlanning } from '../../components/Planning/hooks/usePlanning.jsx';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { WbSunny } from '@mui/icons-material';
 import { useTheme } from '@mui/material';
+import { useUsers } from '../Admin/hooks/useUsers.js';
 
 // TODO api call get events for a month by user
 const mockedEvents = [
@@ -23,25 +24,32 @@ const mockedEvents = [
 
 function MyPlanning({ isUser = true }) {
   const { user, userHasShop } = useUserContext();
+  const { userId } = useParams();
   const theme = useTheme();
   const { getWorkingDays, vacations, setUser } = usePlanning({
     fromConnectedUser: true,
   });
 
+  const { getUser, user: userFromApi, isLoading } = useUsers();
+
   const [events, setEvents] = useState(mockedEvents);
 
   useEffect(() => {
-    setUser(user);
-  }, [user]);
+    getUser(userId);
+  }, [userId]);
 
   useEffect(() => {
-    if (user?.schedules) {
+    setUser(userFromApi);
+  }, [userFromApi]);
+
+  useEffect(() => {
+    if (userFromApi?.schedules) {
       const workingDays = getWorkingDays(new Date(), addDays(new Date(), 3000));
       setEvents([...workingDays, ...vacations]);
     }
   }, [getWorkingDays, user?.schedules, vacations]);
 
-  return user ? (
+  return !isLoading ? (
     <div className={'flex flex-col w-full p-12 '}>
       {userHasShop && (
         <Typography variant={'h1'} className={'text-center p-12'}>
@@ -52,7 +60,7 @@ function MyPlanning({ isUser = true }) {
               backgroundColor: theme.palette.secondary.main,
             }}
           >
-            {user?.shops?.[0]?.label}
+            {userFromApi?.shops?.[0]?.label}
           </span>
         </Typography>
       )}
@@ -68,7 +76,7 @@ function MyPlanning({ isUser = true }) {
           />
           <div class="flex flex-col justify-center items-center">
             <Typography variant={'h2'}>
-              {isUser ? 'My Planning' : user.firstname + ' Planning'}
+              {isUser ? 'My Planning' : userFromApi?.firstname + ' Planning'}
             </Typography>
             <Link to="/ask-vacation">
               <Button variant={'outlined'} color={'black'} type="button">

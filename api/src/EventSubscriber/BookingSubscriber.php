@@ -33,6 +33,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
             $requestData = $request->attributes->get('data');
             $user = $requestData->getUser();
             $bike = $requestData->getBike();
+
             $affiliates = $bike->getShop()->getFranchise()->getUsers()->getValues();
             $startDate = $requestData->getstartDate();
             $endDate = $requestData->getendDate();

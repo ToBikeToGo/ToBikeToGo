@@ -21,6 +21,28 @@ export const Shop = ({ shop }) => {
         entityName={'shop'}
         handleEdit={() => navigate(`/shop/${shop.id}/edit`)}
         handleRemove={() => console.log('remove')}
+        extendsItems={[
+          {
+            label: 'Voir les membres',
+            icon: <Visibility />,
+            action: () => navigate(`/my-shops/${shop.id}/members`),
+          },
+          {
+            label: 'Voir les stats',
+            icon: <Visibility />,
+            action: () => navigate(`/shop/stats/${shop.id}`),
+          },
+          {
+            label: 'Ajouter un vélo',
+            icon: <Visibility />,
+            action: () => navigate(`/create-bike/${shop.id}`),
+          },
+          {
+            label: 'Voir les requêtes de congés',
+            icon: <Visibility />,
+            action: () => navigate(`/vacations-request/${shop.id}`),
+          },
+        ]}
       />
       <img
         src={

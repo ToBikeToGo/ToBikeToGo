@@ -19,6 +19,8 @@ final class Groups {
         self::REQUEST_READ,
         self::VACATION_READ,
         self::SHOP_VACATIONS_READ,
+        'request:validate',
+        'user:read:request'
     ];
     const USER_READ = 'user:read';
     const USER_WRITE = 'user:write';

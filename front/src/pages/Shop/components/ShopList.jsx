@@ -25,12 +25,13 @@ export const ShopListComponent = ({
         {shops?.map((shop) => (
           <Shop shop={shop} key={shop.id} />
         ))}
+        {shops.length === 0 && (
+          <div className={'text-center text-3xl'}>No shop found</div>
+        )}
       </div>
 
       <div
-        className={
-          'p-5 px-8 rounded-xl bg-white shadow-xl  m-5 flex items-center justify-center '
-        }
+        className={'p-5 px-8 rounded-xl m-5 flex items-center justify-center '}
       >
         <Pagination
           count={totalPage}

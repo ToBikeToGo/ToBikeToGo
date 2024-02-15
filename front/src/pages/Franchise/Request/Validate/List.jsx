@@ -93,7 +93,7 @@ const ListRequest = ({ setToast }) => {
                         marginLeft: '1em',
                         color: 'white',
                       }}
-                      onClick={() => approveRequest(request.id)}
+                      onClick={() => approveRequest(request)}
                     >
                       Approve <CheckCircle className={'ml-2'} />
                     </Button>

@@ -12,7 +12,15 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link, useNavigate } from 'react-router-dom';
-import { Fade, InputBase, TextField } from '@mui/material';
+import {
+  Collapse,
+  Fade,
+  InputBase,
+  List,
+  ListItem,
+  ListItemText,
+  TextField,
+} from '@mui/material';
 import styled from 'styled-components';
 import theme from '../../theme/theme.js';
 import { Calendar } from '../Calendar/Calendar.jsx';
@@ -21,7 +29,8 @@ import { useBookingContext } from '../../hooks/useBooking.jsx';
 import { useUserContext } from '../../hooks/UserContext.jsx';
 import { useTranslation } from '../../locales/hooks/getTranslation.js';
 import { useEffect } from 'react';
-import { ArrowBack, ExpandMore } from '@mui/icons-material';
+import { ArrowBack, ExpandLess, ExpandMore } from '@mui/icons-material';
+import NotificationBar from '../Notification/NotificationBar.jsx';
 
 const Search = styled('div')(() => ({
   display: 'flex',
@@ -32,7 +41,7 @@ const Search = styled('div')(() => ({
     backgroundColor: 'white',
   },
   margin: '0 2% 0 10%',
-  width: '70%',
+  minWidth: '550px',
   padding: '0.5em 1em',
   border: `1px solid ${theme.palette.secondary.main}`,
 }));
@@ -53,6 +62,9 @@ const StyledInputBase = styled(InputBase)(({}) => ({
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElSubMenu, setAnchorElSubMenu] = React.useState(null);
+  const [openSubMenu, setOpenSubMenu] = React.useState(false);
+
   const [setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
@@ -67,6 +79,14 @@ function ResponsiveAppBar() {
       changeBookingDates(d?.startDate, d?.endDate);
     },
   });
+
+  const handleClickSubMenu = () => {
+    setOpenSubMenu(!openSubMenu);
+  };
+
+  const { user, isFranchiseProvider, handleLogout, isLogged, idAdmin } =
+    useUserContext();
+
   const searchRef = React.useRef(null);
   const [showSearchOptions, setShowSearchOptions] = React.useState(false);
 
@@ -81,7 +101,6 @@ function ResponsiveAppBar() {
   };
 
   const handleSearch = async () => {
-    console.log(searchParams);
     navigate('/search-bikes');
     getAvailableBikes();
   };
@@ -103,7 +122,7 @@ function ResponsiveAppBar() {
   const pages = [
     {
       label: getTranslation('Navbar.rent.bike'),
-      path: '/rent/bike/31',
+      path: '/shops/map',
     },
     {
       label: getTranslation('Navbar.planning'),
@@ -115,13 +134,21 @@ function ResponsiveAppBar() {
     },
     {
       label: 'Last booking',
-      path: '/last-booking/682',
+      path: '/last-booking',
     },
     {
       label: 'Shops',
       path: '/shops',
     },
   ];
+
+  if (!idAdmin) {
+    pages.push({
+      label: 'Admin',
+      path: '/admin/users',
+      isAdminRoute: true,
+    });
+  }
 
   const handleMenu = (event) => {
     setOpen(!open);
@@ -140,8 +167,13 @@ function ResponsiveAppBar() {
     setAnchorElNav(null);
   };
 
-  const { user, isFranchiseProvider, handleLogout, isLogged } =
-    useUserContext();
+  const handleOpenSubMenu = (event) => {
+    setAnchorElSubMenu(event.currentTarget);
+  };
+
+  const handleCloseSubMenu = () => {
+    setAnchorElSubMenu(null);
+  };
 
   return (
     <AppBar
@@ -200,9 +232,14 @@ function ResponsiveAppBar() {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map(({ label }) => (
+              {pages.map(({ label, isAdminRoute = false }) => (
                 <MenuItem key={label} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center" color={'primary'}>
+                  <Typography
+                    textAlign="center"
+                    style={{
+                      color: isAdminRoute ? 'red' : 'black',
+                    }}
+                  >
                     {label}
                   </Typography>
                 </MenuItem>
@@ -304,6 +341,17 @@ function ResponsiveAppBar() {
                     onChange={onChangeInput}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   />
+                  <TextField
+                    label="City"
+                    type="text"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    sx={{ m: 2 }}
+                    name="city"
+                    onChange={onChangeInput}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  />
                 </div>
               )}
             </Box>
@@ -313,35 +361,38 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 0 }}>
             {' '}
             {isLogged ? (
-              <Button
-                onClick={handleMenu}
-                variant="outlined"
-                id="fade-button"
-                aria-controls={open ? 'fade-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'end',
-                  width: '250px',
-                  backgroundColor: 'white',
-                }}
-              >
-                <p class="text-center ml-2 mr-2 ">
-                  {user.firstname} {user.lastname}
-                </p>
-                <Avatar alt={user.firstname} src={user.avatar} />{' '}
-                {!open ? (
-                  <ExpandMore />
-                ) : (
-                  <ExpandMore
-                    sx={{
-                      transform: 'rotate(180deg)',
-                    }}
-                  />
-                )}
-              </Button>
+              <div className="flex items-centerƒsea">
+                <Button
+                  onClick={handleMenu}
+                  variant="outlined"
+                  id="fade-button"
+                  aria-controls={open ? 'fade-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? 'true' : undefined}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'end',
+                    width: '250px',
+                    backgroundColor: 'white',
+                  }}
+                >
+                  <p class="text-center ml-2 mr-2 ">
+                    {user.firstname} {user.lastname}
+                  </p>
+                  <Avatar alt={user.firstname} src={user.avatar} />{' '}
+                  {!open ? (
+                    <ExpandMore />
+                  ) : (
+                    <ExpandMore
+                      sx={{
+                        transform: 'rotate(180deg)',
+                      }}
+                    />
+                  )}
+                </Button>
+                <NotificationBar />
+              </div>
             ) : (
               <Button
                 variant="contained"
@@ -365,23 +416,50 @@ function ResponsiveAppBar() {
               <MenuItem
                 onClick={handleClose}
                 component={Link}
-                to={`/user/edit-profile/${user.id}`}
+                to={`/user/edit-profile/me`}
                 sx={{
                   width: '250px',
                 }}
               >
                 Edit Profile
               </MenuItem>
-              <MenuItem onClick={handleClose} component={Link} to="/settings">
-                Settings
-              </MenuItem>
               {isFranchiseProvider && (
                 <MenuItem onClick={handleClose} component={Link} to="/my-shops">
                   My Shops
                 </MenuItem>
               )}
-
-              {!isFranchiseProvider && (
+              <MenuItem onClick={handleClickSubMenu}>
+                Admin {openSubMenu ? <ExpandLess /> : <ExpandMore />}
+              </MenuItem>
+              <Collapse in={openSubMenu} timeout="auto" unmountOnExit>
+                <List
+                  component="div"
+                  disablePadding
+                  style={{
+                    backgroundColor: '#ebf6d9',
+                  }}
+                >
+                  <ListItem button component={Link} to="/admin/users">
+                    <ListItemText primary="Users" />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={Link}
+                    to="/franchise/request/validate"
+                  >
+                    <ListItemText primary="Franchise requests" />
+                  </ListItem>
+                  <ListItem
+                    button
+                    component={Link}
+                    to="/franchise/request/validate"
+                  >
+                    <ListItemText primary="Franchise requests" />
+                  </ListItem>
+                  {/* Add more sub-menu items as needed */}
+                </List>
+              </Collapse>
+              {!isFranchiseProvider ? (
                 <MenuItem
                   onClick={handleClose}
                   component={Link}
@@ -389,6 +467,16 @@ function ResponsiveAppBar() {
                 >
                   Rejoindre l'aventure
                 </MenuItem>
+              ) : (
+                <>
+                  <MenuItem
+                    onClick={handleClose}
+                    component={Link}
+                    to="/my-franchise"
+                  >
+                    Mes franchises
+                  </MenuItem>
+                </>
               )}
 
               <MenuItem onClick={handleLogout} component={Link} to="">

@@ -59,7 +59,9 @@ class Media
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups([ConstantsGroups::MEDIA_READ])]
+    #[Groups(
+        ConstantsGroups::ALL_READ,
+    )]
     private ?int $id = null;
 
     #[Groups(

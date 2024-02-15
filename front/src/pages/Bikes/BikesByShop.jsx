@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import { Link, useParams } from 'react-router-dom';
 import { BikeList } from '../../components/Bike/BikeList.jsx';
 import { useUserContext } from '../../hooks/UserContext.jsx';
+import { formatSchedule } from '../../helpers/formatDate.js';
 
 const BikesByShop = () => {
   const {
@@ -18,7 +19,7 @@ const BikesByShop = () => {
     page,
     onChangePage,
   } = useBikes();
-  const { shop, getShopById, isLoading: shopIsLoading } = useShop();
+  const { shop, schedule, getShopById, isLoading: shopIsLoading } = useShop();
   const theme = useTheme();
   const { shopId } = useParams();
 
@@ -30,14 +31,23 @@ const BikesByShop = () => {
     getShopById(shopId);
   }, [getShopById, shopId]);
 
-  if (shopIsLoading || bikesAreLoading) {
+  console.log({
+    bikes,
+    shop,
+    shopIsLoading,
+    bikesAreLoading,
+    totalPage,
+    page,
+    onChangePage,
+  });
+  if (bikesAreLoading) {
     return <CircularProgress className={'m-5'} />;
   }
 
   return (
     <Container>
       <Typography variant="h2" gutterBottom>
-        Bikes in &nbsp;
+        Shop &nbsp;
         <span
           className={'p-3'}
           style={{
@@ -47,6 +57,8 @@ const BikesByShop = () => {
           {shop?.label}
         </span>
       </Typography>
+      {formatSchedule(schedule)}
+
       <BikeList
         bikes={bikes}
         totalPage={totalPage}

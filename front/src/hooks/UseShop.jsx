@@ -15,6 +15,7 @@ export const useShop = () => {
   const [search, setSearch] = useState('');
   const [shops, setShops] = useState([]);
   const [members, setMembers] = useState([]);
+  const [schedule, setSchedule] = useState([]);
   const { page, setPage, onChangePage, setTotalPage, totalPage } =
     usePagination(0);
   const apiUrl = getApirUrl();
@@ -25,13 +26,10 @@ export const useShop = () => {
       fetchApi(`${apiUrl}/shops/members/${id}`)
         .then((response) => response.json())
         .then((data) => {
-          if (data && data['@id']) {
-            setShop({
-              id: data['@id'],
-              ...data,
-            });
-            setMembers(data?.users);
-            setActiveMember(data?.users[0]);
+          if (data) {
+            setShop(data);
+            setMembers(data?.users['hydra:member']);
+            setActiveMember(data?.users['hydra:member'][0]);
           } else {
             throw new Error('Data is not in the expected format');
           }
@@ -59,6 +57,9 @@ export const useShop = () => {
       .then((response) => response.json())
       .then((data) => {
         setBikes(data);
+        setIsLoading(false);
+
+        return data;
       });
   };
 
@@ -71,15 +72,18 @@ export const useShop = () => {
             throw new Error('Network response was not ok');
           }
 
+          setIsLoading(false);
+
           return response.json();
         })
         .then((data) => {
-          if (data && data['@id']) {
+          if (data) {
             setShop(data);
-            setIsLoading(false);
+            setSchedule(data?.schedules?.['hydra:member']);
           } else {
             throw new Error('Data is not in the expected format');
           }
+          setIsLoading(false);
         })
         .catch((error) => {
           setError(error);
@@ -96,7 +100,9 @@ export const useShop = () => {
       if (label) {
         urlSearchParams.append('label', label);
       }
-      urlSearchParams.append('page', page);
+      if (params?.withoutPagination) {
+        urlSearchParams.append('itemsPerPage', 100);
+      }
 
       return fetchApi(`${apiUrl}/shops?${urlSearchParams.toString()}`)
         .then((response) => response.json())
@@ -130,6 +136,7 @@ export const useShop = () => {
     setPage,
     onChangePage,
     totalPage,
+    schedule,
   };
 };
 

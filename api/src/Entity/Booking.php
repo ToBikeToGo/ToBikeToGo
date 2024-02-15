@@ -29,6 +29,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: BookingRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => [ConstantsGroups::BOOKING_READ]],
+    denormalizationContext: ['groups' => [ConstantsGroups::BOOKING_WRITE]],
 )]
 #[ApiResource(
     operations: [
@@ -137,32 +138,32 @@ class Booking
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ, ConstantsGroups::PAYMENT_WRITE])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ,ConstantsGroups::PAYMENT_WRITE, constantsGroups::BOOKING_WRITE])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ, ConstantsGroups::PAYMENT_WRITE])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ,ConstantsGroups::PAYMENT_WRITE, constantsGroups::BOOKING_WRITE])]
     private ?\DateTime $endDate = null;
 
     #[ORM\Column]
-    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ, constantsGroups::BOOKING_WRITE])]
     private ?float $rating = null;
 
     #[ORM\Column(length: 255, type: 'boolean')]
     #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ])]
-    private ?bool $status = null;
+    private ?bool $status = true;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BIKE_READ])]
+    #[Groups([ConstantsGroups::BOOKING_WRITE, ConstantsGroups::BOOKING_READ])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
-    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::PAYMENT_WRITE])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BOOKING_WRITE, ConstantsGroups::PAYMENT_WRITE])]
     private ?Bike $bike = null;
 
     #[ORM\OneToOne(mappedBy: 'booking', cascade: ['persist', 'remove'])]
-    #[Groups([ConstantsGroups::BOOKING_READ])]
+    #[Groups([ConstantsGroups::BOOKING_READ, ConstantsGroups::BOOKING_WRITE])]
     private ?Payment $payment = null;
 
     public function getId(): ?int

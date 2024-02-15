@@ -1,6 +1,7 @@
 import { getApirUrl } from '../../../../../helpers/getApirUrl.js';
 import { createContext, useContext, useState } from 'react';
 import fetchApi from '../../../../../helpers/fetchApi.js';
+import { useUserContext } from '../../../../../hooks/UserContext.jsx';
 
 const franchiseRequestContext = createContext('');
 
@@ -13,7 +14,7 @@ const FranchiseRequestProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [step, setStep] = useState(0);
   const [requestSend, setRequestSend] = useState(false);
-
+  const { user } = useUserContext();
   const getFranchiseRequest = async () => {
     setLoading(true);
     const apiUrl = getApirUrl();
@@ -44,7 +45,6 @@ const FranchiseRequestProvider = ({ children }) => {
         },
       });
 
-      console.log('response, franchise', franchiseResponse);
       const franchise = await franchiseResponse.json();
 
       // Create the shop
@@ -52,7 +52,12 @@ const FranchiseRequestProvider = ({ children }) => {
         method: 'POST',
         body: JSON.stringify({
           label: data.shopLabel,
-          address: data.shopAddress,
+          city: data.shopAddress.city,
+          zipCode: data.shopAddress.postalCode,
+          street: data.shopAddress.street,
+          latitude: data.shopAddress.lat,
+          longitude: data.shopAddress.lng,
+          address: `${data.shopAddress.street}, ${data.shopAddress.postalCode} ${data.shopAddress.city}`,
           franchise: franchise['@id'],
           isOpened: true,
         }),
@@ -70,7 +75,7 @@ const FranchiseRequestProvider = ({ children }) => {
             dow: day.dow,
             startTime: day.startTime,
             endTime: day.endTime,
-            shops: [shop['@id']],
+            shops: [`/api/shops/${shop.id}`],
             startValidity: '2024-01-27T15:43:31.250Z',
             endValidity: '2024-01-27T15:43:31.250Z',
           }),
@@ -85,7 +90,8 @@ const FranchiseRequestProvider = ({ children }) => {
         body: JSON.stringify({
           requestDate: new Date(),
           franchise: franchise['@id'],
-          status: false,
+          status: null,
+          user: '/api/users/' + user.id,
         }),
         headers: {
           'Content-Type': 'application/json',

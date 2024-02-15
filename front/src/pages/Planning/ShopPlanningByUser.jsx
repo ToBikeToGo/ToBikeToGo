@@ -10,7 +10,6 @@ import { usePlanning } from '../../components/Planning/hooks/usePlanning.jsx';
 import { useParams } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 
-
 function ShopPlanningByUser() {
   const {
     members,
@@ -20,13 +19,11 @@ function ShopPlanningByUser() {
     getShopWithMembers,
     isLoading,
   } = useShop();
-  
-  
-  const { shopId } = useParams();
+
+  const { userId } = useParams();
   const { getWorkingDays, vacations, setUser } = usePlanning({
     fromConnectedUser: false,
   });
-
 
   if (isLoading) {
     return <CircularProgress sx={{ m: 5 }} />;

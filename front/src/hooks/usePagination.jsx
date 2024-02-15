@@ -13,6 +13,7 @@ const usePagination = (initialPage = 1) => {
     totalPage,
     onChangePage,
     setTotalPage,
+    setPage,
   };
 
   return pagination;

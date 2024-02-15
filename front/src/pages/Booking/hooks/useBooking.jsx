@@ -7,9 +7,19 @@ export const useBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [rating, setRating] = useState(2);
-  const [dateRange, setDateRange] = useState([null, null]);
+
+  const [bookingData, setBookingData] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+    bike: null,
+    user: null,
+  });
+
   const { page, setPage, onChangePage, setTotalPage, totalPage } =
     usePagination(0);
+
+  const apiUrl = getApirUrl();
+
   const formatBookingsPlanning = (bookings) => {
     return bookings?.map((b) => {
       const startDateDate = new Date(b.startDate);
@@ -24,9 +34,43 @@ export const useBooking = () => {
     });
   };
 
+  const postBooking = useCallback(async () => {
+    console.log('bookingData', bookingData);
+    const response = await fetchApi(`${apiUrl}/bookings/${bookingData.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/merge-patch+json',
+      },
+      body: JSON.stringify({
+        startDate: bookingData.startDate,
+        endDate: bookingData.endDate,
+        rating: 0,
+        status: true,
+        user: bookingData.user,
+        bike: bookingData.bike,
+        payment: '/api/payments/1',
+      }),
+    });
+    const data = await response.json();
+    return data;
+  }, [apiUrl, bookingData]);
+
+  const cancelBooking = useCallback(async (bookingId) => {
+    const response = await fetchApi(`${apiUrl}/bookings/${bookingId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/merge-patch+json',
+      },
+      body: JSON.stringify({
+        status: false,
+      }),
+    });
+    const data = await response.json();
+    return data;
+  }, []);
+
   const fetchBookingByUserId = useCallback(async (userId) => {
     setIsLoading(true);
-    const apiUrl = getApirUrl();
     const response = await fetchApi(`${apiUrl}/bookings?user=${userId}`);
     const data = await response.json();
     setBookings(data['hydra:member']);
@@ -35,7 +79,6 @@ export const useBooking = () => {
 
   const rateBooking = useCallback(
     async (bookingId) => {
-      const apiUrl = getApirUrl();
       const response = await fetchApi(`${apiUrl}/bookings/${bookingId}`, {
         method: 'PATCH',
         body: JSON.stringify({ rating }),
@@ -52,11 +95,10 @@ export const useBooking = () => {
         )
       );
     },
-    [rating]
+    [apiUrl, rating]
   );
 
   const getBookingByBike = useCallback(async (bikeId) => {
-    const apiUrl = getApirUrl();
     try {
       setIsLoading(true);
       const response = await fetchApi(`${apiUrl}/bookings?bike=${bikeId}`);
@@ -70,7 +112,6 @@ export const useBooking = () => {
   }, []);
 
   const getBookingsByShop = useCallback(async (shopId) => {
-    const apiUrl = getApirUrl();
     try {
       setIsLoading(true);
       const response = await fetchApi(`${apiUrl}/shops/${shopId}/bookings`);
@@ -84,18 +125,20 @@ export const useBooking = () => {
     }
   }, []);
 
-  const getBookingsByUser = useCallback(async (userId) => {
-    const apiUrl = getApirUrl();
-    try {
-      setIsLoading(true);
-      const response = await fetchApi(`${apiUrl}/bookings?customer=${userId}`);
-      const data = await response.json();
-      setIsLoading(false);
-      setBookings(bookings);
-    } catch (error) {
-      console.error('Error fetching bookings', error);
-    }
-  }, []);
+  const getBookingsByUser = useCallback(
+    async (userId) => {
+      try {
+        setIsLoading(true);
+        const response = await fetchApi(`${apiUrl}/bookings?user=${userId}`);
+        const data = await response.json();
+        setIsLoading(false);
+        setBookings(data['hydra:member']);
+      } catch (error) {
+        console.error('Error fetching bookings', error);
+      }
+    },
+    [apiUrl]
+  );
 
   return {
     formatBookingsPlanning,
@@ -108,11 +151,12 @@ export const useBooking = () => {
     rateBooking,
     rating,
     setRating,
-    dateRange,
+    bookingData,
     totalPage,
-    setDateRange,
+    setBookingData,
     page,
     setPage,
     onChangePage,
+    postBooking,
   };
 };

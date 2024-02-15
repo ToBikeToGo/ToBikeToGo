@@ -26,6 +26,7 @@ const useUser = () => {
       .then((data) => {
         if (data && data['@id']) {
           setUser({
+            ['@id']: data['@id'],
             id: data['id'],
             firstname: data.firstname,
             lastname: data.lastname,
@@ -39,6 +40,7 @@ const useUser = () => {
               ? `${mediaUrl}${data.media.contentUrl}`
               : null,
             roles: data.roles,
+            notifications: data.notification,
           });
         } else {
           throw new Error('Data is not in the expected format');

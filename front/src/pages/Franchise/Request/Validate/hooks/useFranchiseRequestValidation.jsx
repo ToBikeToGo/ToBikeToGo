@@ -32,27 +32,44 @@ const useFranchiseRequestValidation = () => {
     }
   }, [page]);
 
-  const approveRequest = async (requestId) => {
+  const approveRequest = async (request) => {
     const apiUrl = getApirUrl();
 
     try {
-      const response = await fetchApi(`${apiUrl}/requests/${requestId}`, {
+      // Approve the request
+      const response = await fetchApi(`${apiUrl}/requests/${request.id}`, {
         method: 'PATCH',
         body: JSON.stringify({
           status: true,
         }),
         headers: {
-          'Content-Type': 'application/merge-patch+json', // Set the correct content type here
+          'Content-Type': 'application/merge-patch+json',
         },
       });
 
       const data = await response.json();
+
+      // Update user role to ROLE_PROVIDER
+      const userResponse = await fetchApi(
+        `${apiUrl}/users/${request.user.id}`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({
+            roles: ['ROLE_PROVIDER'],
+          }),
+          headers: {
+            'Content-Type': 'application/merge-patch+json',
+          },
+        }
+      );
+
+      const userData = await userResponse.json();
+
       await getFranchiseRequestValidation();
     } catch (error) {
       console.error('Error while approving request:', error);
     }
   };
-
   const declineRequest = async (requestId) => {
     const apiUrl = getApirUrl();
 

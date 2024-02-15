@@ -49,9 +49,6 @@ const StyledImage = styled.img`
   width: 100%;
 `;
 
-const disneyWorldLatLng = [28.3852, -81.5639];
-const disneyLandLatLng = [33.8121, -117.919];
-
 function RentABike() {
   const { bikeId } = useParams();
   const {
@@ -82,11 +79,25 @@ function RentABike() {
     }
   }, [bike?.shop?.address]);
 
+  const isDateRangeUnavailable = (startDate, endDate) => {
+    return unavailableDates.some(
+      (unavailableDate) =>
+        startDate <= new Date(unavailableDate.endDate) &&
+        endDate >= new Date(unavailableDate.startDate)
+    );
+  };
+
   const { calendarRef, dates, isOpen, onChangeDate, handleOpen } = useCalendar({
     onChangeDateCallback: (d) => {
       //setDates(d);
+
+      if (isDateRangeUnavailable(d.startDate, d.endDate)) {
+        console.log('date range unavailable');
+        return false;
+      }
+
       getAvailableSlotsForDateAndShop({
-        shopId: 22,
+        shopId: bike.shop.id,
         dates: d,
       });
     },
@@ -101,13 +112,6 @@ function RentABike() {
   };
 
   const mapRef = useRef();
-
-  function handleOnSetView() {
-    const { current = {} } = mapRef;
-    const { leafletElement: map } = current;
-
-    map.setView(disneyWorldLatLng, 14);
-  }
 
   useEffect(() => {
     getBikeById(bikeId).then((data) => {

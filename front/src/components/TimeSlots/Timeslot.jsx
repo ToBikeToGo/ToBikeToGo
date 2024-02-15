@@ -32,7 +32,6 @@ const TimeSlots = ({ unavailableSlots = {}, onChange }) => {
   const [selectedTime, setSelectedTime] = useState(null);
   const timeSlots = generateTimeSlots(9, 0, 18, 0, 30); // de 9h00 à 18h00, intervalle de 30 minutes
   const isUnavailable = (time) => {
-    console.log('time', time, unavailableSlots, unavailableSlots[time]);
     return unavailableSlots[time] === 0 || unavailableSlots[time] === undefined;
   };
   const buttonBaseWidth = timeSlots.length > 10 ? '50%' : '100%';
