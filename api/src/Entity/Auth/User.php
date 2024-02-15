@@ -75,8 +75,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         new Post(
             uriTemplate: '/register/member',
             controller: RegisterMemberAction::class,
-            denormalizationContext: ['groups' => ['shop:members:write', 'user:write']],
-            security: "is_granted('ROLE_ADMIN')",
+            denormalizationContext: ['groups' => ['shop:members:write', 'user:write', 'user:write:admin']],
+            security: "is_granted('ROLE_PROVIDER')",
             read: false
         ),
         new Get(normalizationContext: ['groups' => [ConstantsGroups::USER_READ, 'user:read:full']]),
@@ -95,7 +95,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(ConstantsGroups::ALL_READ)]
     private ?int $id = null;
 
-    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_WRITE, ConstantsGroups::USER_FRANCHISE_WRITE])]
+    #[Groups([ConstantsGroups::USER_READ])]
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
@@ -128,7 +128,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $notifications;
 
     #[ORM\ManyToMany(targetEntity: Franchise::class, mappedBy: 'users')]
-    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_FRANCHISE_WRITE])]
+    #[Groups([ConstantsGroups::USER_READ])]
     private Collection $franchises;
 
     #[Groups([

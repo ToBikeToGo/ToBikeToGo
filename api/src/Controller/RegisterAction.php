@@ -33,7 +33,6 @@ class RegisterAction extends AbstractController
         $bytes = bin2hex(random_bytes(16));
 
         $user = new User();
-        $user->setRoles($newUser['roles']);
         $user->setLastname($newUser['lastname']);
         $user->setFirstname($newUser['firstname']);
         $user->setEmail($newUser['email']);
@@ -49,30 +48,11 @@ class RegisterAction extends AbstractController
         $user->setLocale($newUser['locale']);
         $user->setStatus(false);
         $user->setToken($bytes);
-        if (isset($newUser['franchises'])) {
-            foreach ($newUser['franchises'] as $franchiseUri) {
-                $franchiseId = basename($franchiseUri);
-                $franchise = $this->franchiseRepository->find($franchiseId);
-                if ($franchise instanceof Franchise) {
-                    $user->addFranchise($franchise);
-                }
-            }
-        }
         $this->em->persist($user);
-        $this->emailing->sendEmailingTemplate([$user->getEmail()], 1, $user->getToken(), $user->getId());
         $this->em->flush();
-        if (isset($franchise)) {
-            $slug = NotificationTypeEnum::EMPLOYEE_ADDED;
-            /** @var User $admin */
-            $admin = $this->getUser();
-            $this->notificationService->sendNotification(
-                emailing: $this->emailing,
-                sender: $admin,
-                slug: $slug,
-                affiliates: $franchise->getUsers()->getValues(),
-                action: $user
-            );
-        }
+
+        $this->emailing->sendEmailingTemplate([$user->getEmail()], 1, $user->getToken(), $user->getId());
+
         $json = [
             'status' => 'success',
             'code' => '200',

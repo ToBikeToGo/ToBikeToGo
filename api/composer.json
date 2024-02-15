@@ -25,6 +25,7 @@
         "scienta/doctrine-json-functions": "^5.4",
         "sendinblue/api-v3-sdk": "8.x.x",
         "stof/doctrine-extensions-bundle": "^1.8",
+        "stripe/stripe-php": "^13.10",
         "symfony/asset": "6.4.*",
         "symfony/console": "6.4.*",
         "symfony/dotenv": "6.4.*",

@@ -5,7 +5,10 @@ namespace App\Controller;
 use App\Entity\Auth\User;
 use App\Entity\Schedule;
 use App\Entity\Shop;
+use App\Enum\NotificationTypeEnum;
+use App\Enum\RolesEnum;
 use App\Service\Emailing;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,7 +19,8 @@ class RegisterMemberAction extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly Emailing $emailing
+        private readonly Emailing $emailing,
+        private readonly NotificationService $notificationService
     ) {
     }
 
@@ -37,8 +41,10 @@ class RegisterMemberAction extends AbstractController
         $user->setLastname($userData['lastname']);
         $user->setStatus(false);
         $user->setPassword($hashedPassword);
+        $user->setRoles([RolesEnum::EMPLOYEE]);
         $user->addShop($shop);
-    
+        $user->addFranchise($shop->getFranchise());
+
         foreach ($userData['schedules'] as $sc) {
             $schedule = new Schedule();
             $schedule->setDow($sc['dow']);
@@ -49,7 +55,18 @@ class RegisterMemberAction extends AbstractController
         }
         $this->em->persist($user);
         $this->em->flush();
-    
+        $slug = NotificationTypeEnum::EMPLOYEE_ADDED;
+
+        /** @var User $admin */
+        $admin = $this->getUser();
+        $this->notificationService->sendNotification(
+            emailing: $this->emailing,
+            sender: $admin,
+            slug: $slug,
+            affiliates: $userData['franchise']->getUsers()->getValues(),
+            action: $user
+        );
+
         $bytes = bin2hex(random_bytes(16));
         $user->setToken($bytes);
         $this->emailing->sendEmailingTemplate(

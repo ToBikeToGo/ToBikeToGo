@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\Constants\Groups as ConstantsGroups;
+use App\Controller\PaymentAction;
 use App\Entity\Auth\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,9 +14,19 @@ use App\Repository\PaymentRepository;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity()]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/payments/booking',
+            controller: PaymentAction::class,
+            denormalizationContext: ['groups' => [ConstantsGroups::PAYMENT_WRITE]],
+            read: false
+        ),
+    ]
+)]
 class Payment
 {
     use TimestampableTrait;
@@ -22,6 +36,7 @@ class Payment
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups([ConstantsGroups::PAYMENT_WRITE])]
     #[ORM\Column]
     private ?float $price = null;
 
@@ -40,9 +55,11 @@ class Payment
     #[ORM\ManyToMany(targetEntity: Shop::class, inversedBy: 'payments')]
     private Collection $shop;
 
+    #[Groups([ConstantsGroups::PAYMENT_WRITE])]
     #[ORM\OneToOne(inversedBy: 'payment', cascade: ['persist', 'remove'])]
     private ?Booking $booking = null;
 
+    #[Groups([ConstantsGroups::PAYMENT_WRITE])]
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'payments')]
     private Collection $user;
 

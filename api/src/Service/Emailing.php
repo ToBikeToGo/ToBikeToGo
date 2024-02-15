@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use SendinBlue\Client\Configuration;
 use SendinBlue\Client\Model\SendSmtpEmail;
 use SendinBlue\Client\Api\TransactionalEmailsApi;
+use SendinBlue\Client\Model\SendSmtpEmailSender;
 
 class Emailing
 {
@@ -59,8 +60,6 @@ class Emailing
         return true;
     }
 
-
-
     public function sendEmailingHtml(array $emailUser, string $html, $token,int $userId) :bool
     {       $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', $_ENV['MAILER_API_KEY']);
         $apiInstance = new TransactionalEmailsApi(
@@ -77,6 +76,38 @@ class Emailing
             echo 'Exception when calling TransactionalEmailsApi->sendTransacEmail: ', $e->getMessage(), PHP_EOL;
         }
         return true;
+    }
+    public function sendBillingRecap(array $emailUsers, int $idTemplate, string $text): bool
+    {
+        $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', $_ENV['MAILER_API_KEY']);
+        $apiInstance = new TransactionalEmailsApi(
+            new Client(),
+            $config
+        );
 
+        $sendSmtpEmail = new \SendinBlue\Client\Model\SendSmtpEmail();
+        $to = [];
+        $sendSmtpEmail = new SendSmtpEmail();
+        $sender = new SendSmtpEmailSender();
+        $sender->setName('Lucas');
+        $sender->setEmail('lucas.ramis7@gmail.com');
+        $sendSmtpEmail->setSender($sender);
+        // Boucle sur chaque utilisateur et crée une instance de SendSmtpEmailTo pour chaque utilisateur
+        foreach ($emailUsers as $user) {
+            $to[] = new \SendinBlue\Client\Model\SendSmtpEmailTo(['email' => $user->getEmail(), 'name' => $user->getLastname() . ' ' . $user->getFirstname()]);
+        }
+        $sendSmtpEmail->setTo($to);
+        $sendSmtpEmail->setTemplateId($idTemplate);
+        $sendSmtpEmail->setParams((object)[
+            'text' => $text
+        ]);
+        try {
+            $apiInstance->sendTransacEmail($sendSmtpEmail);
+        } catch (\Exception $e) {
+            echo 'Exception when calling TransactionalEmailsApi->sendTransacEmail: ', $e->getMessage(), PHP_EOL;
+            return false;
+        }
+
+        return true;
     }
 }
