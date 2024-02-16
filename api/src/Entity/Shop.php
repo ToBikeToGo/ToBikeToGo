@@ -115,6 +115,7 @@ class Shop
 
     #[ORM\ManyToOne(inversedBy: 'shops')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups([ConstantsGroups::SHOP_READ])]
     private ?Franchise $franchise = null;
 
     #[ORM\ManyToMany(targetEntity: Schedule::class, inversedBy: 'shops')]

@@ -55,7 +55,7 @@ const Login = ({ setToast, Toast }) => {
   };
 
   const handleSubmit = (event) => {
-    startLoading()
+    startLoading();
     fetchApi(
       `${getMediaUrl()}auth
 `,
@@ -79,7 +79,7 @@ const Login = ({ setToast, Toast }) => {
           });
           return Promise.reject(); // Add this line to stop the promise chain
         }
-        stopLoading()
+        stopLoading();
         return response;
       })
       .then(async (response) => {
@@ -88,7 +88,7 @@ const Login = ({ setToast, Toast }) => {
         if (data.token) {
           saveTokeInLocalStorage(data.token);
         }
-        stopLoading()
+        stopLoading();
         if (response.status === 200) {
           setToast({
             open: true,
@@ -96,7 +96,7 @@ const Login = ({ setToast, Toast }) => {
             severity: 'success',
           });
 
-          console.log('here')
+          console.log('here');
 
           const redirectAfterLogin = localStorage.getItem('redirectAfterLogin');
           if (redirectAfterLogin) {
@@ -105,9 +105,8 @@ const Login = ({ setToast, Toast }) => {
             setTimeout(() => {
               navigate(redirectAfterLogin);
             }, 2000);
-          }
-          else {
-              navigate('/shops')
+          } else {
+            navigate('/shops');
           }
         } else {
           // If the status code is not 200, display an error message

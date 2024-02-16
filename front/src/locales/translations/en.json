@@ -1,11 +1,11 @@
 {
   "Navbar": {
-    "planning": "Mon Planning",
+    "planning": "My Planning",
     "rent": {
-      "bike": "Louer un vélo"
+      "bike": "Rent a bike"
     },
     "my": {
-      "bikes": "Mes vélos"
+      "bikes": "My bikes"
     }
   }
 }

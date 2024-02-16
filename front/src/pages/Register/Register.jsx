@@ -106,7 +106,7 @@ const Register = ({ setToast, Toast }) => {
           }
 
           setTimeout(() => {
-            navigate('/shops');
+            navigate('/login');
           }, 2000);
         })
         .catch((error) => {

@@ -21,6 +21,10 @@ const NotificationBar = () => {
     setIsOpen(open);
   };
 
+  const cleanText = (text) => {
+    return text.replace(/<[^>]*>?/gm, '');
+  };
+
   return (
     <div>
       <IconButton onClick={toggleDrawer(true)}>
@@ -31,7 +35,7 @@ const NotificationBar = () => {
           <ArrowBackIcon />
         </IconButton>
         {notifications.map(({ text }) => {
-          return <p>{text}</p>;
+          return <p className={'m-4 bg-green-200 p-4'}>{cleanText(text)}</p>;
         })}
       </Drawer>
     </div>

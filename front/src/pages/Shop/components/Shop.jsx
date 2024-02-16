@@ -6,8 +6,9 @@ import { useTheme } from '@mui/material';
 import theme from '../../../theme/theme.js';
 import { AdminCrudMolette } from '../../../components/AdminCrudMolette/index.jsx';
 import { getMediaUrl } from '../../../helpers/getApirUrl.js';
+import { useUserContext } from '../../../hooks/UserContext.jsx';
 
-export const Shop = ({ shop }) => {
+export const Shop = ({ shop, isOwner = false }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   return (
@@ -19,6 +20,7 @@ export const Shop = ({ shop }) => {
     >
       <AdminCrudMolette
         entityName={'shop'}
+        isOwner={isOwner}
         handleEdit={() => navigate(`/shop/${shop.id}/edit`)}
         handleRemove={() => console.log('remove')}
         extendsItems={[
@@ -26,6 +28,11 @@ export const Shop = ({ shop }) => {
             label: 'Voir les membres',
             icon: <Visibility />,
             action: () => navigate(`/my-shops/${shop.id}/members`),
+          },
+          {
+            label: 'Voir les réservations',
+            icon: <Visibility />,
+            action: () => navigate(`/shop-booking-planning/${shop.id}`),
           },
           {
             label: 'Voir les stats',

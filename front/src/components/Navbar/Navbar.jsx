@@ -14,7 +14,6 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Collapse,
-  Fade,
   InputBase,
   List,
   ListItem,
@@ -84,7 +83,7 @@ function ResponsiveAppBar() {
     setOpenSubMenu(!openSubMenu);
   };
 
-  const { user, isFranchiseProvider, handleLogout, isLogged, idAdmin } =
+  const { user, isFranchiseProvider, handleLogout, isLogged, isAdmin } =
     useUserContext();
 
   const searchRef = React.useRef(null);
@@ -126,11 +125,7 @@ function ResponsiveAppBar() {
     },
     {
       label: getTranslation('Navbar.planning'),
-      path: '/my-planning',
-    },
-    {
-      label: 'Vacations request',
-      path: '/vacations-request/52',
+      path: `/planning/${user.id}`,
     },
     {
       label: 'Last booking',
@@ -142,7 +137,7 @@ function ResponsiveAppBar() {
     },
   ];
 
-  if (!idAdmin) {
+  if (isAdmin) {
     pages.push({
       label: 'Admin',
       path: '/admin/users',
@@ -428,37 +423,33 @@ function ResponsiveAppBar() {
                   My Shops
                 </MenuItem>
               )}
-              <MenuItem onClick={handleClickSubMenu}>
-                Admin {openSubMenu ? <ExpandLess /> : <ExpandMore />}
-              </MenuItem>
-              <Collapse in={openSubMenu} timeout="auto" unmountOnExit>
-                <List
-                  component="div"
-                  disablePadding
-                  style={{
-                    backgroundColor: '#ebf6d9',
-                  }}
-                >
-                  <ListItem button component={Link} to="/admin/users">
-                    <ListItemText primary="Users" />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={Link}
-                    to="/franchise/request/validate"
-                  >
-                    <ListItemText primary="Franchise requests" />
-                  </ListItem>
-                  <ListItem
-                    button
-                    component={Link}
-                    to="/franchise/request/validate"
-                  >
-                    <ListItemText primary="Franchise requests" />
-                  </ListItem>
-                  {/* Add more sub-menu items as needed */}
-                </List>
-              </Collapse>
+              {isAdmin && (
+                <>
+                  <MenuItem onClick={handleClickSubMenu}>
+                    Admin {openSubMenu ? <ExpandLess /> : <ExpandMore />}
+                  </MenuItem>
+                  <Collapse in={openSubMenu} timeout="auto" unmountOnExit>
+                    <List
+                      component="div"
+                      disablePadding
+                      style={{
+                        backgroundColor: '#ebf6d9',
+                      }}
+                    >
+                      <ListItem button component={Link} to="/admin/users">
+                        <ListItemText primary="Users" />
+                      </ListItem>
+                      <ListItem
+                        button
+                        component={Link}
+                        to="/franchise/request/validate"
+                      >
+                        <ListItemText primary="Franchise requests" />
+                      </ListItem>
+                    </List>
+                  </Collapse>
+                </>
+              )}
               {!isFranchiseProvider ? (
                 <MenuItem
                   onClick={handleClose}

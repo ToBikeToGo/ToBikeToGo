@@ -30,15 +30,13 @@ class ActivateAction extends AbstractController
         $user = $this->userRepository->findOneBy(["id" => $userId, "token" => $token]);
         $role = $user->getRoles();
         if ($user) {
-            if ($userData['password']) {
-                if (in_array(Roles::ROLE_EMPLOYEE, $role)) {
-                    $plaintextPassword = $userData['password'];
-                    $hashedPassword = $passwordHasher->hashPassword(
-                        $user,
-                        $plaintextPassword
-                    );
-                    $user->setPassword($hashedPassword);
-                }
+            if ($userData['password'] !== '') {
+                $plaintextPassword = $userData['password'];
+                $hashedPassword = $passwordHasher->hashPassword(
+                    $user,
+                    $plaintextPassword
+                );
+                $user->setPassword($hashedPassword);
             }
             $user->setStatus(true);
             $this->entityManager->flush();

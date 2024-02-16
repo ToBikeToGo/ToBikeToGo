@@ -51,6 +51,10 @@ const EditShop = () => {
         name: 'profilePicture',
         isEditable: true,
       },
+      {
+        type: 'schedule',
+        relateEntity: 'shops',
+      },
     ],
     initialSelectedImage: shop?.media?.contentUrl
       ? getMediaUrl() + shop.media.contentUrl

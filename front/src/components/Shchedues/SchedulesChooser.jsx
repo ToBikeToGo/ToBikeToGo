@@ -34,6 +34,7 @@ export const SchedulesChooser = ({ onChange }) => {
   const [openingDays, setOpeningDays] = useState('');
 
   const handleDayChange = (event) => {
+    console.log(event.target);
     setOpeningDays({
       ...openingDays,
       [event.target.name]: event.target.checked,
@@ -43,12 +44,16 @@ export const SchedulesChooser = ({ onChange }) => {
   };
 
   const handleTimeChange = (key) => (date) => {
-    setOpeningHours({
-      ...openingHours,
-      [key]: date,
-    });
+    setOpeningHours((prevOpeningHours) => {
+      const updatedOpeningHours = {
+        ...prevOpeningHours,
+        [key]: date,
+      };
 
-    onChange(mapOpeningHoursToDays(openingHours));
+      onChange(mapOpeningHoursToDays(updatedOpeningHours));
+
+      return updatedOpeningHours;
+    });
   };
 
   return (

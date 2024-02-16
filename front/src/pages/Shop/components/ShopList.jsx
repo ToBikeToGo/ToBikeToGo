@@ -11,6 +11,7 @@ export const ShopListComponent = ({
   page,
   onChangePage,
   totalPage,
+  isOwner = false,
 }) => {
   return (
     <Container>
@@ -23,7 +24,7 @@ export const ShopListComponent = ({
       )}
       <div className={'flex flex-wrap justify-center md:justify-center'}>
         {shops?.map((shop) => (
-          <Shop shop={shop} key={shop.id} />
+          <Shop shop={shop} key={shop.id} isOwner={isOwner} />
         ))}
         {shops.length === 0 && (
           <div className={'text-center text-3xl'}>No shop found</div>

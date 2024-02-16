@@ -6,26 +6,32 @@ const BookingContext = React.createContext('');
 
 const useBooking = () => {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [bookingDates, setBookingDates] = React.useState({});
+  const [bookingDates, setBookingDates] = React.useState({
+    startDate: new Date(),
+    endDate: new Date(new Date().setDate(new Date().getDate() + 1)),
+  });
   const [availableBikes, setAvailableBikes] = React.useState([]);
   const [searchParams, setSearchParams] = React.useState({
     brand: '',
     category: '',
     maxPrice: 1000,
+    city: '',
+    label: '',
   });
 
   const getAvailableBikes = async () => {
     const { startDate, endDate } = bookingDates;
-    const { brand, category, maxPrice, city } = searchParams;
+    const { brand, category, maxPrice, city, label } = searchParams;
     const apiUrl = getApirUrl();
     // Create a URLSearchParams instance
     const params = new URLSearchParams({
-      startAt: startDate.toLocaleDateString('fr-FR'),
-      endAt: endDate.toLocaleDateString('fr-FR'),
+      startAt: startDate?.toLocaleDateString('fr-FR'),
+      endAt: endDate?.toLocaleDateString('fr-FR'),
       brand,
       category,
       'price[lte]': maxPrice,
       'shop.city': city,
+      label,
     });
     try {
       setIsLoading(true);
