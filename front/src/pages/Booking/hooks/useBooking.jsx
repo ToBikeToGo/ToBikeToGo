@@ -35,7 +35,6 @@ export const useBooking = () => {
   };
 
   const postBooking = useCallback(async () => {
-    console.log('bookingData', bookingData);
     const response = await fetchApi(`${apiUrl}/bookings/${bookingData.id}`, {
       method: 'PATCH',
       headers: {

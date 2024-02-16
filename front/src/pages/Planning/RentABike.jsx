@@ -13,10 +13,12 @@ import { Calendar } from '../../components/Calendar/Calendar.jsx';
 import { useCalendar } from '../../components/Calendar/hooks/useCalendar.jsx';
 import { TimeSlots } from '../../components/TimeSlots/Timeslot.jsx';
 import { useBikes } from '../Bikes/hooks/useBike.jsx';
-import { getMediaUrl } from '../../helpers/getApirUrl.js';
+import {getApirUrl, getMediaUrl} from '../../helpers/getApirUrl.js';
 import { useParams } from 'react-router-dom';
 import { useSlots } from '../../hooks/useSlots.jsx';
 import { getMapCoordonate } from '../../helpers/getMapCoordonate.js';
+import fetchApi from "../../helpers/fetchApi.js";
+import { useUserContext } from '../../hooks/UserContext.jsx';
 const legalIcon = new Icon({
   iconUrl: PinImg,
   iconSize: [35, 35],
@@ -61,6 +63,7 @@ function RentABike() {
   const mediaUrl = getMediaUrl();
   const { bike, getBikeById, isLoading } = useBikes();
   const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
+  const { user } = useUserContext();
 
   const [isLoadingMap, setIsLoadingMap] = useState(true);
 
@@ -102,7 +105,41 @@ function RentABike() {
       });
     },
   });
+  const handlePayment = async () => {
+    try {
+      const apiUrl = getApirUrl();
+      const response = await fetchApi(`${apiUrl}/payments/booking`,{
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          price:  (bike.price * (dates[0]?.endDate - dates[0]?.startDate)) /
+              (1000 * 60 * 60 * 24)
+        .toFixed(2),
+          booking: {
+            startDate: "2024-02-15T14:29:48.771Z",
+            endDate: "2024-02-15T14:29:48.771Z",
+            bike: '/api/bikes/' + bike.id
+          },
+          user: [
+            '/api/users/' + user.id,
+          ]
+        })
+      })  // Attendre la réponse JSON et extraire les données
+      const responseData = await response.json();
 
+      // Accéder à la propriété redirect_url dans les données JSON
+      const redirectUrl = responseData.redirect_url;
+
+      // Rediriger l'utilisateur vers l'URL de redirection
+      window.location.href = redirectUrl;
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      // Gérez les erreurs de connexion au serveur
+    }
+  };
   const isDateUnavailable = (date) => {
     return unavailableDates.some(
       (unavailableDate) =>
@@ -198,10 +235,11 @@ function RentABike() {
           </Typography>
           <TimeSlots
             unavailableSlots={slots}
-            onChange={(time) => console.log(time, 'TODO add api call')}
+            onChange={(time) => console.log(time, 'add api call')}
           />
 
           <Button
+            onClick={handlePayment}
             variant="outlined"
             color="black"
             sx={{

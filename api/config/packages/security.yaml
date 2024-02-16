@@ -49,6 +49,7 @@ security:
         - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing API documentations and Swagger UI docs
         - { path: ^/auth, roles: PUBLIC_ACCESS }
         - { path: ^/api/slots, roles: ROLE_USER, methods: [POST] }
+        - { path: ^/api/bikes/available/shop/.*, roles: ROLE_USER }
         - { path: ^/api/bikes, roles: ROLE_PROVIDER, methods: [DELETE, PUT, PATCH, POST] }
         - { path: ^/api/bike_categories, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST] }
         - { path: ^/api/shops, roles: ROLE_PROVIDER, methods: [DELETE, PUT, PATCH] }

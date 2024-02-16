@@ -11,6 +11,7 @@ use Stripe\Exception\ApiErrorException;
 use Stripe\StripeClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use function Symfony\Component\Clock\now;
 
@@ -23,87 +24,61 @@ class PaymentAction extends AbstractController
     {
     }
 
-    public function __invoke(Request $request) :JsonResponse
+    public function __invoke(Request $request): JsonResponse
     {
-        $stripe = new StripeClient($_ENV['STRIPE_SECRET_KEY']);
+        \Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
         $requestData = $request->attributes->get('data');
 
         $user = $requestData->getUser();
-        $price = $requestData->getPrice();
+        $priceRequest = $requestData->getPrice();
         $booking = $requestData->getBooking();
-        $commission = round(($price*2)/100, 2);
-        $priceStripe = str_replace('.', '', $price);
+        $commission = round(($priceRequest*2)/100, 2);
+        $priceStripe = $priceRequest * 100;
+        $booking->setUser($user[0]);
+        $booking->setStatus(true);
+        $booking->setRating(0);
 
-        try {
-            $customer = $stripe->customers->create([
-                'description' => 'Name : ' . $user[0]->getFirstname() . ' ' . $user[0]->getLastname(),
-                'email' => $user[0]->getEmail(),
-            ]);
-            $cardCustomer = $stripe->customers->createSource($customer['id'], ['source' => 'tok_visa']);
-            $charge = $stripe->charges->create([
-                'customer' => $customer['id'],
-                'amount' => $priceStripe,
-                'currency' => 'EUR',
-                'source' => $cardCustomer['id'],
-            ]);
-            $billingText = "Name : " . $user[0]->getFirstname() . " " . $user[0]->getLastname() .
-                "\nAmount : " . $price . '€'
-            ;
-            $this->emailing->sendBillingRecap([$user[0]], 3, $billingText);
+        $now = new \DateTime();
+        $payment = new Payment();
+        $payment->setPrice($priceRequest);
+        $payment->setCommission($commission);
+        $payment->setStripeId(0);
+        $payment->setStatus(true);
+        $payment->setPaymentDate($now);
+        $payment->setBooking($booking);
 
-            $booking->setUser($user[0]);
-            $booking->setStatus(true);
-            $booking->setRating(0);
+        $this->entityManager->persist($booking);
+        $this->entityManager->persist($payment);
+        $this->entityManager->flush();
 
-            $now = new \DateTime();
-            $payment = new Payment();
-            $payment->setPrice($price);
-            $payment->setCommission($commission);
-            $payment->setStripeId($charge['id']);
-            $payment->setStatus(true);
-            $payment->setPaymentDate($now);
-            $payment->setBooking($booking);
+        $billingText = "Name : " . $user[0]->getFirstname() . " " . $user[0]->getLastname() .
+            "\nAmount : " . $priceRequest . '€';
+        $this->emailing->sendBillingRecap([$user[0]], 3, $billingText);
 
-            $this->entityManager->persist($payment);
-            $this->entityManager->flush();
 
-            $json = [
-                'status' => 'success',
-                'code' => '200',
-                'message' => 'Stripe call and mailing succeed '
-            ];
-        } catch (ApiErrorException $e) {
-            $errorCode = $e->getError()->code;
-            switch ($errorCode) {
-                case 'card_declined':
-                    $json = [
-                        'status' => 'error',
-                        'code' => '400',
-                        'message' => 'Credit card declined. Please try another card.'
-                    ];
-                    break;
-                case 'invalid_request_error':
-                    $json = [
-                        'status' => 'error',
-                        'code' => '400',
-                        'message' => 'Invalid request. Please check your input data.'
-                    ];
-                    break;
-                default:
-                    $json = [
-                        'status' => 'error',
-                        'code' => '500',
-                        'message' => 'An error occurred. Please try again later.'
-                    ];
-                    break;
-            }
-        } catch (\Exception $e) {
-            $json = [
-                'status' => 'error',
-                'code' => '500',
-                'message' => 'An error occurred. Please try again later.'
-            ];
-        }
-        return new JsonResponse($json);
+        $YOUR_DOMAIN = $_ENV['URL_FRONT'];
+
+        $price = \Stripe\Price::create([
+            'unit_amount' => $priceStripe, // Montant en centimes (par exemple, 300 pour 3,00 €)
+            'currency' => 'eur', // Devise (par exemple, 'eur' pour euros)
+            'product_data' => [
+                'name' => $booking->getBike()->getBrand(),
+            ],
+            'nickname' =>  $booking->getBike()->getId(), // Utilisez 'nickname' pour spécifier la description
+        ]);
+
+        $checkout_session = \Stripe\Checkout\Session::create([
+            'line_items' => [[
+                'price' => $price->id, // Identifiant de l'objet de prix
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => $YOUR_DOMAIN . '/last-booking' . '?success=true',
+            'cancel_url' => $YOUR_DOMAIN . '/rent/bike/' . $booking->getBike()->getId() . '?canceled=true',
+        ]);
+        // Rediriger l'utilisateur vers l'URL de la session de paiement Stripe
+        return new JsonResponse([
+        'redirect_url' => $checkout_session->url
+        ]);
     }
 }
