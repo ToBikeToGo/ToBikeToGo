@@ -14,6 +14,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Constants\Globals as Roles;
 
 class RegisterAction extends AbstractController
 {
@@ -47,6 +48,7 @@ class RegisterAction extends AbstractController
         $user->setPhone($newUser['phone']);
         $user->setLocale($newUser['locale']);
         $user->setStatus(false);
+        $user->setRoles([Roles::ROLE_USER]);
         $user->setToken($bytes);
         $this->em->persist($user);
         $this->em->flush();
