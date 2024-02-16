@@ -10,6 +10,7 @@ export const useTranslation = () => {
   };
   const { user } = useUserContext();
   const { locale = 'EN' } = user;
+  console.log(user, locale);
 
   const getTranslation = useCallback(
     (key) => {
