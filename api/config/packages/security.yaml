@@ -53,6 +53,7 @@ security:
         - { path: ^/api/bikes, roles: ROLE_PROVIDER, methods: [DELETE, PUT, PATCH, POST] }
         - { path: ^/api/bike_categories, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST] }
         - { path: ^/api/shops, roles: ROLE_PROVIDER, methods: [DELETE, PUT, PATCH] }
+        - { path: ^/api/users/.*, roles: ROLE_USER, methods: [GET] }
         - { path: ^/api/users, roles: ROLE_ADMIN, methods: [DELETE, PUT, POST] }
         - { path: ^/api/users, roles: ROLE_PROVIDER, methods: [GET]}
         - { path: ^/api/register/member, roles: ROLE_PROVIDER, methods: [POST] }
