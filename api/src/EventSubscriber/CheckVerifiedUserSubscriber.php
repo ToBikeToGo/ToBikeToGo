@@ -8,6 +8,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use App\Constants\Globals as Roles;
 
 class CheckVerifiedUserSubscriber implements EventSubscriberInterface
 {
@@ -22,10 +23,17 @@ class CheckVerifiedUserSubscriber implements EventSubscriberInterface
     public function onCheckPassport(CheckPassportEvent $event)
     {
         $passport = $event->getPassport();
+        $user = $passport->getUser();
+        $email = $user->getEmail();
+        $roles = $user->getRoles();
+
+        if (in_array(ROLES::ROLE_ADMIN, $roles) && $email !== 'admin@admin.fr') {
+            throw new AuthenticationException('You are not allowed to access this page');
+        }
+
         if (!$passport instanceof Passport) {
             throw new \Exception('Unexpected passport type');
         }
-        $user = $passport->getUser();
         if (!$user instanceof User) {
             throw new \Exception('Unexpected user type');
         }

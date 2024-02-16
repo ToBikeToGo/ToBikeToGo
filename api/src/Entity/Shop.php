@@ -2,23 +2,24 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiFilter;
+use App\Entity\Auth\User;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
-use App\Controller\ShopStatsAction;
-use App\Entity\Auth\User;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ShopRepository;
+use ApiPlatform\Metadata\ApiFilter;
+use App\Controller\ShopStatsAction;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\BlameableTrait;
 use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use App\Constants\Groups as ConstantsGroups;
+use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity()]
 #[ApiResource(
@@ -63,6 +64,7 @@ use App\Constants\Groups as ConstantsGroups;
     normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ]],
 )]
 #[ApiFilter(SearchFilter::class, properties: ['label' => 'partial'])]
+#[ApiFilter(BooleanFilter::class, properties: ['isOpened'])]
 class Shop
 {
     use TimestampableTrait;
