@@ -18,6 +18,7 @@ export const AdminCrudMolette = ({
   handleEdit,
   handleRemove,
   extendsItems,
+  isOwner,
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -46,63 +47,64 @@ export const AdminCrudMolette = ({
 
   return (
     <>
-      {isAdmin && (
-        <div className="absolute top-0 right-0 p-2">
-          <IconButton
-            aria-label="more"
-            aria-controls="long-menu"
-            aria-haspopup="true"
-            onClick={handleClick}
-          >
-            <MoreVert />
-          </IconButton>
-          <Menu
-            id="long-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
-          >
-            {extendsItems?.map((item) => (
-              <MenuItem key={item.label} onClick={item.action}>
-                {item.label}
-              </MenuItem>
-            ))}
-            <MenuItem onClick={handleEdit}>Edit</MenuItem>
-            <MenuItem onClick={handleOpenDialog}>Remove</MenuItem>
-            <Dialog
-              open={openDialog}
-              onClose={handleCloseDialog}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
+      {isAdmin ||
+        (isOwner && (
+          <div className="absolute top-0 right-0 p-2">
+            <IconButton
+              aria-label="more"
+              aria-controls="long-menu"
+              aria-haspopup="true"
+              onClick={handleClick}
             >
-              <DialogTitle id="alert-dialog-title">
-                {'Confirm Removal'}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  Are you sure you want to remove this {entityName}?
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleCloseDialog} color="black">
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleConfirmRemove}
-                  variant="contained"
-                  color="red"
-                  autoFocus
-                >
-                  Confirm
-                </Button>
-              </DialogActions>
-            </Dialog>
-          </Menu>
-        </div>
-      )}
+              <MoreVert />
+            </IconButton>
+            <Menu
+              id="long-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button',
+              }}
+            >
+              {extendsItems?.map((item) => (
+                <MenuItem key={item.label} onClick={item.action}>
+                  {item.label}
+                </MenuItem>
+              ))}
+              <MenuItem onClick={handleEdit}>Edit</MenuItem>
+              <MenuItem onClick={handleOpenDialog}>Remove</MenuItem>
+              <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">
+                  {'Confirm Removal'}
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Are you sure you want to remove this {entityName}?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCloseDialog} color="black">
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleConfirmRemove}
+                    variant="contained"
+                    color="red"
+                    autoFocus
+                  >
+                    Confirm
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </Menu>
+          </div>
+        ))}
     </>
   );
 };

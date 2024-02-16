@@ -43,6 +43,7 @@ function ShopPlanning({}) {
   const {
     members,
     name,
+    shop,
     activeMember,
     setActiveMember,
     getShopWithMembers,
@@ -84,7 +85,7 @@ function ShopPlanning({}) {
   return (
     <div className={'flex flex-col w-full p-12 '}>
       <Typography variant={'h1'} className={'text-center p-12'}>
-        Work at {name}
+        Work at {shop?.label}
       </Typography>
       <MemberList members={members} onMemberClick={onMemberClick} />
       <div>

@@ -124,7 +124,7 @@ export const useShop = () => {
     shop,
     error,
     members,
-    name,
+
     activeMember,
     setActiveMember,
     getAllShops,

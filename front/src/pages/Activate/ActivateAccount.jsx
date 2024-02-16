@@ -57,7 +57,7 @@ const ActivateAccountForm = ({ setToast, token, userId }) => {
   return (
     <form className={'flex flex-col bg-white  p-5 rounded-xl m-5'}>
       <h1>Activate your account</h1>
-      <p className={'text-red-500'}>{error}</p>
+      <p className={'text-black'}>{error}</p>
 
       <TextField
         label={'Password'}

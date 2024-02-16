@@ -70,6 +70,16 @@ export const MyFranchise = () => {
 
   const isLoading = isFranchiseLoading || isShopLoading;
 
+  if (isLoading) {
+    return (
+      <CircularProgress
+        sx={{
+          m: 5,
+        }}
+      />
+    );
+  }
+
   return (
     <Box
       style={{
@@ -98,7 +108,7 @@ export const MyFranchise = () => {
             {selectedFranchise.description}
           </Typography>
 
-          <ShopListComponent shops={selectedFranchise.shops} />
+          <ShopListComponent shops={selectedFranchise.shops} isOwner={true} />
           <Box
             style={{
               display: 'flex',
@@ -122,8 +132,6 @@ export const MyFranchise = () => {
           </Box>
         </Box>
       )}
-
-      {isLoading && <CircularProgress />}
     </Box>
   );
 };

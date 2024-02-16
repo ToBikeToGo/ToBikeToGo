@@ -18,8 +18,8 @@ function ShopPlanningByUser() {
     setActiveMember,
     getShopWithMembers,
     isLoading,
+    shop,
   } = useShop();
-
   const { userId } = useParams();
   const { getWorkingDays, vacations, setUser } = usePlanning({
     fromConnectedUser: false,
