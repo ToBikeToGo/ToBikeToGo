@@ -176,6 +176,7 @@ const Login = ({ setToast, Toast }) => {
               marginBottom: '20px',
             }}
             type={'password'}
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
             onChange={handlePasswordChange}
           />
           <Button
@@ -187,6 +188,7 @@ const Login = ({ setToast, Toast }) => {
               height: '4em',
             }}
             size={'large'}
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
             onClick={handleSubmit}
           >
             {isLoading ? (

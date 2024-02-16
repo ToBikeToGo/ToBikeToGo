@@ -55,6 +55,7 @@ security:
         - { path: ^/api/shops, roles: ROLE_PROVIDER, methods: [DELETE, PUT, PATCH] }
         - { path: ^/api/users, roles: ROLE_ADMIN, methods: [DELETE, PUT, POST] }
         - { path: ^/api/users, roles: ROLE_PROVIDER, methods: [GET]}
+        - { path: ^/api/register/member, roles: ROLE_PROVIDER, methods: [POST] }
         - { path: ^/api/bookings?, roles: ROLE_USER, methods: [GET] }
         - { path: ^/api/bookings/.*, roles: ROLE_USER, methods: [GET] }
         - { path: ^/api/shops/.*/bookings, roles: ROLE_EMPLOYEE, methods: [GET] }

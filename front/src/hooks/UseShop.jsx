@@ -100,9 +100,12 @@ export const useShop = () => {
       if (label) {
         urlSearchParams.append('label', label);
       }
+
       if (params?.withoutPagination) {
         urlSearchParams.append('itemsPerPage', 100);
       }
+      urlSearchParams.append('page', page);
+      urlSearchParams.append('isOpened', true);
 
       return fetchApi(`${apiUrl}/shops?${urlSearchParams.toString()}`)
         .then((response) => response.json())
