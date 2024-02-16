@@ -29,9 +29,9 @@ class RegisterMemberAction extends AbstractController
         $userData = json_decode($request->getContent(), true);
 
         $shop = $this->em->getRepository(Shop::class)->findOneBy(['id' => $userData['shop']]);
-
         $user = new User();
         $user->setEmail($userData['email']);
+
         $plaintextPassword = $shop->getLabel();
         $hashedPassword = $passwordHasher->hashPassword(
             $user,
@@ -63,7 +63,7 @@ class RegisterMemberAction extends AbstractController
             emailing: $this->emailing,
             sender: $admin,
             slug: $slug,
-            affiliates: $userData['franchise']->getUsers()->getValues(),
+            affiliates: $shop->getFranchise()->getUsers()->getValues(),
             action: $user
         );
 
