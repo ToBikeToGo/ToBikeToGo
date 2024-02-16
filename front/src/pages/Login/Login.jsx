@@ -10,7 +10,7 @@ import { useState } from 'react';
 import fetchApi from '../../helpers/fetchApi.js';
 import withToast from '../../components/HOC/WithToastHOC.jsx';
 import { getApirUrl, getMediaUrl } from '../../helpers/getApirUrl.js';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useLoading } from '../../hooks/useLoading.jsx';
 import { checkEmail } from '../../helpers/checkEmail.js';
 
@@ -144,25 +144,6 @@ const Login = ({ setToast, Toast }) => {
           <Typography variant="h2" m={5}>
             Login
           </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-              margin: 'auto',
-              border: '1px solid black',
-            }}
-            bgcolor={'white'}
-          >
-            <Typography variant="h6" m={2}>
-              <Google /> Login with Google
-            </Typography>
-          </Box>
-          <Typography variant="h6" m={5}>
-            or
-          </Typography>
           <StyledInput
             placeholder="Username"
             sx={{
@@ -205,7 +186,7 @@ const Login = ({ setToast, Toast }) => {
           </Button>
         </form>
         <Typography variant="h6">Don't have an account ?</Typography>
-        <a>Sign Up</a>
+        <Link to="/register">Sign up</Link>
       </Box>
     </StyledWrapper>
   );
