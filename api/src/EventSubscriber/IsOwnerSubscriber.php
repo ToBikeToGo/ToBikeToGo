@@ -18,7 +18,8 @@ class IsOwnerSubscriber implements EventSubscriberInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        $loggedInUser = $this->tokenStorage->getToken()->getUser();
+
+        /*$loggedInUser = $this->tokenStorage->getToken()->getUser();
         $roles = $loggedInUser->getRoles();
 
         if (in_array('ROLE_ADMIN', $roles) || in_array('ROLE_PROVIDER', $roles)) {
@@ -32,13 +33,13 @@ class IsOwnerSubscriber implements EventSubscriberInterface
             if ($loggedInUser !== $requestUser) {
                 throw new CustomUserMessageAuthenticationException('You are not the owner of this resource');
             }
-        }
+        }*/
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => 'onKernelRequest',
+            //KernelEvents::REQUEST => 'onKernelRequest',
         ];
     }
 }
