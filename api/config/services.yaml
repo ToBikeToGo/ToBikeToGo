@@ -32,22 +32,16 @@ services:
         tags:
             - { name: 'serializer.normalizer' }
 
-    App\Serializer\UserNormalizer:
-        arguments:
-            $storage: '@vich_uploader.storage.default'
-            $normalizer: '@serializer.normalizer.object'
-            $tokenStorage: '@security.token_storage'
-        tags:
-            - { name: 'serializer.normalizer' }
-
     App\Serializer\ShopNormalizer:
         arguments:
             $normalizer: '@serializer.normalizer.object'
         tags:
             - { name: 'serializer.normalizer' }
 
-    App\Security\Voter\SecurityVoter:
+    App\EventSubscriber\IsOwnerSubscriber:
         arguments:
+            $tokenStorage: '@security.token_storage'
+            
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
