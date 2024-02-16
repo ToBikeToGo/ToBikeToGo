@@ -28,7 +28,7 @@ class ActivateAction extends AbstractController
         $userId = $userData['user'];
         $user = $this->userRepository->findOneBy(["id" => $userId, "token" => $token]);
         if ($user) {
-            if ($userData['password']) {
+            if ($userData['password'] !== '') {
                 $plaintextPassword = $userData['password'];
                 $hashedPassword = $passwordHasher->hashPassword(
                     $user,

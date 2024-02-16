@@ -29,7 +29,7 @@ class Franchise
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups([ConstantsGroups::FRANCHISE_READ])]
+    #[Groups([ConstantsGroups::FRANCHISE_READ, ConstantsGroups::SHOP_READ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

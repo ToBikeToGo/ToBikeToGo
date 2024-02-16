@@ -10,7 +10,7 @@ import { today } from 'react-big-calendar/lib/utils/dates.js';
 import { useBooking } from './hooks/useBooking.jsx';
 import { useEffect, useState } from 'react';
 import { useUserContext } from '../../hooks/UserContext.jsx';
-import { getMediaUrl } from '../../helpers/getApirUrl.js';
+import { getApirUrl, getMediaUrl } from '../../helpers/getApirUrl.js';
 import Box from '@mui/material/Box';
 import { calculateTotalPrice } from '../../helpers/calculateTotalPrice.js';
 import { ArrowRight, ElectricBike, RateReview } from '@mui/icons-material';
@@ -22,6 +22,7 @@ import { useCalendar } from '../../components/Calendar/hooks/useCalendar.jsx';
 import { useSlots } from '../../hooks/useSlots.jsx';
 import * as React from 'react';
 import { TimeClock } from '@mui/x-date-pickers';
+import fetchApi from '../../helpers/fetchApi.js';
 
 const isEnded = (date) => {
   return isAfter(today, date);
@@ -91,19 +92,29 @@ const LastBooking = () => {
   const [openCancelModal, setOpenCancelModal] = useState(false);
 
   // Fonction pour ouvrir la modale d'annulation
-  const handleOpenCancelModal = () => {
+  const handleOpenCancelModal = (booking) => {
+    setSelectedBooking(booking);
     setOpenCancelModal(true);
   };
 
-  // Fonction pour fermer la modale d'annulation
   const handleCloseCancelModal = () => {
     setOpenCancelModal(false);
   };
 
   // Fonction pour gérer l'annulation de la réservation
-  const handleCancelBooking = () => {
-    // Ici, vous pouvez ajouter le code pour annuler la réservation
-    // Après avoir annulé la réservation, fermez la modale
+  const handleCancelBooking = (id) => {
+    setOpenCancelModal(false);
+
+    const apiUrl = getApirUrl();
+
+    fetchApi(`${apiUrl}/bookings/${id}`, {
+      method: 'DELETE',
+    }).then((response) => {
+      if (!response.ok) {
+        return Promise.reject();
+      }
+      return response.json();
+    });
     handleCloseCancelModal();
   };
 
@@ -216,7 +227,7 @@ const LastBooking = () => {
             <div className={'flex flex-col  items-center ml-auto'}>
               <Typography variant="h6" gutterBottom>
                 {calculateTotalPrice(
-                  reservation?.bike?.price,
+                  reservation?.payment?.price,
                   reservation?.startDate,
                   reservation?.endDate
                 )}{' '}
@@ -231,22 +242,11 @@ const LastBooking = () => {
                   sx={{
                     color: 'white !important',
                   }}
-                  onClick={handleOpenCancelModal}
+                  onClick={() => handleOpenCancelModal(reservation)}
                 >
                   Cancel
                 </Button>
               )}
-              <Button
-                fullWidth
-                variant="contained"
-                color="secondary"
-                style={{
-                  marginTop: '1em',
-                  color: 'white',
-                }}
-              >
-                Details
-              </Button>
               {isEnded(reservation.endDate) && (
                 <Button
                   sx={{
@@ -399,7 +399,7 @@ const LastBooking = () => {
                 margin: '1em',
                 color: 'white',
               }}
-              onClick={handleCancelBooking}
+              onClick={() => handleCancelBooking(selectedBooking?.id)}
             >
               Yes, cancel it
             </Button>

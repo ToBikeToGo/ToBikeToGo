@@ -44,7 +44,7 @@ security:
 
     access_control:
         - { path: ^/api/register, methods: POST, roles: PUBLIC_ACCESS }
-        - { path: ^/api/activate, methods: GET, roles: PUBLIC_ACCESS }
+        - { path: ^/api/activate, methods: POST, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing API documentations and Swagger UI docs
         - { path: ^/auth, roles: PUBLIC_ACCESS }
@@ -54,7 +54,7 @@ security:
         - { path: ^/api/bike_categories, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST] }
         - { path: ^/api/shops, roles: ROLE_PROVIDER, methods: [DELETE, PUT, PATCH] }
         - { path: ^/api/users, roles: ROLE_ADMIN, methods: [DELETE, PUT, POST] }
-        - { path: ^/api/users, roles: ROLE_PROVIDER, methods: [GET]}
+        - { path: ^/api/users/.*, roles: ROLE_USER, methods: [GET]}
         - { path: ^/api/bookings?, roles: ROLE_USER, methods: [GET] }
         - { path: ^/api/bookings/.*, roles: ROLE_USER, methods: [GET] }
         - { path: ^/api/shops/.*/bookings, roles: ROLE_EMPLOYEE, methods: [GET] }

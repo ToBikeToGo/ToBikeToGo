@@ -25,7 +25,12 @@ const fetchApi = async (url, options) => {
     const response = await fetch(url, { ...config, signal: controller.signal });
     const data = await response;
 
-    if (data.status === 401 && route !== '/login' && route !== '/register') {
+    if (
+      data.status === 401 &&
+      route !== '/login' &&
+      route !== '/register' &&
+      !route.includes('activate')
+    ) {
       localStorage.removeItem('token');
 
       localStorage.setItem('redirectAfterLogin', route);

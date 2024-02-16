@@ -66,7 +66,10 @@ const useUser = () => {
   }, [user]);
 
   const isFranchiseProvider = useMemo(() => {
-    return user?.roles && user.roles.includes('ROLE_PROVIDER');
+    return (
+      (user?.roles && user.roles.includes('ROLE_PROVIDER')) ||
+      (user?.roles && user?.roles.includes('ROLE_FRANCHISE'))
+    );
   }, [user]);
 
   const isLogged = useMemo(() => {

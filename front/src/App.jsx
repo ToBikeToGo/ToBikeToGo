@@ -38,6 +38,7 @@ import { ShopPlanningByUser } from './pages/Planning/ShopPlanningByUser.jsx';
 import { ShopBookingPlannings } from './pages/Planning/ShopBookingPlannings.jsx';
 import { ManageUsers } from './pages/Admin/ManageUsers.jsx';
 import { CheckSecurityMiddleware } from './components/Security/SecurityMiddleware.jsx';
+import ActivateAccount from './pages/Activate/ActivateAccount.jsx';
 const StyledApp = styled.div`
   background-color: #fff6f6;
   min-height: 100vh;
@@ -98,9 +99,10 @@ function App() {
                         />
                         <Route
                           exact
-                          path="/last-booking"
-                          element={<LastBooking />}
+                          path="/activate/:token/:userId"
+                          element={<ActivateAccount />}
                         />
+                        <Route path="/last-booking" element={<LastBooking />} />
                         <Route
                           exact
                           path="/shop-booking-planning/:shopId"

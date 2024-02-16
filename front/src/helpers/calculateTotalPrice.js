@@ -5,7 +5,7 @@ export const calculateTotalPrice = (dayPrice, startDate, endDate) => {
   const end = parseISO(endDate);
 
   console.log(start, end);
-  const days = differenceInDays(end, start);
+  const days = differenceInDays(end, start) + 1;
   console.log(days, dayPrice);
   const totalPrice = dayPrice * days;
 

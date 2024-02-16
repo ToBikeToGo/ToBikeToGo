@@ -123,7 +123,7 @@ class UserFixtures extends Fixture
             (new User())
                 ->setEmail('user.franchise@gmail.fr')
                 ->setPassword('$2y$13$Pk4MfxwtvP7zZlHvH57WxeE5rZRdqAtp0kbWx/fXPiEd1lUiaN24u')
-                ->setRoles(['ROLE_FRANCHISE'])
+                ->setRoles(['ROLE_PROVIDER'])
                 ->setFirstName($faker->firstName())
                 ->setLastName($faker->lastName())
                 ->setPhone($faker->phoneNumber())

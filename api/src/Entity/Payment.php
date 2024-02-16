@@ -36,7 +36,7 @@ class Payment
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups([ConstantsGroups::PAYMENT_WRITE])]
+    #[Groups([ConstantsGroups::PAYMENT_WRITE, ConstantsGroups::BOOKING_READ])]
     #[ORM\Column]
     private ?float $price = null;
 

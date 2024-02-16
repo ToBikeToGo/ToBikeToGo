@@ -46,7 +46,7 @@ export const AdminCrudMolette = ({
 
   return (
     <>
-      {!isAdmin && (
+      {isAdmin && (
         <div className="absolute top-0 right-0 p-2">
           <IconButton
             aria-label="more"

@@ -4,9 +4,18 @@ import Button from '@mui/material/Button';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowBack } from '@mui/icons-material';
 import { SchedulesChooser } from '../../../components/Shchedues/SchedulesChooser.jsx';
+import { useShop } from '../../../hooks/UseShop.jsx';
+import { useEffect } from 'react';
 
 const AddMemberPage = () => {
   const { shopId } = useParams();
+
+  const { getShopById, shop } = useShop();
+
+  useEffect(() => {
+    getShopById(shopId);
+  }, [shopId]);
+
   const form = {
     title: 'Add a member',
     canEditAll: true,
@@ -36,11 +45,11 @@ const AddMemberPage = () => {
         isEditable: true,
       },
       {
-        type: 'checkbox',
-        id: 'status',
-        label: 'Status',
-        name: 'status',
-        value: '',
+        type: 'hidden',
+        id: 'franchise',
+        label: 'Shop',
+        name: 'franchise',
+        value: `${shop?.franchise?.id}`,
       },
       {
         type: 'hidden',

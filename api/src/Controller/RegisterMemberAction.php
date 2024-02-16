@@ -37,6 +37,7 @@ class RegisterMemberAction extends AbstractController
             $user,
             $plaintextPassword
         );
+        $bytes = bin2hex(random_bytes(16));
         $user->setFirstname($userData['firstname']);
         $user->setLastname($userData['lastname']);
         $user->setStatus(false);
@@ -44,6 +45,7 @@ class RegisterMemberAction extends AbstractController
         $user->setRoles([RolesEnum::EMPLOYEE]);
         $user->addShop($shop);
         $user->addFranchise($shop->getFranchise());
+        $user->setToken($bytes);
 
         foreach ($userData['schedules'] as $sc) {
             $schedule = new Schedule();
@@ -67,12 +69,10 @@ class RegisterMemberAction extends AbstractController
             action: $user
         );
 
-        $bytes = bin2hex(random_bytes(16));
-        $user->setToken($bytes);
         $this->emailing->sendEmailingTemplate(
             [$user->getEmail()],
             1,
-            $user->getToken(),
+            $bytes,
             $user->getId()
         );
 

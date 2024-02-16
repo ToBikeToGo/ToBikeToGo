@@ -26,7 +26,6 @@ export const ShopForOwner = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100vh',
       }}
     >
       <ShopWithDetails shop={shop} canEdit={true} />

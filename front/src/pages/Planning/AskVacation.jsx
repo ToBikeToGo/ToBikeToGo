@@ -29,7 +29,7 @@ import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 import { TablePaginationActions } from '@mui/base';
 import { VACATIONS_REQUEST_STATUS } from './constants/vacations.ts';
-import {CheckCircle, HourglassBottomOutlined} from '@mui/icons-material';
+import { CheckCircle, HourglassBottomOutlined } from '@mui/icons-material';
 import { useUserContext } from '../../hooks/UserContext.jsx';
 import { getApirUrl } from '../../helpers/getApirUrl.js';
 import withToast from '../../components/HOC/WithToastHOC.jsx';
@@ -58,7 +58,6 @@ const StyledVacationBox = styled.div`
   justify-content: center;
   align-items: center;
 `;
-
 
 const rows = [
   {
@@ -168,16 +167,25 @@ function AskVacation({ setToast, toast }) {
         Ask Vacation
       </Typography>
       <StyledPage>
-
         <StyledVacationBox>
-
-          <Calendar
-            calendarRef={calendarRef}
-            handleOpen={handleOpen}
-            onChangeDate={onChangeDate}
-            dates={dates}
-            isOpen={isOpen}
-          />
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              width: '100%',
+              flexDirection: 'column',
+            }}
+          >
+            <Calendar
+              calendarRef={calendarRef}
+              handleOpen={handleOpen}
+              onChangeDate={onChangeDate}
+              dates={dates}
+              isOpen={isOpen}
+            />
+          </Box>
 
           <form
             onSubmit={handleSubmit(handleAskVacation)}
@@ -218,7 +226,7 @@ function AskVacation({ setToast, toast }) {
         <Planning events={vacations} />
       </StyledPage>
       <div>
-        <Typography variant="h3"  gutterBottom>
+        <Typography variant="h3" gutterBottom>
           Vacation requests
         </Typography>
         <TableContainer
@@ -252,10 +260,10 @@ function AskVacation({ setToast, toast }) {
                     {row.status === VACATIONS_REQUEST_STATUS.APPROVED ? (
                       <CheckCircle color={'success'} />
                     ) : row.status === VACATIONS_REQUEST_STATUS.PENDING ? (
-                        <HourglassBottomOutlined color={'warning'} />
+                      <HourglassBottomOutlined color={'warning'} />
                     ) : (
-                        <HourglassBottomOutlined color={'error'} />
-                        )}
+                      <HourglassBottomOutlined color={'error'} />
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
