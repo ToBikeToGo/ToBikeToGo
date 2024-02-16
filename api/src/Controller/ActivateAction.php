@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Constants\Globals as Roles;
 
 class ActivateAction extends AbstractController
 {
@@ -27,14 +28,17 @@ class ActivateAction extends AbstractController
         $token = $userData['token'];
         $userId = $userData['user'];
         $user = $this->userRepository->findOneBy(["id" => $userId, "token" => $token]);
+        $role = $user->getRoles();
         if ($user) {
             if ($userData['password']) {
-                $plaintextPassword = $userData['password'];
-                $hashedPassword = $passwordHasher->hashPassword(
-                    $user,
-                    $plaintextPassword
-                );
-                $user->setPassword($hashedPassword);
+                if (in_array(Roles::ROLE_EMPLOYEE, $role)) {
+                    $plaintextPassword = $userData['password'];
+                    $hashedPassword = $passwordHasher->hashPassword(
+                        $user,
+                        $plaintextPassword
+                    );
+                    $user->setPassword($hashedPassword);
+                }
             }
             $user->setStatus(true);
             $this->entityManager->flush();

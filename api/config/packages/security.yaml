@@ -44,7 +44,7 @@ security:
 
     access_control:
         - { path: ^/api/register, methods: POST, roles: PUBLIC_ACCESS }
-        - { path: ^/api/activate, methods: GET, roles: PUBLIC_ACCESS }
+        - { path: ^/api/activate, methods: POST, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing API documentations and Swagger UI docs
         - { path: ^/auth, roles: PUBLIC_ACCESS }
