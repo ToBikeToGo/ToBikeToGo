@@ -55,7 +55,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             denormalizationContext: ['groups' => ['user:read', 'schedule:read']],
             read: false,
         ),
-        new Get(
+        new Post(
             uriTemplate: '/activate/{token}/{user}',
             controller: ActivateAction::class,
             read: false,
