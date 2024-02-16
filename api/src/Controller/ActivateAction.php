@@ -23,16 +23,19 @@ class ActivateAction extends AbstractController
 
     public function __invoke(Request $request, UserPasswordHasherInterface $passwordHasher) :JsonResponse
     {
-        $token = $request->attributes->get('token');
-        $userId = $request->attributes->get('user');
+        $userData = json_decode($request->getContent(), true);
+        $token = $userData['token'];
+        $userId = $userData['user'];
         $user = $this->userRepository->findOneBy(["id" => $userId, "token" => $token]);
         if ($user) {
-            $plaintextPassword = $request->attributes->get('password');
-            $hashedPassword = $passwordHasher->hashPassword(
-                $user,
-                $plaintextPassword
-            );
-            $user->setPassword($hashedPassword);
+            if ($userData['password']) {
+                $plaintextPassword = $userData['password'];
+                $hashedPassword = $passwordHasher->hashPassword(
+                    $user,
+                    $plaintextPassword
+                );
+                $user->setPassword($hashedPassword);
+            }
             $user->setStatus(true);
             $this->entityManager->flush();
             $json = [
