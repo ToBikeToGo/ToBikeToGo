@@ -225,11 +225,6 @@ function ResponsiveAppBar() {
             >
               Edit Profile
             </MenuItem>
-            {isFranchiseProvider && (
-                <MenuItem onClick={handleClose} component={Link} to="/my-shops">
-                  My Shops
-                </MenuItem>
-            )}
             {isAdmin && (
                 <>
                   <MenuItem onClick={handleClickSubMenu}>

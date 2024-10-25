@@ -94,7 +94,7 @@ const AddMemberPage = () => {
         sx={{
           m: 2,
         }}
-        to={`/my-shops/${shopId}`}
+        to={`/my-shops/${shopId}/members`}
       >
         Go back to My Shop
         <ArrowBack />

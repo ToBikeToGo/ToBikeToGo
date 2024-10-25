@@ -73,7 +73,7 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
     if (selectedImage !== form.initialSelectedImage && datas.file) {
       const formData = new FormData();
       formData.append('file', datas.file);
-      fetchApi(`${apiUrl}/medias`, {
+      fetchApi(`${apiUrl}/media`, {
         method: 'POST',
         body: formData,
       })
@@ -89,7 +89,7 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
           return response.json();
         })
         .then((data) => {
-          const updatedDatas = { ...datas, media: `api/medias/${data['id']}` };
+          const updatedDatas = { ...datas, media: `api/media/${data['id']}` };
 
           return fetchApi(`${apiUrl}${form.call.link}`, {
             method: form.call.method,
