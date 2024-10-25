@@ -39,7 +39,7 @@ const Search = styled('div')(() => ({
   '&:hover': {
     backgroundColor: 'white',
   },
-  margin: '0 2% 0 10%',
+  margin: '0 1% 0 0%',
   minWidth: '550px',
   padding: '0.5em 1em',
   border: `1px solid ${theme.palette.secondary.main}`,
@@ -84,7 +84,7 @@ function ResponsiveAppBar() {
   };
 
   const { user, isFranchiseProvider, handleLogout, isLogged, isAdmin } =
-    useUserContext();
+      useUserContext();
 
   const searchRef = React.useRef(null);
   const [showSearchOptions, setShowSearchOptions] = React.useState(false);
@@ -118,24 +118,27 @@ function ResponsiveAppBar() {
   const { getTranslation } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const pages = [
-    {
-      label: getTranslation('Navbar.rent.bike'),
-      path: '/shops/map',
-    },
-    {
-      label: getTranslation('Navbar.planning'),
-      path: `/planning/${user.id}`,
-    },
-    {
-      label: 'Last booking',
-      path: '/last-booking',
-    },
-    {
-      label: 'Shops',
-      path: '/shops',
-    },
-  ];
+  // Condition to hide or show these pages
+  const pages = isLogged
+      ? [
+        {
+          label: getTranslation('Navbar.rent.bike'),
+          path: '/shops/map',
+        },
+        {
+          label: getTranslation('Navbar.planning'),
+          path: `/planning/${user.id}`,
+        },
+        {
+          label: 'Last booking',
+          path: '/last-booking',
+        },
+        {
+          label: 'Shops',
+          path: '/shops',
+        },
+      ]
+      : []; // Empty if user is not logged
 
   if (isAdmin) {
     pages.push({
@@ -147,7 +150,6 @@ function ResponsiveAppBar() {
 
   const handleMenu = (event) => {
     setOpen(!open);
-
     setAnchorEl(event.currentTarget);
   };
 
@@ -169,321 +171,268 @@ function ResponsiveAppBar() {
   const handleCloseSubMenu = () => {
     setAnchorElSubMenu(null);
   };
+  let content;
 
-  return (
-    <AppBar
-      position="static"
-      sx={{
-        backgroundColor: '#fff6f6',
-        boxShadow: 'none',
-      }}
-    >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Typography
-            variant="h2"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontWeight: 700,
-              textDecoration: 'none',
-              // Add these lines
-              overflow: 'visible', // Make sure the logo is not cut off
-              whiteSpace: 'normal', // Allow the logo to wrap to the next line if necessary
-            }}
-          >
-            BikeToGo
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
-              {pages.map(({ label, isAdminRoute = false }) => (
-                <MenuItem key={label} onClick={handleCloseNavMenu}>
-                  <Typography
-                    textAlign="center"
-                    style={{
-                      color: isAdminRoute ? 'red' : 'black',
-                    }}
-                  >
-                    {label}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            BikeToGo
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map(({ label, path }) => (
-              <Button
-                key={path}
-                onClick={handleCloseNavMenu}
-                sx={{
-                  my: 2,
-                  color: theme.palette.text.secondary,
-                  display: 'block',
+  if (isLogged) {
+    content = (
+        <Box sx={{ flexGrow: 0 }}>
+          <div className="flex items-center">
+            <Button
+                onClick={handleMenu}
+                variant="outlined"
+                id="fade-button"
+                aria-controls={open ? 'fade-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'end',
+                  width: '180px',
+                  backgroundColor: 'white',
                 }}
-                component={Link}
-                to={path}
-              >
-                {label}
-              </Button>
-            ))}
-          </Box>
-          <Search ref={searchRef}>
-            <StyledInputBase
-              placeholder="Find a bike…"
-              inputProps={{ 'aria-label': 'search' }}
-              onClick={handleSearchClick}
-              onChange={onChangeInput}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              name={'label'}
-            />
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-                width: '100%',
-                flexDirection: 'column',
-              }}
             >
-              <Calendar
-                calendarRef={calendarRef}
-                handleOpen={handleOpen}
-                onChangeDate={onChangeDate}
-                dates={dates}
-                isOpen={isOpen}
-              />
-              {showSearchOptions && (
-                <div
-                  style={{
-                    margin: '1em',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    opacity: showSearchOptions ? 1 : 0,
-                    transition: 'opacity 1s ease-in-out',
-                  }}
-                  className="search-options"
-                >
-                  <TextField
-                    label="Max Price"
-                    type="number"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    sx={{ m: 2 }}
-                    name="maxPrice"
-                    onChange={onChangeInput}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                  <TextField
-                    label="Brand"
-                    type="text"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    name="brand"
-                    onChange={onChangeInput}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                  <TextField
-                    label="City"
-                    type="text"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    sx={{ m: 2 }}
-                    name="city"
-                    onChange={onChangeInput}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                </div>
-              )}
-            </Box>
-
-            <SearchIconWrapper></SearchIconWrapper>
-          </Search>
-          <Box sx={{ flexGrow: 0 }}>
-            {' '}
-            {isLogged ? (
-              <div className="flex items-centerƒsea">
-                <Button
-                  onClick={handleMenu}
-                  variant="outlined"
-                  id="fade-button"
-                  aria-controls={open ? 'fade-menu' : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? 'true' : undefined}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'end',
-                    width: '250px',
-                    backgroundColor: 'white',
-                  }}
-                >
-                  <p class="text-center ml-2 mr-2 ">
-                    {user.firstname} {user.lastname}
-                  </p>
-                  <Avatar alt={user.firstname} src={user.avatar} />{' '}
-                  {!open ? (
-                    <ExpandMore />
-                  ) : (
-                    <ExpandMore
+              <p class="text-center ml-2 mr-2 ">
+                {user.firstname} {user.lastname}
+              </p>
+              <Avatar alt={user.firstname} src={user.avatar} />{' '}
+              {!open ? (
+                  <ExpandMore />
+              ) : (
+                  <ExpandMore
                       sx={{
                         transform: 'rotate(180deg)',
                       }}
-                    />
-                  )}
-                </Button>
-                <NotificationBar />
-              </div>
-            ) : (
-              <Button
-                variant="contained"
-                component={Link}
-                to="/login"
-                sx={{
-                  width: '250px',
-                  backgroundColor: 'white',
-                }}
-              >
-                Me connecter
-              </Button>
-            )}
-            <Menu
+                  />
+              )}
+            </Button>
+            <NotificationBar />
+          </div>
+          <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
               keepMounted
               open={Boolean(anchorEl)}
               onClose={handleClose}
-            >
-              <MenuItem
+          >
+            <MenuItem
                 onClick={handleClose}
                 component={Link}
                 to={`/user/edit-profile/me`}
                 sx={{
                   width: '250px',
                 }}
-              >
-                Edit Profile
-              </MenuItem>
-              {isFranchiseProvider && (
+            >
+              Edit Profile
+            </MenuItem>
+            {isFranchiseProvider && (
                 <MenuItem onClick={handleClose} component={Link} to="/my-shops">
                   My Shops
                 </MenuItem>
-              )}
-              {isAdmin && (
+            )}
+            {isAdmin && (
                 <>
                   <MenuItem onClick={handleClickSubMenu}>
                     Admin {openSubMenu ? <ExpandLess /> : <ExpandMore />}
                   </MenuItem>
                   <Collapse in={openSubMenu} timeout="auto" unmountOnExit>
                     <List
-                      component="div"
-                      disablePadding
-                      style={{
-                        backgroundColor: '#ebf6d9',
-                      }}
+                        component="div"
+                        disablePadding
+                        style={{
+                          backgroundColor: '#ebf6d9',
+                        }}
                     >
                       <ListItem button component={Link} to="/admin/users">
                         <ListItemText primary="Users" />
                       </ListItem>
                       <ListItem
-                        button
-                        component={Link}
-                        to="/franchise/request/validate"
+                          button
+                          component={Link}
+                          to="/franchise/request/validate"
                       >
                         <ListItemText primary="Franchise requests" />
                       </ListItem>
                     </List>
                   </Collapse>
                 </>
-              )}
-              {!isFranchiseProvider ? (
-                <MenuItem
-                  onClick={handleClose}
-                  component={Link}
-                  to="/franchise/request"
-                >
+            )}
+            {!isFranchiseProvider && !isAdmin ? (
+                <MenuItem onClick={handleClose} component={Link} to="/franchise/request">
                   Rejoindre l'aventure
                 </MenuItem>
-              ) : (
-                <>
-                  <MenuItem
-                    onClick={handleClose}
-                    component={Link}
-                    to="/my-franchise"
-                  >
-                    Mes franchises
-                  </MenuItem>
-                </>
-              )}
+            ) : isFranchiseProvider && !isAdmin ? (
+                <MenuItem onClick={handleClose} component={Link} to="/my-franchise">
+                  Mes franchises
+                </MenuItem>
+            ) : null}
 
-              <MenuItem onClick={handleLogout} component={Link} to="">
-                Logout
-              </MenuItem>
+            <MenuItem onClick={handleLogout} component={Link} to="">
+              Logout
+            </MenuItem>
 
-              <MenuItem
+            <MenuItem
                 onClick={handleClose}
                 component={Link}
                 to="/my-shops"
-              ></MenuItem>
-            </Menu>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+            ></MenuItem>
+          </Menu>
+        </Box>
+    );
+  } else {
+    content = (
+        <Button
+            variant="contained"
+            component={Link}
+            to="/login"
+            sx={{
+              width: '250px',
+              backgroundColor: 'white',
+              marginLeft: 'auto', // Aligns button to the right
+              marginRight: '20px', // Aligns button to the right
+            }}
+        >
+          Me connecter
+        </Button>
+    );
+  }
+  return (
+      <AppBar
+          position="static"
+          sx={{
+            backgroundColor: '#fff6f6',
+            boxShadow: 'none',
+          }}
+      >
+        <Container maxWidth="xl"
+                   sx={{ paddingRight: '0 !important' }}>
+          <Toolbar disableGutters>
+            <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                href="#app-bar-with-responsive-menu"
+                sx={{
+                  mr: 2,
+                  display: { xs: 'flex', md: 'flex' },
+                  fontWeight: 400,
+                  textDecoration: 'none',
+                  flexGrow: 1, // This will make the title take up the available space
+                }}
+            >
+              BikeToGo
+            </Typography>
+
+            {/* Only show these elements if the user is logged */}
+            {isLogged && (
+                <>
+                  <Box sx={{
+                    flexGrow: 0,
+                    display: 'flex', // Ensures flex layout
+                    flexDirection: 'row', // Align items in a row
+                    alignItems: 'center', // Vertically center the items
+                    justifyContent: 'space-between', // Space between the items
+                  }}>
+                    {pages.map(({ label, path }) => (
+                        <Button
+                            key={path}
+                            onClick={handleCloseNavMenu}
+                            sx={{
+                              my: 2,
+                              color: theme.palette.text.secondary,
+                              display: 'block',
+                            }}
+                            component={Link}
+                            to={path}
+                        >
+                          {label}
+                        </Button>
+                    ))}
+                  </Box>
+
+                  {/* Search bar visible only when logged */}
+                  <Search ref={searchRef}>
+                    <StyledInputBase
+                        placeholder="Find a bike…"
+                        inputProps={{ 'aria-label': 'search' }}
+                        onClick={handleSearchClick}
+                        onChange={onChangeInput}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                        name={'label'}
+                    />
+                    <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          position: 'relative',
+                          width: '100%',
+                          flexDirection: 'column',
+                        }}
+                    >
+                      <Calendar
+                          calendarRef={calendarRef}
+                          handleOpen={handleOpen}
+                          onChangeDate={onChangeDate}
+                          dates={dates}
+                          isOpen={isOpen}
+                      />
+                      {showSearchOptions && (
+                          <div
+                              style={{
+                                margin: '1em',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                opacity: showSearchOptions ? 1 : 0,
+                                transition: 'opacity 1s ease-in-out',
+                              }}
+                              className="search-options"
+                          >
+                            <TextField
+                                label="Max Price"
+                                type="number"
+                                InputLabelProps={{
+                                  shrink: true,
+                                }}
+                                sx={{ m: 2 }}
+                                name="maxPrice"
+                                onChange={onChangeInput}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            />
+                            <TextField
+                                label="Brand"
+                                type="text"
+                                InputLabelProps={{
+                                  shrink: true,
+                                }}
+                                name="brand"
+                                onChange={onChangeInput}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            />
+                            <TextField
+                                label="City"
+                                type="text"
+                                InputLabelProps={{
+                                  shrink: true,
+                                }}
+                                sx={{ m: 2 }}
+                                name="city"
+                                onChange={onChangeInput}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            />
+                          </div>
+                      )}
+                    </Box>
+                  </Search>
+                </>
+            )}
+            {content}
+          </Toolbar>
+        </Container>
+      </AppBar>
   );
 }
+
 export default ResponsiveAppBar;
+

@@ -61,6 +61,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
 )]
 #[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: "/media",
+            normalizationContext: ['groups' => [ConstantsGroups::SHOP_WRITE]],
+        )
+    ],
+)]
+#[ApiResource(
     normalizationContext: ['groups' => [ConstantsGroups::SHOP_READ]],
 )]
 #[ApiFilter(SearchFilter::class, properties: ['label' => 'partial'])]
@@ -128,6 +136,7 @@ class Shop
     #[ORM\OneToMany(mappedBy: 'shop', targetEntity: Vacation::class)]
     private Collection $vacations;
 
+    #[Groups([ConstantsGroups::SHOP_READ, ConstantsGroups::FRANCHISE_READ])]
     #[ORM\ManyToOne(inversedBy: 'shops')]
     private ?Media $media = null;
 

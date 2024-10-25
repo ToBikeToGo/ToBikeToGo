@@ -72,7 +72,7 @@ security:
         - { path: ^/api/roles, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST] }
         - { path: ^/api/publications, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST, GET] }
         - { path: ^/api/questions, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST, GET] }
-        - { path: ^/api/requests, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH] }
+        - { path: ^/api/requests.*, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH] }
         - { path: ^/api/schedules, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH] }
         - { path: ^/api/vacations, roles: ROLE_PROVIDER, methods: [PUT, PATCH] }
         - { path: ^/api/type_questions, roles: ROLE_ADMIN, methods: [DELETE, PUT, PATCH, POST, GET] }

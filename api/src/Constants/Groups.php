@@ -5,6 +5,7 @@ namespace App\Constants;
 final class Groups {
     const ALL_READ = [
         self::USER_READ,
+        self::USER_UPDATE,
         self::BIKE_READ,
         self::QUESTION_READ,
         self::PROPOSITION_READ,
@@ -23,6 +24,7 @@ final class Groups {
         'user:read:request'
     ];
     const USER_READ = 'user:read';
+    const USER_UPDATE = 'user:write:update';
     const USER_WRITE = 'user:write';
     const USER_FRANCHISE_WRITE = 'user:franchise:write';
     const BIKE_READ = 'bike:read';

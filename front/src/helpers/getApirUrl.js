@@ -6,6 +6,5 @@ export const getApirUrl = () => {
 
 export const getMediaUrl = () => {
   const env = import.meta.env;
-
   return env.VITE_MEDIA_URL;
 };

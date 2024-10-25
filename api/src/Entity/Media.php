@@ -70,7 +70,7 @@ class Media
     private ?string $contentUrl = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups([ConstantsGroups::MEDIA_READ])]
+    #[Groups([ConstantsGroups::MEDIA_READ, ConstantsGroups::FRANCHISE_READ])]
     private ?string $name = null;
 
     #[Assert\NotNull(groups: ['media:write'])]

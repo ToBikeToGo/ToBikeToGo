@@ -53,8 +53,8 @@ export const Shop = ({ shop, isOwner = false }) => {
       />
       <img
         src={
-          shop.media?.contentUrl
-            ? getMediaUrl() + shop.media.contentUrl
+          shop.media.name
+            ? getMediaUrl() +'uploads/media/' +  shop.media.name
             : 'https://media.gettyimages.com/id/912819604/fr/vectoriel/ic%C3%B4ne-du-site-e-commerce-vitrine-design-plat.jpg?s=612x612&w=gi&k=20&c=1ORkFTN_MAUixOP-jWzpELTYyiAob1cYDTXoQiGYf6I='
         }
         alt={shop.label}

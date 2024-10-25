@@ -131,10 +131,8 @@ const Login = ({ setToast, Toast }) => {
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: 'background.default',
-          borderRadius: '12px',
           width: '100%',
-          margin: 'auto',
-          padding: '50px',
+          height: 'auto',
           borderLeft: '1px solid #e7d9d9',
         }}
         bgColor={'primary'}

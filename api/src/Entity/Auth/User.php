@@ -85,14 +85,14 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         ),
         new Get(normalizationContext: ['groups' => [ConstantsGroups::USER_READ, 'user:read:full']]),
         new Patch(
-            denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]],
+            denormalizationContext: ['groups' => [ConstantsGroups::USER_UPDATE, ConstantsGroups::USER_WRITE]],
             securityPostDenormalize: "is_granted('PATCH', object)",
         ),
         // new Put(), // I don't use PUT, only PATCH
         new Delete(),
     ],
     normalizationContext: ['groups' => [ConstantsGroups::USER_READ]],
-    denormalizationContext: ['groups' => ['user:write:update', ConstantsGroups::USER_WRITE]],
+    denormalizationContext: ['groups' => [ConstantsGroups::USER_UPDATE, ConstantsGroups::USER_WRITE]],
 )]
 #[ApiFilter(
     SearchFilter::class, properties: [
@@ -107,7 +107,11 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     #[Groups(ConstantsGroups::ALL_READ)]
     private ?int $id = null;
 
-    #[Groups([ConstantsGroups::USER_READ, ConstantsGroups::USER_FRANCHISE_WRITE])]
+    #[Groups([
+        ConstantsGroups::USER_READ,
+        ConstantsGroups::USER_FRANCHISE_WRITE,
+        ConstantsGroups::USER_UPDATE
+    ])]
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
