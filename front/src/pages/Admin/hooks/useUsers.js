@@ -27,7 +27,6 @@ const useUsers = () => {
     const response = await fetchApi(url);
     const data = await response.json();
     setUsers(data['hydra:member']);
-    console.log(data);
     setTotalPage(Math.ceil(data['hydra:totalItems'] / 20));
     setIsLoading(false);
     return data;

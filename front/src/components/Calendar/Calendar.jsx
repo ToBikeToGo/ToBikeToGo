@@ -20,7 +20,6 @@ const Calendar = ({
   const [error, setError] = useState(null);
   const handleDateChange = (item) => {
     const { startDate, endDate } = item.selection;
-    console.log('item', item);
 
     if (startDate && endDate) {
       const daysDiff = (endDate - startDate) / (1000 * 60 * 60 * 24);

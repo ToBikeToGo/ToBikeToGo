@@ -33,7 +33,6 @@ const BikeAdviceChat = () => {
             }
 
             const data = await res.json();
-            console.log(data)
             setAdvice(data.choices[0].message.content); // Affiche la réponse
             setMessage(''); // Réinitialise le champ de saisie après l'envoi
         } catch (err) {
