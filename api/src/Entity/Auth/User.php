@@ -2,26 +2,16 @@
 
 namespace App\Entity\Auth;
 
-use AllowDynamicProperties;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Doctrine\Common\Filter\SearchFilterInterface;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiFilter;
-use App\Controller\FranchiseUsersAdminAction;
-use App\Controller\RegisterMemberAction;
-use App\Entity\Shop;
-use ApiPlatform\Metadata\ApiProperty;
 use DateTime;
+use App\Entity\Shop;
 use App\Entity\Media;
-use App\Controller\ActivateAction;
-use App\Controller\RegisterAction;
-use App\Controller\UserController;
 use App\Entity\Booking;
 use App\Entity\Payment;
 use App\Entity\Request;
 use App\Entity\Schedule;
 use App\Entity\Vacation;
 use App\Entity\Franchise;
+use AllowDynamicProperties;
 use App\Entity\Blog\Comment;
 use App\Entity\Notification;
 use App\Entity\Shop\Product;
@@ -29,17 +19,29 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use Ramsey\Uuid\Rfc4122\UuidV4;
+use ApiPlatform\Metadata\Delete;
 use App\Entity\Blog\Publication;
 use Doctrine\ORM\Mapping as ORM;
 use App\State\UserPasswordHasher;
+use App\Controller\ActivateAction;
+use App\Controller\RegisterAction;
+use App\Controller\UserController;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use App\Controller\RemoveMemberAction;
+use App\Controller\UpdateMemberAction;
 use ApiPlatform\Metadata\GetCollection;
+use App\Controller\RegisterMemberAction;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\Collection;
 use App\Constants\Groups as ConstantsGroups;
+use App\Controller\FranchiseUsersAdminAction;
 use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Doctrine\Common\Filter\SearchFilterInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[AllowDynamicProperties] #[ORM\Entity()]
@@ -76,12 +78,28 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             read: false,
             denormalizationContext: ['groups' => [ConstantsGroups::USER_WRITE]],
         ),
+        new Get(
+            uriTemplate: '/members/{id}',
+            denormalizationContext: ['groups' => ['shop:members:read', 'user:read', 'user:read:admin']],
+        ),
         new Post(
             uriTemplate: '/register/member',
             controller: RegisterMemberAction::class,
             denormalizationContext: ['groups' => ['shop:members:write', 'user:write', 'user:write:admin']],
             security: "is_granted('ROLE_PROVIDER')",
             read: false
+        ),
+        new PATCH(
+            uriTemplate: '/members/{id}',
+            controller: UpdateMemberAction::class,
+            denormalizationContext: ['groups' => ['shop:members:write', 'user:write', 'user:write:admin']],
+            security: "is_granted('ROLE_PROVIDER')",
+        ),
+        new Delete(
+            uriTemplate: '/members/{id}',
+            controller: RemoveMemberAction::class,
+            denormalizationContext: ['groups' => ['shop:members:write', 'user:write', 'user:write:admin']],
+            security: "is_granted('ROLE_PROVIDER')",
         ),
         new Get(normalizationContext: ['groups' => [ConstantsGroups::USER_READ, 'user:read:full']]),
         new Patch(
@@ -258,6 +276,13 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         if (!$this->shops->contains($shop)) {
             $this->shops->add($shop);
         }
+
+        return $this;
+    }
+
+    public function removeShop(Shop $shop): static
+    {
+        $this->shops->removeElement($shop);
 
         return $this;
     }

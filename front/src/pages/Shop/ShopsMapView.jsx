@@ -13,6 +13,7 @@ import { BikeList } from '../../components/Bike/BikeList.jsx';
 import { useBookingContext } from '../../hooks/useBooking.jsx';
 import Button from '@mui/material/Button';
 import { toShortDate } from '../../helpers/formatDate.js';
+import { useTranslation } from '../../locales/hooks/getTranslation.js';
 const legalIcon = new Icon({
   iconUrl: PinImg,
   iconSize: [35, 35],
@@ -65,6 +66,7 @@ const LocateControl = ({ shops }) => {
 const ShopsMapView = () => {
   const { getAllShops, getAvailableBikesByShop, bikes } = useShopContext();
   const { isLoading, startLoading, stopLoading } = useLoading();
+  const { getTranslation } = useTranslation();
   const {
     isLoading: isLoadingBikes,
     startLoading: startLoadingBikes,
@@ -102,7 +104,7 @@ const ShopsMapView = () => {
       stopLoadingBikes();
     } catch (error) {
       console.error(
-        'Une erreur est survenue lors de la récupération des vélos disponibles :',
+        getTranslation('bike-rent.error'),
         error
       );
     }
@@ -128,8 +130,8 @@ const ShopsMapView = () => {
         }
       >
         <MapContainer
-          center={[51.505, -0.09]}
-          zoom={33}
+          center={[48.8566, 2.3522]} // Default address set to Paris coordinates
+          zoom={6}
           style={{
             height: '1000px',
             width: '100%',
@@ -164,7 +166,7 @@ const ShopsMapView = () => {
                   src="https://media.gettyimages.com/id/912819604/fr/vectoriel/ic%C3%B4ne-du-site-e-commerce-vitrine-design-plat.jpg?s=612x612&amp;w=gi&amp;k=20&amp;c=1ORkFTN_MAUixOP-jWzpELTYyiAob1cYDTXoQiGYf6I="
                   alt="place Rousset"
                 />
-                <Link to={`/bikes/${shop.id}`}>Voir les vélos</Link>
+                <Link to={`/bikes/${shop.id}`}>{getTranslation('bike-rent.bikes')}</Link>
               </Popup>
             </Marker>
           ))}
@@ -211,13 +213,13 @@ const ShopsMapView = () => {
               <>
                 {startDate && endDate ? (
                   <h3 className={'m-2'}>
-                    {bikes?.length} Vélos disponibles du{' '}
-                    {toShortDate(startDate)} au {toShortDate(endDate)}
+                    {bikes?.length} {getTranslation('bike-rent.available-date')}{' '}
+                    {toShortDate(startDate)} {getTranslation('bike-rent.available-date-to')} {toShortDate(endDate)}
                   </h3>
                 ) : (
                   <h3 className={'m-2'}>
                     {bikes?.length}
-                    Vélos disponibles
+                    {getTranslation('bike-rent.available')}
                   </h3>
                 )}
                 <BikeList bikes={bikes} />

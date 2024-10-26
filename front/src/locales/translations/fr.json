@@ -6,6 +6,71 @@
     },
     "my": {
       "bikes": "Mes vélos"
+    },
+    "bookings": "Dernières réservations",
+    "shops": "Magasins",
+    "admin": "Admin",
+    "search": {
+      "placeholder": "Rechercher un vélo...",
+      "start-date": "Date de début",
+      "end-date": "Date de fin",
+      "max-price": "Prix max",
+      "brand": "Marque",
+      "city": "Ville"
+    },
+    "login": "Me connecter",
+    "menu": {
+      "edit-profile": "Modifier mon profil",
+      "franchise-request": "Rejoindre l'aventure",
+      "logout": "Déconnexion",
+      "admin": {
+        "title": "Admin",
+        "users": "Utilisateurs",
+        "franchise-requests": "Demandes de franchises"
+      },
+      "my-franchises": "Mes franchises",
+      "my-shops": "Mes magasins"
     }
+  },
+  "login": {
+    "title": "Connexion",
+    "username": "Email",
+    "password": "Mot de passe",
+    "submit": "Connexion",
+    "error": "Email ou mot de passe invalide",
+    "success": "Connexion réussie",
+    "no-account": "Pas encore de compte ?",
+    "register": "Inscrivez-vous ici"
+  },
+  "edit-profile": {
+    "title": "Modifier le profil",
+    "first-name": "Prénom",
+    "last-name": "Nom",
+    "email": "Email",
+    "locale": "Langue préférée",
+    "profile-picture": "Photo de profil",
+    "submit": {
+      "edit-user": "Modifier l'utilisateur",
+      "edit-profile": "Modifier mon profil",
+      "success": "Profil modifié avec succès !"
+    }
+  },
+  "bike-rent": {
+    "bikes": "Voir les vélos",
+    "available": "Vélos disponibles",
+    "available-date": "Disponible à partir du",
+    "available-date-to": "au",
+    "error": "Une erreur est survenue lors de la récupération des vélos disponibles"
+  },
+  "planning": {
+    "title": "Mon planning",
+    "ask-vacation": "Demander des vacances",
+    "no-bookings": "Vous n'avez pas de réservations à venir",
+    "bookings": "Vos réservations à venir",
+    "past-bookings": "Vos réservations passées",
+    "cancel": "Annuler",
+    "cancel-confirmation": "Êtes-vous sûr de vouloir annuler cette réservation ?",
+    "cancel-success": "Réservation annulée avec succès",
+    "cancel-error": "Une erreur est survenue lors de l'annulation de la réservation"
   }
 }

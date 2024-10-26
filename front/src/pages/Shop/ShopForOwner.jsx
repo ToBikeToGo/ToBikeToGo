@@ -1,16 +1,30 @@
 import { ShopWithDetails } from './components/ShopWithDetails.jsx';
 import { useShopContext } from '../../hooks/UseShop.jsx';
 import { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { CircularProgress, useTheme } from '@mui/material';
 import { MemberTable } from '../../components/Member/MemberTable.jsx';
+import fetchApi from '../../helpers/fetchApi.js';
+import { getApirUrl } from '../../helpers/getApirUrl.js';
 
 export const ShopForOwner = () => {
   const { getShopWithMembers, shop, members } = useShopContext();
   const theme = useTheme();
   const { shopId } = useParams();
+  const navigate = useNavigate();
+  const onMemberEdit = (id) => {
+    navigate(`/my-shops/edit-member/${id}`);
+  };
+  const apiUrl = getApirUrl();
+  const onMemberDelete = (id) => {
+    fetchApi(`${apiUrl}/members/${id}`, {
+      method: 'DELETE',
+    }).then(() => {
+      getShopWithMembers(shopId);
+    });
+  }
 
   useEffect(() => {
     getShopWithMembers(shopId);
@@ -43,8 +57,8 @@ export const ShopForOwner = () => {
       <Box sx={{ width: '80%', marginTop: '2em' }}>
         <MemberTable
           members={members}
-          onMemberDelete={() => {}}
-          onMemberEdit={() => {}}
+          onMemberDelete={onMemberDelete}
+          onMemberEdit={onMemberEdit}
         />
       </Box>
       <Button

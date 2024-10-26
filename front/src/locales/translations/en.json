@@ -6,6 +6,74 @@
     },
     "my": {
       "bikes": "My bikes"
+    },
+    "bookings": "Last bookings",
+    "shops": "Shops",
+    "admin": "Admin",
+    "search": {
+      "placeholder": "Search for a bike...",
+      "start-date": "Start date",
+      "end-date": "End date",
+      "max-price": "Max price",
+      "brand": "Brand",
+      "city": "City"
+    },
+    "login": "Login",
+    "menu": {
+      "edit-profile": "Edit profile",
+      "franchise-request": "Join the adventure",
+      "logout": "Logout",
+      "admin": {
+        "title": "Admin",
+        "users": "Users",
+        "franchise-requests": "Franchise requests"
+      },
+      "my-franchises": "My franchises",
+      "my-shops": "My shops"
+    }
+  },
+  "login": {
+    "title": "Login",
+    "username": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "error": "Invalid email or password",
+    "success": "Login successful",
+    "no-account": "Don't have an account yet?",
+    "register": "Register here"
+  },
+  "edit-profile": {
+    "title": "Edit my profile",
+    "first-name": "First name",
+    "last-name": "Last name",
+    "email": "Email",
+    "locale": "Language preference",
+    "profile-picture": "Profile picture",
+    "submit": {
+      "edit-user": "Edit user",
+      "edit-profile": "Edit profile",
+      "success": "Profile edited successfully"
+    }
+  },
+  "bike-rent": {
+    "bikes": "See bikes",
+    "available": "Available bikes",
+    "available-date": "Available from",
+    "available-date-to": "to",
+    "error": "An error occurred while fetching the bikes"
+  },
+  "planning": {
+    "title": "My Planning",
+    "ask-vacation": "Ask for vacation",
+    "no-booking": "No booking",
+    "no-booking-description": "You don't have any booking yet. Rent a bike to start planning your next adventure!",
+    "booking": {
+      "start-date": "Start date",
+      "end-date": "End date",
+      "bike": "Bike",
+      "status": "Status",
+      "actions": "Actions",
+      "cancel": "Cancel"
     }
   }
 }

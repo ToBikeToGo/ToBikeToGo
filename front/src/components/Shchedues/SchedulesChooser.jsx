@@ -1,5 +1,5 @@
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 const daysOfWeek = [
@@ -14,24 +14,46 @@ const daysOfWeek = [
 
 const mapOpeningHoursToDays = (openingHours) => {
   let mappedOpeningHours = [];
-  let dayOfWeek = 0;
-  for (let i = 0; i < Object.keys(openingHours).length; i += 2) {
-    const startKey = Object.keys(openingHours)[i];
-    const endKey = Object.keys(openingHours)[i + 1];
-    mappedOpeningHours.push({
-      dow: dayOfWeek,
-      startTime: openingHours[startKey],
-      endTime: openingHours[endKey],
-    });
-    dayOfWeek++;
-  }
+  
+  daysOfWeek.forEach((day, index) => {
+    const startKey = `${day}Start`;
+    const endKey = `${day}End`;
+
+    if (openingHours[startKey] && openingHours[endKey]) {
+      const startTime = new Date(openingHours[startKey]);
+      startTime.setHours(startTime.getHours() + 2);
+
+      const endTime = new Date(openingHours[endKey]);
+      endTime.setHours(endTime.getHours() + 2);
+
+      mappedOpeningHours.push({
+        dow: index,
+        startTime: startTime,
+        endTime: endTime,
+      });
+    }
+  });
 
   return mappedOpeningHours;
 };
 
-export const SchedulesChooser = ({ onChange }) => {
-  const [openingHours, setOpeningHours] = useState('');
-  const [openingDays, setOpeningDays] = useState('');
+export const SchedulesChooser = ({ onChange, initialSchedules }) => {
+  const [openingHours, setOpeningHours] = useState({});
+  const [openingDays, setOpeningDays] = useState({});
+
+  useEffect(() => {
+    if (initialSchedules && initialSchedules.length > 0) {
+      initialSchedules.forEach((schedule) => {
+        const day = daysOfWeek[schedule.dow];
+        setOpeningDays((prev) => ({ ...prev, [day]: true }));
+        setOpeningHours((prev) => ({
+          ...prev,
+          [`${day}Start`]: schedule.startTime,
+          [`${day}End`]: schedule.endTime,
+        }));
+      });
+    }
+  }, [initialSchedules]);
 
   const handleDayChange = (event) => {
     console.log(event.target);

@@ -53,6 +53,7 @@ class RegisterMemberAction extends AbstractController
             $schedule->setStartTime(new \DateTime($sc['startTime']))
                 ->setEndTime(new \DateTime($sc['endTime']))
                 ->addUser($user);
+            $schedule->setStartValidity(new \DateTime());
             $this->em->persist($schedule);
         }
         $this->em->persist($user);

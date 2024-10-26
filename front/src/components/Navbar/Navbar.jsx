@@ -130,11 +130,11 @@ function ResponsiveAppBar() {
           path: `/planning/${user.id}`,
         },
         {
-          label: 'Last booking',
+          label: getTranslation('Navbar.bookings'),
           path: '/last-booking',
         },
         {
-          label: 'Shops',
+          label: getTranslation('Navbar.shops'),
           path: '/shops',
         },
       ]
@@ -142,7 +142,7 @@ function ResponsiveAppBar() {
 
   if (isAdmin) {
     pages.push({
-      label: 'Admin',
+      label: getTranslation('Navbar.admin'),
       path: '/admin/users',
       isAdminRoute: true,
     });
@@ -304,7 +304,8 @@ function ResponsiveAppBar() {
           <Toolbar disableGutters>
             <Typography
                 variant="h6"
-                noWrap
+                onClick={() => navigate('/')}
+            noWrap
                 component="a"
                 href="#app-bar-with-responsive-menu"
                 sx={{

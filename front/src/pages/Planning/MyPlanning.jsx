@@ -9,8 +9,10 @@ import { usePlanning } from '../../components/Planning/hooks/usePlanning.jsx';
 import { Link, useParams } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { WbSunny } from '@mui/icons-material';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useTheme } from '@mui/material';
 import { useUsers } from '../Admin/hooks/useUsers.js';
+import { useTranslation } from '../../locales/hooks/getTranslation.js';
 
 // TODO api call get events for a month by user
 const mockedEvents = [
@@ -26,6 +28,7 @@ function MyPlanning({ isUser = true }) {
   const { user, userHasShop } = useUserContext();
   const { userId } = useParams();
   const theme = useTheme();
+  const { getTranslation } = useTranslation();
   const { getWorkingDays, vacations, setUser } = usePlanning({
     fromConnectedUser: true,
   });
@@ -76,7 +79,7 @@ function MyPlanning({ isUser = true }) {
           />
           <div class="flex flex-col justify-center items-center">
             <Typography variant={'h2'}>
-              {isUser ? 'My Planning' : userFromApi?.firstname + ' Planning'}
+              {isUser ? getTranslation('planning.title') : userFromApi?.firstname + ' Planning'}
             </Typography>
             <Link to="/ask-vacation">
               <Button variant={'outlined'} color={'black'} type="button">
@@ -95,7 +98,7 @@ function MyPlanning({ isUser = true }) {
       </div>
     </div>
   ) : (
-    <div>Loading...</div>
+    <CircularProgress color={'secondary'} className={'m-5'} />
   );
 }
 

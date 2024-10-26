@@ -3,6 +3,7 @@ import { TextField } from '@mui/material';
 import { format, isEqual, isBefore } from 'date-fns';
 import { DateRange } from 'react-date-range';
 import theme from '../../theme/theme.js';
+import { useTranslation } from '../../locales/hooks/getTranslation.js';
 import { InfoRounded } from '@mui/icons-material';
 import withToast from '../HOC/WithToastHOC.jsx';
 const Calendar = ({
@@ -18,6 +19,7 @@ const Calendar = ({
   setToast,
 }) => {
   const [error, setError] = useState(null);
+  const { getTranslation } = useTranslation();
   const handleDateChange = (item) => {
     const { startDate, endDate } = item.selection;
 
@@ -47,7 +49,7 @@ const Calendar = ({
           InputProps={{
             color: 'primary',
           }}
-          label={'Start date'}
+          label={getTranslation('Navbar.search.start-date')}
           size={'small'}
           color={'primary'}
           value={format(dates?.[0]?.startDate || new Date(), 'dd/MM/yyyy')}
@@ -59,7 +61,7 @@ const Calendar = ({
         />
         <TextField
           size={'small'}
-          label={'End date'}
+          label={getTranslation('Navbar.search.end-date')}
           variant="outlined"
           value={format(dates?.[0]?.endDate || new Date(), 'dd/MM/yyyy')}
           mb={2}

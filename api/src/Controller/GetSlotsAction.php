@@ -40,6 +40,7 @@ class GetSlotsAction extends AbstractController
         // Retrieve data from the body of the request
         $data = json_decode($request->getContent(), true);
         $this->date = $data['date'];
+        error_log('la date est : ' . $this->date);
 
         // Verify that the date is valid
         if (!\DateTime::createFromFormat(self::DATE_FORMAT, $this->date)) {
@@ -49,7 +50,7 @@ class GetSlotsAction extends AbstractController
         $this->date = new \DateTime($this->date);
 
         // Get the day of the week
-        $this->dow = $this->date->format('N');
+        $this->dow = $this->date->format('N') - 1;
 
         // Format the date
         $this->date = $this->toDateFormat($this->date);
@@ -67,6 +68,7 @@ class GetSlotsAction extends AbstractController
 
         // If there are no available start or end times, return an empty array
         if (empty($this->startTimeArray) || empty($this->endTimeArray)) {
+            error_log('ko');
             return new JsonResponse(['slots' => []], Response::HTTP_OK);
         }
 

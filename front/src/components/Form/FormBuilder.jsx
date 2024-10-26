@@ -15,7 +15,7 @@ import { useState, useRef, useEffect } from 'react';
 import { SchedulesChooser } from '../Shchedues/SchedulesChooser.jsx';
 import MenuItem from '@mui/material/MenuItem';
 
-const FormBuilder = ({ form, onSubmit, setToast }) => {
+const FormBuilder = ({ form, onSubmit, setToast, initialSchedules }) => {
   const [datas, setDatas] = useState({});
   const [entity, setEntity] = useState(null);
   const [selectedImage, setSelectedImage] = useState(
@@ -223,6 +223,13 @@ const FormBuilder = ({ form, onSubmit, setToast }) => {
           );
         } else if (field.type === 'schedule') {
           return <SchedulesChooser onChange={onChangeSchedules} />;
+        } else if (field.type === 'schedule-edit') {
+          return (
+            <SchedulesChooser
+                onChange={onChangeSchedules}
+                initialSchedules={initialSchedules}
+            />
+          ); 
         } else if (field.type === 'select') {
           return (
             <FormControl fullWidth>

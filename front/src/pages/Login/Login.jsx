@@ -13,6 +13,7 @@ import { getApirUrl, getMediaUrl } from '../../helpers/getApirUrl.js';
 import { useNavigate, Link } from 'react-router-dom';
 import { useLoading } from '../../hooks/useLoading.jsx';
 import { checkEmail } from '../../helpers/checkEmail.js';
+import { useTranslation } from '../../locales/hooks/getTranslation.js';
 
 const StyledInput = styled(TextField)`
   width: 100%;
@@ -45,6 +46,7 @@ const Login = ({ setToast, Toast }) => {
   const [email, setEmail] = useState('');
   const { startLoading, stopLoading, isLoading } = useLoading();
   const navigate = useNavigate();
+  const { getTranslation } = useTranslation();
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -74,7 +76,7 @@ const Login = ({ setToast, Toast }) => {
         if (!response.ok) {
           setToast({
             open: true,
-            message: 'Email or password is not valid',
+            message: getTranslation('login.error'),
             severity: 'error',
           });
           return Promise.reject(); // Add this line to stop the promise chain
@@ -92,11 +94,9 @@ const Login = ({ setToast, Toast }) => {
         if (response.status === 200) {
           setToast({
             open: true,
-            message: 'Login successful',
+            message: getTranslation('login.success'),
             severity: 'success',
           });
-
-          console.log('here');
 
           const redirectAfterLogin = localStorage.getItem('redirectAfterLogin');
           if (redirectAfterLogin) {
@@ -142,14 +142,14 @@ const Login = ({ setToast, Toast }) => {
             Login
           </Typography>
           <StyledInput
-            placeholder="Username"
+            placeholder={getTranslation('login.username')}
             sx={{
               marginBottom: '20px',
             }}
             onChange={handleEmailChange}
           />
           <StyledInput
-            placeholder="Password"
+            placeholder={getTranslation('login.password')}
             sx={{
               marginBottom: '20px',
             }}
@@ -182,8 +182,8 @@ const Login = ({ setToast, Toast }) => {
             )}
           </Button>
         </form>
-        <Typography variant="h6">Don't have an account ?</Typography>
-        <Link to="/register">Sign up</Link>
+        <Typography variant="h6">{getTranslation('login.no-account')}</Typography>
+        <Link to="/register">{getTranslation('login.register')}</Link>
       </Box>
     </StyledWrapper>
   );

@@ -27,7 +27,7 @@ import { ListRequest } from './pages/Franchise/Request/Validate/List.jsx';
 import { MyFranchise } from './pages/Shop/MyShops/MyFranchise.jsx';
 import { ShopForOwner } from './pages/Shop/ShopForOwner.jsx';
 import { AddMemberPage } from './pages/Shop/MyShops/AddMember.jsx';
-import { EditMember } from './pages/Shop/MyShops/EditMember.jsx';
+import { EditMemberPage } from './pages/Shop/MyShops/EditMember.jsx';
 import { EditProfile } from './pages/User/EditProfile.jsx';
 import { SearchBikes } from './pages/Bikes/SearchBikes.jsx';
 import { CreateBikePage } from './pages/Bikes/CreateBike.jsx';
@@ -161,7 +161,7 @@ function App() {
                         />{' '}
                         <Route
                           path="/my-shops/edit-member/:userId"
-                          element={<EditMember />}
+                          element={<EditMemberPage />}
                         />
                         <Route
                           path="/user/edit-profile/:userId"

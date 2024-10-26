@@ -7,10 +7,12 @@ import { CircularProgress } from '@mui/material';
 import { useUserContext } from '../../hooks/UserContext.jsx';
 import { useParams } from 'react-router-dom';
 import { useUsers } from '../Admin/hooks/useUsers.js';
+import { useTranslation } from '../../locales/hooks/getTranslation.js';
 
 const EditProfile = () => {
   const [error, setError] = useState(null);
   const { user: userFromContext, refreshUser } = useUserContext();
+  const { getTranslation } = useTranslation();
 
   const { userId } = useParams();
   const { getUser, user: externalUser } = useUsers();
@@ -24,13 +26,13 @@ const EditProfile = () => {
   const user = userId ? externalUser : userFromContext;
 
   const form = {
-    title: 'Edit my profile',
+    title: getTranslation('edit-profile.title'),
     canEditAll: false,
     fields: [
       {
         type: 'text',
         id: 'lastname',
-        label: 'Last name',
+        label: getTranslation('edit-profile.last-name'),
         name: 'lastname',
         value: user.lastname,
         isEditable: true,
@@ -38,7 +40,7 @@ const EditProfile = () => {
       {
         type: 'text',
         id: 'firstname',
-        label: 'First name',
+        label: getTranslation('edit-profile.first-name'),
         name: 'firstname',
         value: user.firstname,
         isEditable: true,
@@ -46,7 +48,7 @@ const EditProfile = () => {
       {
         type: 'text',
         id: 'email',
-        label: 'Email',
+        label: getTranslation('edit-profile.email'),
         name: 'email',
         value: user.email,
         isEditable: false,
@@ -54,9 +56,9 @@ const EditProfile = () => {
       {
         type: 'select',
         id: 'locale',
-        label: 'Language preferences',
+        label: getTranslation('edit-profile.locale'),
         options: [
-          { value: 'FR', label: 'French' },
+          { value: 'FR', label: 'Français' },
           { value: 'EN', label: 'English' },
         ],
         name: 'locale',
@@ -66,17 +68,17 @@ const EditProfile = () => {
       {
         type: 'image',
         id: 'profilePicture',
-        label: 'Profile Picture',
+        label: getTranslation('edit-profile.profile-picture'),
         name: 'profilePicture',
         isEditable: true,
       },
     ],
-    submitLabel: userId ? 'Edit user' : 'Edit my profile',
+    submitLabel: userId ? getTranslation('edit-profile.submit.edit-user') : getTranslation('edit-profile.submit.edit-profile'),
     call: {
       link: `/users/${user.id}`,
       method: 'PATCH',
     },
-    successMessage: 'Le profil a été mis à jour !',
+    successMessage: getTranslation('edit-profile.submit.success'),
     initialValues: {
       roles: ['ROLE_EMPLOYEE'],
       shop: 90,

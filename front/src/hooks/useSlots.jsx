@@ -21,13 +21,16 @@ export const useSlots = () => {
   const getAvailableSlotsForDateAndShop = useCallback(
     async ({ shopId, dates }) => {
       try {
+        const startDate = new Date(dates.startDate.getTime() - dates.startDate.getTimezoneOffset() * 60000)
+          .toISOString()
+          .split('T')[0];
         const response = await fetchApi(`${apiUrl}/shops/${shopId}/slots`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            date: dates.startDate.toISOString().split('T')[0],
+            date: startDate,
           }),
         });
         const data = await response.json();
