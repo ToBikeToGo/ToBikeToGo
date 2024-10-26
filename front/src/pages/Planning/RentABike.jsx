@@ -64,6 +64,7 @@ function RentABike() {
   const { bike, getBikeById, isLoading } = useBikes();
   const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
   const { user } = useUserContext();
+  const [selectedSlot, setSelectedSlot] = useState(null);
 
   const [isLoadingMap, setIsLoadingMap] = useState(true);
 
@@ -108,6 +109,7 @@ function RentABike() {
   const handlePayment = async () => {
     try {
       const apiUrl = getApirUrl();
+      const mergedDate = mergeDateAndTime(dates[0]?.startDate, selectedSlot);
       const response = await fetchApi(`${apiUrl}/payments/booking`,{
         headers: {
           'Accept': 'application/json',
@@ -119,8 +121,8 @@ function RentABike() {
               (1000 * 60 * 60 * 24)
         .toFixed(2),
           booking: {
-            startDate: "2024-02-15T14:29:48.771Z",
-            endDate: "2024-02-15T14:29:48.771Z",
+            startDate: new Date(mergedDate),
+            endDate: dates[0]?.endDate,
             bike: '/api/bikes/' + bike.id
           },
           user: [
@@ -140,6 +142,16 @@ function RentABike() {
       // Gérez les erreurs de connexion au serveur
     }
   };
+  function mergeDateAndTime(dateString, timeString) {
+    const date = new Date(dateString);
+  
+    const [hours, minutes] = timeString.split(':').map(Number);
+  
+    date.setHours(hours + 1);
+    date.setMinutes(minutes);
+  
+    return date;
+  }
   const isDateUnavailable = (date) => {
     return unavailableDates.some(
       (unavailableDate) =>
@@ -235,10 +247,11 @@ function RentABike() {
           </Typography>
           <TimeSlots
             unavailableSlots={slots}
-            onChange={(time) => console.log(time, 'add api call')}
+            onChange={(time) => setSelectedSlot(time)}
           />
 
           <Button
+            disabled={!selectedSlot}
             onClick={handlePayment}
             variant="outlined"
             color="black"

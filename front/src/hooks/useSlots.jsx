@@ -50,7 +50,7 @@ export const useSlots = () => {
           `${apiUrl}/bikes/${bikeId}/unavailable`
         );
         const data = await response.json();
-        setUnavailableDates(data);
+        // setUnavailableDates(data);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching slots', error);
