@@ -154,7 +154,7 @@ class Booking
     private ?bool $status = true;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]
     #[Groups([ConstantsGroups::BOOKING_WRITE, ConstantsGroups::BOOKING_READ])]
     private ?User $user = null;
 
